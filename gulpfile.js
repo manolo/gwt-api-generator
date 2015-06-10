@@ -13,8 +13,8 @@ var StreamFromArray = require('stream-from-array');
 
 // You can change the namespace of your package here.
 var ns = "com.vaadin.components.gwt.polymer";
-var target = process.cwd() + "/src/main/java/" + ns.replace(/\./g,'/') + "/client/";
-var resources = process.cwd() + "/src/main/resources/" + ns.replace(/\./g,'/') + "/public/";
+var target = __dirname + "/src/main/java/" + ns.replace(/\./g,'/') + "/client/";
+var resources = __dirname + "/src/main/resources/" + ns.replace(/\./g,'/') + "/public/";
 var bowerdir = resources + "bower_components/";
 
 // Using global because if we try to pass it to templates via the helper or any object
@@ -187,6 +187,20 @@ gulp.task('generate', ['generate:elements-all', 'generate:widgets-all'], functio
   gutil.log('Done.');
 });
 
+gulp.task('copy:src', function() {
+  var source = target.replace('/client/', '/');
+
+  return gulp.src(source + '**')
+    .pipe(gulp.dest(source.replace(__dirname, process.cwd())));
+});
+
+gulp.task('copy:resources', function() {
+  return gulp.src(resources + '**')
+    .pipe(gulp.dest(resources.replace(__dirname, process.cwd())));
+});
+
+gulp.task('copy-files', ['copy:src', 'copy:resources']);
+
 gulp.task('default', function(){
-  runSequence('clean', 'bower:install', 'generate');
+  runSequence('clean', 'bower:install', 'generate', 'copy-files');
 });
