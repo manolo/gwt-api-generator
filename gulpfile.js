@@ -13,8 +13,8 @@ var StreamFromArray = require('stream-from-array');
 
 // You can change the namespace of your package here.
 var ns = "com.vaadin.components.gwt.polymer";
-var target = "./src/main/java/" + ns.replace(/\./g,'/') + "/client/";
-var resources = "./src/main/resources/" + ns.replace(/\./g,'/') + "/public/";
+var target = process.cwd() + "/src/main/java/" + ns.replace(/\./g,'/') + "/client/";
+var resources = process.cwd() + "/src/main/resources/" + ns.replace(/\./g,'/') + "/public/";
 var bowerdir = resources + "bower_components/";
 
 // Using global because if we try to pass it to templates via the helper or any object
@@ -41,7 +41,7 @@ gulp.task('bower:install', ['clean'], function() {
     args.package = args.package.replace(' ', ',').split(',')
   }
 
-  return bower({ cmd: 'install', directory: bowerdir}, [args.package])
+  return bower({ cmd: 'install', cwd: resources}, [args.package])
     .pipe(map(function(file, cb){
       // iron-a11y-keys lacks the fire-keys-pressed annotation.
       if (/iron-a11y-keys.html/.test(file.relative)) {
@@ -59,8 +59,7 @@ gulp.task('bower:install', ['clean'], function() {
         );
       }
       cb(null, file);
-    }))
-    .pipe(gulp.dest(bowerdir));
+    }));
 });
 
 gulp.task('parse', ['analyze'], function(cb) {
@@ -129,7 +128,7 @@ function parseTemplate(template, obj, name, dir, suffix) {
   var path = target + dir + file;
   gutil.log("Generating: ", name, path);
 
-  var tpl = _.template(fs.readFileSync('./template/' + template + '.template'));
+  var tpl = _.template(fs.readFileSync(__dirname + '/template/' + template + '.template'));
   obj.ns = ns;
   fs.ensureFileSync(path);
   fs.writeFileSync(path, new Buffer(tpl(_.merge({}, null, obj, helpers))));
