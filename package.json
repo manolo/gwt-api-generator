@@ -1,6 +1,6 @@
 {
-  "name": "gwt-polymer",
-  "version": "0.0.1",
+  "name": "metathesis",
+  "version": "0.9.0",
   "description": "",
   "author": "Vaadin Ltd",
   "license": "Apache License 2.0",
@@ -25,6 +25,7 @@
     "web",
     "components",
     "webcomponents",
-    "gwt"
+    "gwt",
+    "polymer"
   ]
 }
