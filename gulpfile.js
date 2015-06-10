@@ -195,8 +195,17 @@ gulp.task('copy:lib', function() {
     .pipe(gulp.dest(process.cwd() + '/' + clientDirBase));
 });
 
+gulp.task('copy:pom', function() {
+  return gulp.src(__dirname + "/pom/pom.xml")
+    .pipe(gulp.dest(process.cwd()));
+});
+
 gulp.task('copy-files', ['copy:src', 'copy:resources']);
 
 gulp.task('default', function(){
-  runSequence('clean', 'bower:install', 'generate', 'copy:lib');
+  if(args.pom) {
+    runSequence('clean', 'bower:install', 'generate', 'copy:lib', 'copy:pom');
+  } else {
+    runSequence('clean', 'bower:install', 'generate', 'copy:lib');
+  }
 });
