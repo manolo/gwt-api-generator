@@ -18,7 +18,9 @@
     "run-sequence": "latest",
     "stream-from-array": "latest"
   },
-  "main": "bin/gwt-api-generator.js",
+  "bin": {
+    "metathesis": "./bin/metathesis.js"
+  },
   "keywords": [
     "vaadin",
     "components",
