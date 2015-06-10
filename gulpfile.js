@@ -11,11 +11,14 @@ var helpers = require("./template/helpers");
 var hyd = require("hydrolysis");
 var StreamFromArray = require('stream-from-array');
 
-// You can change the namespace of your package here.
-var ns = "com.vaadin.components.gwt.polymer";
-var target = __dirname + "/src/main/java/" + ns.replace(/\./g,'/') + "/client/";
-var resources = __dirname + "/src/main/resources/" + ns.replace(/\./g,'/') + "/public/";
-var bowerdir = resources + "bower_components/";
+var clientDirBase = (args.javaDir || 'src/main/java/').replace(/,+$/, "");
+var publicDirBase = (args.resourcesDir || 'src/main/resources/').replace(/,+$/, "");
+var ns = args.namespace || "com.vaadin.components.gwt.polymer";
+
+var clientDir = process.cwd() + '/' + clientDirBase + '/' + ns.replace(/\./g,'/') + "/client/";
+var publicDir = process.cwd() + '/' +  publicDirBase + '/' + ns.replace(/\./g,'/') + "/public/";
+var libDir = __dirname + '/lib/';
+var bowerDir = publicDir + "bower_components/";
 
 // Using global because if we try to pass it to templates via the helper or any object
 // we need to call merge which makes a copy of the structure per template slowing down
@@ -24,12 +27,12 @@ global.parsed = []; // we store all parsed objects so as we can iterate or find 
 global.imports = []; // we store a table for elements and import files
 
 gulp.task('clean:target', function() {
-  fs.removeSync(target + 'element');
-  fs.removeSync(target + 'widget');
+  fs.removeSync(clientDir + 'element');
+  fs.removeSync(clientDir + 'widget');
 });
 
 gulp.task('clean:resources', function() {
-  fs.removeSync(resources);
+  fs.removeSync(publicDir);
 });
 
 gulp.task('clean', ['clean:target', 'clean:resources']);
@@ -41,7 +44,7 @@ gulp.task('bower:install', ['clean'], function() {
     args.package = args.package.replace(' ', ',').split(',')
   }
 
-  return bower({ cmd: 'install', cwd: resources}, [args.package])
+  return bower({ cmd: 'install', cwd: publicDir}, [args.package])
     .pipe(map(function(file, cb){
       // iron-a11y-keys lacks the fire-keys-pressed annotation.
       if (/iron-a11y-keys.html/.test(file.relative)) {
@@ -85,18 +88,18 @@ gulp.task('parse', ['analyze'], function(cb) {
 });
 
 gulp.task('analyze', ['clean:target'], function() {
-  return gulp.src([bowerdir + "*/*.html",
+  return gulp.src([bowerDir + "*/*.html",
     // ignore all demo.html, index.html and metadata.html files
-    "!" + bowerdir + "*/*demo.html",
-    "!" + bowerdir + "*/*index.html",
-    "!" + bowerdir + "*/*metadata.html",
+    "!" + bowerDir + "*/*demo.html",
+    "!" + bowerDir + "*/*index.html",
+    "!" + bowerDir + "*/*metadata.html",
     // includes a set of js files only, and some do not exist
-    "!" + bowerdir + "*/*web-animations.html",
+    "!" + bowerDir + "*/*web-animations.html",
     // Not useful in gwt and also has spurious event names
-    "!" + bowerdir + "*/*iron-jsonp-library.html",
+    "!" + bowerDir + "*/*iron-jsonp-library.html",
     ])
     .pipe(map(function(file, cb) {
-      hyd.Analyzer.analyze(bowerdir + file.relative).then(function(result) {
+      hyd.Analyzer.analyze(bowerDir + file.relative).then(function(result) {
         var jsonArray = result.elements && result.elements[0] ? result.elements : result.behaviors;
         jsonArray.forEach(function(item) {
           var path = file.relative.replace(/\\/, '/');
@@ -125,7 +128,7 @@ gulp.task('analyze', ['clean:target'], function() {
 // dir is relative to the namespace (gwt client) folder.
 function parseTemplate(template, obj, name, dir, suffix) {
   var file = helpers.camelCase(name) + suffix;
-  var path = target + dir + file;
+  var path = clientDir + dir + file;
   gutil.log("Generating: ", name, path);
 
   var tpl = _.template(fs.readFileSync(__dirname + '/template/' + template + '.template'));
@@ -187,20 +190,13 @@ gulp.task('generate', ['generate:elements-all', 'generate:widgets-all'], functio
   gutil.log('Done.');
 });
 
-gulp.task('copy:src', function() {
-  var source = target.replace('/client/', '/');
-
-  return gulp.src(source + '**')
-    .pipe(gulp.dest(source.replace(__dirname, process.cwd())));
-});
-
-gulp.task('copy:resources', function() {
-  return gulp.src(resources + '**')
-    .pipe(gulp.dest(resources.replace(__dirname, process.cwd())));
+gulp.task('copy:lib', function() {
+  return gulp.src(libDir + '**')
+    .pipe(gulp.dest(process.cwd() + '/' + clientDirBase));
 });
 
 gulp.task('copy-files', ['copy:src', 'copy:resources']);
 
 gulp.task('default', function(){
-  runSequence('clean', 'bower:install', 'generate', 'copy-files');
+  runSequence('clean', 'bower:install', 'generate', 'copy:lib');
 });
