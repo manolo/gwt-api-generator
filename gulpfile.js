@@ -10,6 +10,7 @@ var runSequence = require('run-sequence');
 var helpers = require("./template/helpers");
 var hyd = require("hydrolysis");
 var StreamFromArray = require('stream-from-array');
+var rename = require("gulp-rename");
 
 var clientDirBase = (args.javaDir || 'src/main/java/').replace(/,+$/, "");
 var publicDirBase = (args.resourcesDir || 'src/main/resources/').replace(/,+$/, "");
@@ -196,7 +197,8 @@ gulp.task('copy:lib', function() {
 });
 
 gulp.task('copy:pom', function() {
-  return gulp.src(__dirname + "/pom/pom.xml")
+  return gulp.src(__dirname + "/pom-template.xml")
+    .pipe(rename('pom.xml'))
     .pipe(gulp.dest(process.cwd()));
 });
 
