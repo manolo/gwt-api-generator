@@ -1,6 +1,16 @@
-## NOTE: This branch does not work yet.
+# Vaadin Metathesis
 
-We are working on polymer 1.0.x and will release a ready to use
-GWT library very soon.
+A generator for creating GWT JSInterop classes from Javascript libraries and Frameworks, such as Polymer.
+
+### Installation and Usage
+
+- Install
+```shell
+$ npm install -g vaadin/metathesis
+```
+- Generate classes from [paper-elements](https://elements.polymer-project.org/browse?package=paper-elements)
+```shell
+$ metathesis polymer --package=PolymerElements/paper-elements
+```
 
 
