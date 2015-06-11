@@ -11,6 +11,7 @@
     "gulp": "latest",
     "gulp-bower": "latest",
     "gulp-util": "latest",
+    "gulp-rename": "latest",
     "lodash": "latest",
     "map-stream": "latest",
     "hydrolysis": "git://github.com/Polymer/hydrolysis#master",
