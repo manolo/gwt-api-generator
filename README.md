@@ -12,5 +12,8 @@ $ npm install -g vaadin/metathesis
 ```shell
 $ metathesis polymer --package=PolymerElements/paper-elements
 ```
-
+- Generate classes with an example `pom.xml`
+```shell
+$ metathesis polymer --package=PolymerElements/paper-elements --pom
+```
 
