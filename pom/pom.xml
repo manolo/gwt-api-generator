@@ -8,15 +8,24 @@
   <properties>
     <maven.compiler.source>1.7</maven.compiler.source>
     <maven.compiler.target>1.7</maven.compiler.target>
+    <additionalparam>-Xdoclint:none</additionalparam>
   </properties>
 
+  <distributionManagement>
+    <snapshotRepository>
+      <id>sonatype-nexus-snapshots</id>
+      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+      <uniqueVersion>false</uniqueVersion>
+    </snapshotRepository>
+  </distributionManagement>
 
   <dependencies>
     <dependency>
-       <groupId>com.google.gwt</groupId>
-       <artifactId>gwt-user</artifactId>
-       <version>2.7.0</version>
-     </dependency>
+      <groupId>com.google.gwt</groupId>
+      <artifactId>gwt-user</artifactId>
+      <version>2.7.0</version>
+      <scope>provided</scope>
+    </dependency>
   </dependencies>
 
   <build>
