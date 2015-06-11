@@ -14,7 +14,8 @@ var rename = require("gulp-rename");
 
 var clientDirBase = (args.javaDir || 'src/main/java/').replace(/,+$/, "");
 var publicDirBase = (args.resourcesDir || 'src/main/resources/').replace(/,+$/, "");
-var ns = args.namespace || "com.vaadin.components.gwt.polymer";
+var ns = args.groupId || "com.vaadin.components.gwt.polymer";
+var artifactId = args.artifactId || "gwt-polymer-elements";
 
 var clientDir = process.cwd() + '/' + clientDirBase + '/' + ns.replace(/\./g,'/') + "/client/";
 var publicDir = process.cwd() + '/' +  publicDirBase + '/' + ns.replace(/\./g,'/') + "/public/";
@@ -183,11 +184,17 @@ gulp.task('generate:widget-events', ['parse'], function() {
    })
 });
 
+gulp.task('generate:gwt-module', function() {
+  return gulp.src(__dirname + "/template/GwtModule.template")
+    .pipe(rename(helpers.camelCase(artifactId)+".gwt.xml"))
+    .pipe(gulp.dest(publicDir + "../"));
+});
+
 gulp.task('generate:elements-all', ['generate:imports-map','generate:elements', 'generate:events']);
 
 gulp.task('generate:widgets-all', ['generate:widgets', 'generate:widget-events']);
 
-gulp.task('generate', ['generate:elements-all', 'generate:widgets-all'], function() {
+gulp.task('generate', ['generate:elements-all', 'generate:widgets-all', 'generate:gwt-module'], function() {
   gutil.log('Done.');
 });
 
@@ -197,9 +204,10 @@ gulp.task('copy:lib', function() {
 });
 
 gulp.task('copy:pom', function() {
-  return gulp.src(__dirname + "/pom-template.xml")
-    .pipe(rename('pom.xml'))
-    .pipe(gulp.dest(process.cwd()));
+  var tpl = _.template(fs.readFileSync(__dirname + "/pom-template.xml"));
+  var obj = {ns: ns, artifactId: artifactId};
+  fs.ensureFileSync(process.cwd() + "/pom.xml");
+  fs.writeFileSync(process.cwd() + "/pom.xml", new Buffer(tpl(_.merge({}, null, obj, helpers))));
 });
 
 gulp.task('copy-files', ['copy:src', 'copy:resources']);
