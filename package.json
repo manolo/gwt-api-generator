@@ -16,7 +16,8 @@
     "hydrolysis": "git://github.com/Polymer/hydrolysis#master",
     "minimist": "^1.1.1",
     "run-sequence": "latest",
-    "stream-from-array": "latest"
+    "stream-from-array": "latest",
+    "marked": "latest"
   },
   "bin": {
     "metathesis": "./bin/metathesis.js"
