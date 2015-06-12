@@ -204,8 +204,8 @@ gulp.task('copy:lib', function() {
 });
 
 gulp.task('copy:pom', function() {
-  var tpl = _.template(fs.readFileSync(__dirname + "/pom-template.xml"));
-  var obj = {ns: ns, artifactId: artifactId};
+  var tpl = _.template(fs.readFileSync(__dirname + "/template/pom.template"));
+  var obj = {groupId: ns, artifactId: artifactId};
   fs.ensureFileSync(process.cwd() + "/pom.xml");
   fs.writeFileSync(process.cwd() + "/pom.xml", new Buffer(tpl(_.merge({}, null, obj, helpers))));
 });
