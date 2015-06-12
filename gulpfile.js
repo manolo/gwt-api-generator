@@ -20,6 +20,8 @@ var clientDir = process.cwd() + '/' + clientDirBase + '/' + ns.replace(/\./g,'/'
 var publicDir = process.cwd() + '/' +  publicDirBase + '/' + ns.replace(/\./g,'/') + "/public/";
 var libDir = __dirname + '/lib/';
 var bowerDir = publicDir + "bower_components/";
+var marked = require('marked');
+
 
 // Using global because if we try to pass it to templates via the helper or any object
 // we need to call merge which makes a copy of the structure per template slowing down
