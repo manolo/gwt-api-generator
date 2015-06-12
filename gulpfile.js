@@ -25,7 +25,6 @@ var bowerDir = publicDir + "bower_components/";
 // we need to call merge which makes a copy of the structure per template slowing down
 // the performance.
 global.parsed = []; // we store all parsed objects so as we can iterate or find behaviors
-global.imports = []; // we store a table for elements and import files
 
 gulp.task('clean:target', function() {
   fs.removeSync(clientDir + 'element');
@@ -109,11 +108,6 @@ gulp.task('analyze', ['clean:target'], function() {
             item.path = path;
             // Save all items in an array for later processing
             global.parsed.push(item);
-            // remember href in a separate hash
-            global.imports.push({
-              element: item.is,
-              path: path
-            });
           }
         });
         cb(null, file);
@@ -137,10 +131,6 @@ function parseTemplate(template, obj, name, dir, suffix) {
   fs.ensureFileSync(path);
   fs.writeFileSync(path, new Buffer(tpl(_.merge({}, null, obj, helpers))));
 }
-
-gulp.task('generate:imports-map', ['parse'], function() {
-  parseTemplate('ImportsMap', {"imports" : global.imports}, 'imports-map', 'element/', '.java');
-});
 
 gulp.task('generate:elements', ['parse'], function() {
   return StreamFromArray(global.parsed,{objectMode: true})
@@ -183,7 +173,7 @@ gulp.task('generate:widget-events', ['parse'], function() {
    })
 });
 
-gulp.task('generate:elements-all', ['generate:imports-map','generate:elements', 'generate:events']);
+gulp.task('generate:elements-all', ['generate:elements', 'generate:events']);
 
 gulp.task('generate:widgets-all', ['generate:widgets', 'generate:widget-events']);
 
