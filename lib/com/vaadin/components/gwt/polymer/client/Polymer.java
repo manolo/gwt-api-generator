@@ -6,7 +6,6 @@ import java.util.Set;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
-import com.vaadin.components.gwt.polymer.client.element.ImportsMap;
 
 public abstract class Polymer {
 
@@ -17,7 +16,7 @@ public abstract class Polymer {
      * the appropriate <import> tag in the document header
      */
     public static void ensureTag(String tagName) {
-        ensureHTMLImport(ImportsMap.getInstance().get(tagName));
+        ensureHTMLImport(tagName + "/" + tagName + ".html");
     }
 
     public static void ensureHTMLImport(String url) {

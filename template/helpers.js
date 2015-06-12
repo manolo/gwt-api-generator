@@ -1,4 +1,13 @@
 module.exports = {
+  marked: require('marked').setOptions({
+    gfm: true,
+    tables: true,
+    breaks: true,
+    pedantic: true,
+    sanitize: false,
+    smartLists: true,
+    smartypants: true
+  }),
   javaKeywords: ['for', 'switch'], // TODO: if it's necessary add other keywords as well
   findBehavior: function(name) {
     for (var i = 0; i < global.parsed.length; i++) {
@@ -171,7 +180,9 @@ module.exports = {
   },
   getDescription: function(spaces, o) {
     o = o || this;
-    return (o.description || o.desc || '').trim().split('\n').join('\n' + spaces + '* ').replace(/\*\//g, "* /");
+    var desc = o.description || o.desc || '';
+    desc = this.marked(desc);
+    return (desc).trim().split('\n').join('\n' + spaces + '* ').replace(/\*\//g, "* /");
   },
   disclaimer: function() {
     return "/**\n" +
