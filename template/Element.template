@@ -18,7 +18,7 @@ public interface <%= elementClassName() %> extends HTMLElement {
 
 <% if (hasAttributes()) _.forEach(attributes, function(attribute){ %>
     /**
-     * <%= getDescription('     ', atribute) %>
+     * <%= getDescription('     ', attribute) %>
      *
      * JavaScript Info:
      * @attribute <%= attribute.name %>

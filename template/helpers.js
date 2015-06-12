@@ -95,7 +95,7 @@ module.exports = {
     }
   },
   hasItems: function(array) {
-    return array == true;
+    return array && array.length > 0;
   },
   hasEvents: function() {
     return this.hasItems(this.events);
