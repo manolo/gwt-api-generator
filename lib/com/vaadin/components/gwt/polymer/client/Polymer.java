@@ -19,7 +19,7 @@ public abstract class Polymer {
      * bower_components/tagName/tagName.html
      */
     public static void ensureTag(String tagName) {
-        ensureHTMLImport(tagName + "/" + tagName + ".html");
+        ensureTag(tagName, null);
     }
 
     /**
@@ -27,10 +27,11 @@ public abstract class Polymer {
      * the appropriate &lt;import&gt; tag in the document header.
      *
      * @param tagName
-     * @param url component path relative to bower_components folder
+     * @param url component path relative to bower_components folder.
+     *        if null it imports bower_components/tagName/tagName.html
      */
     public static void ensureTag(String tagName, String src) {
-        ensureHTMLImport(src);
+        ensureHTMLImport(src == null ? tagName + "/" + tagName + ".html" : src);
     }
 
     /**
@@ -56,7 +57,7 @@ public abstract class Polymer {
      * from the bower_components/src url if it was not loaded yet.
      */
     public static <T> T createElement(String tagName, String src) {
-        ensureTag(tagName);
+        ensureTag(tagName, src);
         return (T)Document.get().createElement(tagName);
     }
 
@@ -65,8 +66,7 @@ public abstract class Polymer {
      * from the bower_components/tagName/tagName.html url if not loaded yet.
      */
     public static <T> T createElement(String tagName) {
-        ensureTag(tagName);
-        return (T)Document.get().createElement(tagName);
+        return createElement(tagName, null);
     }
 
     /**
