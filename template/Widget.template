@@ -58,6 +58,13 @@ public class <%= className() %> extends <%= baseWidgetName() %> {
     public <%= computeType(attribute.type) %> <%= computeGetterWithPrefix(attribute) %>() {
         return getPolymerElement().<%= computeGetterWithPrefix(attribute) %>();
     }
+    /**
+     * <%= getDescription('     ', attribute) %>
+     *
+     * JavaScript Info:
+     * @attribute <%= attribute.name %>
+     * @type <%= attribute.type %>
+     */
     public void <%= computeSetterWithPrefix(attribute) %>(<%= computeType(attribute.type) %> value) {
         // getElement().setPropertyObject("<%= attribute.name %>", value);
         getElement().setAttribute("<%= attribute.name %>", String.valueOf(value));
