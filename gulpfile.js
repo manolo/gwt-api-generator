@@ -126,7 +126,7 @@ gulp.task('analyze', ['clean:target'], function() {
 // dir is relative to the namespace (gwt client) folder.
 function parseTemplate(template, obj, name, dir, suffix) {
   var file = helpers.camelCase(name) + suffix;
-  var prefix = obj.name.split('-')[0];
+  var prefix = obj.name.split('-')[0].replace(/\./g,'');
   var path = clientDir + prefix + '/' + dir + file;
   gutil.log("Generating: ", name, path);
 
