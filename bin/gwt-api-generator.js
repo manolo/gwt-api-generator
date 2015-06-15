@@ -5,7 +5,7 @@ require('../gulpfile');
 
 require('coa').Cmd()
   .name(process.argv[1])
-  .title('Vaadin Metathesis')
+  .title('gwt-api-generator')
   .helpful()
   .opt()
     .name('package')
