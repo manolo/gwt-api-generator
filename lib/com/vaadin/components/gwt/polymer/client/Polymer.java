@@ -87,7 +87,12 @@ public abstract class Polymer {
         final T e = (T)Document.get().createElement(tagName);
         if (!isRegisteredElement(e)) {
             for (String src : imports) {
-                ensureTag(tagName, src);
+                ensureTag(tagName, src, new Function() {
+                    public Object call(Object arg) {
+                        reasignProperties(e);
+                        return null;
+                    }
+                }, null);
             }
         }
         return e;
@@ -139,5 +144,22 @@ public abstract class Polymer {
         }
         $doc.head.appendChild(l);
         return l;
+    }-*/;
+
+    /**
+     * Read all element properties and set then again so as on-change handlers are
+     * run. This is useful when a component is loaded the first time.
+     */
+    private static native void reasignProperties(Object e)
+    /*-{
+        for (i in e) {
+            if (!i.startsWith('_') && Object.prototype.hasOwnProperty.call(e, i) && e[i] !== undefined && typeof e[i] != 'object') {
+                console.log("Reassigning property: ", i, e[i], e);
+                var o = e[i];
+                console.log(i, e[i], typeof e[i]);
+                e[i] = undefined;
+                e[i] = o;
+            }
+        }
     }-*/;
 }
