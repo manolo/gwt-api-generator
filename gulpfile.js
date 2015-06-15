@@ -109,6 +109,11 @@ gulp.task('analyze', ['clean:target'], function() {
           if (item.is) {
             item.name = item.is;
             item.path = path;
+
+            var bowerFile = file.base + path.split("/")[0] + "/bower.json";
+            var bowerFileContent = fs.readFileSync(bowerFile);
+            item.bowerData = bowerFileContent ? JSON.parse(bowerFileContent) : {};
+
             // Save all items in an array for later processing
             global.parsed.push(item);
           }
@@ -124,13 +129,14 @@ gulp.task('analyze', ['clean:target'], function() {
 
 // Parse a template. It should be in the /template/ folder and have .template ext.
 // dir is relative to the namespace (gwt client) folder.
-function parseTemplate(template, obj, name, dir, suffix) {
+function parseTemplate(template, obj, name, dir, suffix, bowerData) {
   var file = helpers.camelCase(name) + suffix;
   var path = clientDir + dir + file;
   gutil.log("Generating: ", name, path);
 
   var tpl = _.template(fs.readFileSync(__dirname + '/template/' + template + '.template'));
   obj.ns = ns;
+  obj.bowerData = bowerData;
   fs.ensureFileSync(path);
   fs.writeFileSync(path, new Buffer(tpl(_.merge({}, null, obj, helpers))));
 }
@@ -139,7 +145,7 @@ gulp.task('generate:elements', ['parse'], function() {
   return StreamFromArray(global.parsed,{objectMode: true})
    .on('data', function(item) {
      if (!helpers.isBehavior(item)) {
-       parseTemplate('Element', item, item.is, 'element/', 'Element.java');
+       parseTemplate('Element', item, item.is, 'element/', 'Element.java', item.bowerData);
      }
    })
 });
@@ -149,7 +155,7 @@ gulp.task('generate:events', ['parse'], function() {
    .on('data', function(item) {
       if (item.events) {
         item.events.forEach(function(event) {
-          parseTemplate('ElementEvent', event, event.name, 'element/event/', 'Event.java');
+          parseTemplate('ElementEvent', event, event.name, 'element/event/', 'Event.java', item.bowerData);
         });
       }
    })
@@ -159,7 +165,7 @@ gulp.task('generate:widgets', ['parse'], function() {
   return StreamFromArray(global.parsed,{objectMode: true})
    .on('data', function(item) {
       if (!helpers.isBehavior(item)) {
-        parseTemplate('Widget', item, item.is, 'widget/', '.java');
+        parseTemplate('Widget', item, item.is, 'widget/', '.java', item.bowerData);
       }
    })
 });
@@ -169,8 +175,8 @@ gulp.task('generate:widget-events', ['parse'], function() {
    .on('data', function(item) {
       if (item.events) {
         item.events.forEach(function(event) {
-          parseTemplate('WidgetEvent', event, event.name, 'widget/event/', 'Event.java');
-          parseTemplate('WidgetEventHandler', event, event.name, 'widget/event/', 'EventHandler.java');
+          parseTemplate('WidgetEvent', event, event.name, 'widget/event/', 'Event.java', item.bowerData);
+          parseTemplate('WidgetEventHandler', event, event.name, 'widget/event/', 'EventHandler.java', item.bowerData);
         });
       }
    })

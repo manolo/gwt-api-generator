@@ -1,4 +1,4 @@
-<%= disclaimer() %>
+<%= disclaimer(bowerData) %>
 package com.vaadin.components.gwt.polymer.client.element;
 
 import java.util.HashMap;

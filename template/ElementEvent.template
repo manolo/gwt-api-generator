@@ -1,4 +1,4 @@
-<%= disclaimer() %>
+<%= disclaimer(bowerData) %>
 package <%= ns %>.client.element.event;
 
 import com.vaadin.components.gwt.polymer.client.webapi.*;

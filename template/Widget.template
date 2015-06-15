@@ -1,4 +1,4 @@
-<%= disclaimer() %>
+<%= disclaimer(bowerData) %>
 package <%= ns %>.client.widget;
 
 import <%= ns %>.client.element.*;
