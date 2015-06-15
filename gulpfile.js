@@ -14,8 +14,8 @@ var rename = require("gulp-rename");
 
 var clientDirBase = (args.javaDir || 'src/main/java/').replace(/,+$/, "");
 var publicDirBase = (args.resourcesDir || 'src/main/resources/').replace(/,+$/, "");
-var ns = args.groupId || "com.vaadin.components.gwt.polymer";
-var artifactId = args.artifactId || "gwt-polymer-elements";
+var ns = args.groupId || "com.vaadin.polymer";
+var artifactId = args.artifactId || "elements";
 
 var clientDir = process.cwd() + '/' + clientDirBase + '/' + ns.replace(/\./g,'/') + "/client/";
 var publicDir = process.cwd() + '/' +  publicDirBase + '/' + ns.replace(/\./g,'/') + "/public/";
@@ -178,7 +178,7 @@ gulp.task('generate:widget-events', ['parse'], function() {
 
 gulp.task('generate:gwt-module', function() {
   return gulp.src(__dirname + "/template/GwtModule.template")
-    .pipe(rename(helpers.camelCase(artifactId)+".gwt.xml"))
+    .pipe(rename("Elements.gwt.xml"))
     .pipe(gulp.dest(publicDir + "../"));
 });
 
