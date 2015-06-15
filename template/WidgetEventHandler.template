@@ -1,5 +1,5 @@
 <%= disclaimer() %>
-package <%= ns %>.client.widget.event;
+package <%= ns %>.widget.event;
 
 import com.google.gwt.event.shared.EventHandler;
 

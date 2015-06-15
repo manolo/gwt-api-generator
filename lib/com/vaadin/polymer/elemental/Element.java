@@ -1,4 +1,6 @@
-package com.vaadin.components.gwt.polymer.client.webapi;
+package com.vaadin.polymer.elemental;
+
+import com.vaadin.polymer.elemental.CSSStyleDeclaration;
 
 import com.google.gwt.core.client.js.JsProperty;
 import com.google.gwt.core.client.js.JsType;

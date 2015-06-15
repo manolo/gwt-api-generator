@@ -1,5 +1,5 @@
 <%= disclaimer() %>
-package <%= ns %>.client.widget.event;
+package <%= ns %>.widget.event;
 
 import com.google.gwt.event.shared.GwtEvent;
 import com.google.gwt.core.client.JavaScriptObject;
@@ -11,9 +11,9 @@ public class <%= camelCase(name) %>Event extends GwtEvent<<%= camelCase(name) %>
 
     public static Type<<%= camelCase(name) %>EventHandler> TYPE = new Type<<%= camelCase(name) %>EventHandler>();
 
-    private <%= ns %>.client.element.event.<%= camelCase(name) %>Event nativeEvent;
+    private <%= ns %>.element.event.<%= camelCase(name) %>Event nativeEvent;
 
-    public <%= camelCase(name) %>Event(<%= ns %>.client.element.event.<%= camelCase(name) %>Event nativeEvent) {
+    public <%= camelCase(name) %>Event(<%= ns %>.element.event.<%= camelCase(name) %>Event nativeEvent) {
         this.nativeEvent = nativeEvent;
     }
 
@@ -25,7 +25,7 @@ public class <%= camelCase(name) %>Event extends GwtEvent<<%= camelCase(name) %>
         handler.on<%= camelCase(name) %>(this);
     }
 
-    public <%= ns %>.client.element.event.<%= camelCase(name) %>Event getNativeEvent() {
+    public <%= ns %>.element.event.<%= camelCase(name) %>Event getNativeEvent() {
         return nativeEvent;
     }
 <% if (hasParams())  _.forEach(params, function(param){ %>
