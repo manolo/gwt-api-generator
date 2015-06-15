@@ -1,12 +1,12 @@
 <%= disclaimer() %>
-package <%= ns %>.client.widget;
+package <%= ns %>.widget;
 
-import <%= ns %>.client.element.*;
+import <%= ns %>.element.*;
 <% if (hasEvents()) { %>
-import <%= ns %>.client.widget.event.*;
+import <%= ns %>.widget.event.*;
 <% } %>
-import com.vaadin.components.gwt.polymer.client.PolymerWidget;
-import com.vaadin.components.gwt.polymer.client.webapi.*;
+import com.vaadin.polymer.client.PolymerWidget;
+import com.vaadin.polymer.client.webapi.*;
 import com.google.gwt.core.client.JsArray;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.core.client.JavaScriptObject;
@@ -30,10 +30,10 @@ public class <%= className() %> extends <%= baseWidgetName() %> {
         super(<%= elementClassName() %>.TAG, <%= elementClassName() %>.SRC, html);
 <% if (hasEvents()) _.forEach(events, function(event){ %>
         getPolymerElement().addEventListener(
-                <%= ns %>.client.element.event.<%= camelCase(event.name) %>Event.NAME,
-                new <%= ns %>.client.element.event.<%= camelCase(event.name) %>Event.Listener() {
+                <%= ns %>.element.event.<%= camelCase(event.name) %>Event.NAME,
+                new <%= ns %>.element.event.<%= camelCase(event.name) %>Event.Listener() {
             @Override
-            protected void handleEvent(<%= ns %>.client.element.event.<%= camelCase(event.name) %>Event event) {
+            protected void handleEvent(<%= ns %>.element.event.<%= camelCase(event.name) %>Event event) {
                 fireEvent(new <%= camelCase(event.name) %>Event(event));
             }
         });

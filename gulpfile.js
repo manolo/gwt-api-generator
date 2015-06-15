@@ -17,7 +17,7 @@ var publicDirBase = (args.resourcesDir || 'src/main/resources/').replace(/,+$/, 
 var ns = args.groupId || "com.vaadin.polymer";
 var artifactId = args.artifactId || "elements";
 
-var clientDir = process.cwd() + '/' + clientDirBase + '/' + ns.replace(/\./g,'/') + "/client/";
+var clientDir = process.cwd() + '/' + clientDirBase + '/' + ns.replace(/\./g,'/') + "/";
 var publicDir = process.cwd() + '/' +  publicDirBase + '/' + ns.replace(/\./g,'/') + "/public/";
 var libDir = __dirname + '/lib/';
 var bowerDir = publicDir + "bower_components/";
@@ -126,11 +126,12 @@ gulp.task('analyze', ['clean:target'], function() {
 // dir is relative to the namespace (gwt client) folder.
 function parseTemplate(template, obj, name, dir, suffix) {
   var file = helpers.camelCase(name) + suffix;
-  var path = clientDir + dir + file;
+  var prefix = obj.name.split('-')[0];
+  var path = clientDir + prefix + '/' + dir + file;
   gutil.log("Generating: ", name, path);
 
   var tpl = _.template(fs.readFileSync(__dirname + '/template/' + template + '.template'));
-  obj.ns = ns;
+  obj.ns = ns + '.' + prefix;
   fs.ensureFileSync(path);
   fs.writeFileSync(path, new Buffer(tpl(_.merge({}, null, obj, helpers))));
 }
