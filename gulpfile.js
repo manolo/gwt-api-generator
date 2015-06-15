@@ -203,8 +203,6 @@ gulp.task('copy:pom', function() {
   fs.writeFileSync(process.cwd() + "/pom.xml", new Buffer(tpl(_.merge({}, null, obj, helpers))));
 });
 
-gulp.task('copy-files', ['copy:src', 'copy:resources']);
-
 gulp.task('default', function(){
   if(args.pom) {
     runSequence('clean', 'bower:install', 'generate', 'copy:lib', 'copy:pom');
