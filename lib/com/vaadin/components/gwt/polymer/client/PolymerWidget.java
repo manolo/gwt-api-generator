@@ -8,9 +8,9 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 
 public class PolymerWidget extends HTMLPanel {
 
-    public PolymerWidget(String tag, String html) {
+    public PolymerWidget(String tag, String src, String html) {
         super(tag, html);
-        Polymer.ensureTag(tag);
+        Polymer.ensureTag(tag, src);
     }
 
     public PolymerWidget(String tag, SafeHtml safeHtml) {
@@ -23,7 +23,7 @@ public class PolymerWidget extends HTMLPanel {
     public void setHorizontal(String horizontal) {
         setBooleanAttribute("horizontal", true);
     }
-    
+
     public void setLayout(boolean layout) {
         setBooleanAttribute("layout", layout);
     }
@@ -51,7 +51,7 @@ public class PolymerWidget extends HTMLPanel {
     public void setSelfEnd(String selfEnd) {
         setBooleanAttribute("self-end", true);
     }
-    
+
 
     public void setDisabled(boolean disabled) {
         setBooleanAttribute("disabled", disabled);
@@ -59,8 +59,8 @@ public class PolymerWidget extends HTMLPanel {
     public void setDisabled(String disabled) {
         setBooleanAttribute("disabled", true);
     }
-    
-    
+
+
     public void setAriaLabel(String ariaLabel) {
         getElement().setAttribute("ariaLabel", ariaLabel);
     }
@@ -69,7 +69,7 @@ public class PolymerWidget extends HTMLPanel {
     public void setCenterCenter(String centerCenter) {
         getElement().setAttribute("center-center", centerCenter);
     }
-    
+
 
     public void setBooleanAttribute(String name, boolean value) {
         if (value) {

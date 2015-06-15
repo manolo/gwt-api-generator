@@ -13,12 +13,34 @@ public abstract class Polymer {
 
     /**
      * Ensures that the tagName has been registered, otherwise injects
-     * the appropriate <import> tag in the document header
+     * the appropriate &lt;import&gt; tag in the document header.
+     *
+     * It loads the component from following the convention:
+     * bower_components/tagName/tagName.html
      */
     public static void ensureTag(String tagName) {
-        ensureHTMLImport(tagName + "/" + tagName + ".html");
+        ensureTag(tagName, null);
     }
 
+    /**
+     * Ensures that the tagName has been registered, otherwise injects
+     * the appropriate &lt;import&gt; tag in the document header.
+     *
+     * @param tagName
+     * @param url component path relative to bower_components folder.
+     *        if null it imports bower_components/tagName/tagName.html
+     */
+    public static void ensureTag(String tagName, String src) {
+        ensureHTMLImport(src == null ? tagName + "/" + tagName + ".html" : src);
+    }
+
+    /**
+     * Inserts the appropriate &lt;import&gt; of a component given by url.
+     *
+     * Note that bower_components will be prefixed to the url always.
+     *
+     * @param url component path relative to bower_components folder
+     */
     public static void ensureHTMLImport(String url) {
         String href = "bower_components/" + url;
         if (!urlImported.contains(href)) {
@@ -32,13 +54,24 @@ public abstract class Polymer {
 
     /**
      * Returns a new instance of the Element. It loads the webcomponent
-     * if not loaded yet.
+     * from the bower_components/src url if it was not loaded yet.
      */
-    public static <T> T createElement(String tagName) {
-        ensureHTMLImport(tagName);
+    public static <T> T createElement(String tagName, String src) {
+        ensureTag(tagName, src);
         return (T)Document.get().createElement(tagName);
     }
 
+    /**
+     * Returns a new instance of the Element. It loads the webcomponent
+     * from the bower_components/tagName/tagName.html url if not loaded yet.
+     */
+    public static <T> T createElement(String tagName) {
+        return createElement(tagName, null);
+    }
+
+    /**
+     * Returns the JsInterop instance of Document
+     */
     public static com.vaadin.components.gwt.polymer.client.webapi.Document getDocument() {
         return (com.vaadin.components.gwt.polymer.client.webapi.Document)Document.get();
     }
