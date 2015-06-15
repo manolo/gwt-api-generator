@@ -129,12 +129,12 @@ public abstract class Polymer {
         l.href = href;
         if (onload) {
           l.onload = function() {
-             onload.@com.vaadin.components.gwt.polymer.client.webapi.Function::call(*)();
+             onload.@com.vaadin.polymer.webapi.Function::call(*)();
           }
         }
         if (onerror) {
           l.onerror = function() {
-              onerror.@com.vaadin.components.gwt.polymer.client.webapi.Function::call(*)();
+              onerror.@com.vaadin.polymer.webapi.Function::call(*)();
           }
         }
         $doc.head.appendChild(l);
