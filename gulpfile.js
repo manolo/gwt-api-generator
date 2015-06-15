@@ -183,6 +183,11 @@ gulp.task('generate:gwt-module', function() {
     .pipe(gulp.dest(publicDir + "../"));
 });
 
+gulp.task('copy:static-gwt-module', function() {
+  return gulp.src(__dirname + "/template/Elements.gwt.xml")
+    .pipe(gulp.dest(process.cwd() + '/' +  publicDirBase + '/com/vaadin/polymer/'));
+});
+
 
 gulp.task('generate:elements-all', ['generate:elements', 'generate:events']);
 
@@ -206,8 +211,8 @@ gulp.task('copy:pom', function() {
 
 gulp.task('default', function(){
   if(args.pom) {
-    runSequence('clean', 'bower:install', 'generate', 'copy:lib', 'copy:pom');
+    runSequence('clean', 'bower:install', 'generate', 'copy:lib', 'copy:static-gwt-module', 'copy:pom');
   } else {
-    runSequence('clean', 'bower:install', 'generate', 'copy:lib');
+    runSequence('clean', 'bower:install', 'generate', 'copy:lib', 'copy:static-gwt-module');
   }
 });
