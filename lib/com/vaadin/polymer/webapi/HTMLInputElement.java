@@ -1,4 +1,4 @@
-package com.vaadin.polymer.client.webapi;
+package com.vaadin.polymer.webapi;
 
 import com.google.gwt.core.client.js.JsType;
 

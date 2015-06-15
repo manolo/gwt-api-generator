@@ -1,4 +1,4 @@
-package com.vaadin.polymer.client;
+package com.vaadin.polymer;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -6,7 +6,7 @@ import java.util.Set;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
-import com.vaadin.components.gwt.polymer.client.webapi.Function;
+import com.vaadin.polymer.webapi.Function;
 
 public abstract class Polymer {
 
@@ -104,8 +104,8 @@ public abstract class Polymer {
     /**
      * Returns the JsInterop instance of Document
      */
-    public static com.vaadin.polymer.client.webapi.Document getDocument() {
-        return (com.vaadin.polymer.client.webapi.Document)Document.get();
+    public static com.vaadin.polymer.webapi.Document getDocument() {
+        return (com.vaadin.polymer.webapi.Document)Document.get();
     }
 
     /**

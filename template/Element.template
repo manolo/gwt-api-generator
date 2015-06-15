@@ -1,7 +1,7 @@
 <%= disclaimer() %>
 package <%= ns %>.element;
 
-import com.vaadin.polymer.client.webapi.*;
+import com.vaadin.polymer.webapi.*;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArray;
 import com.google.gwt.core.client.js.JsProperty;
