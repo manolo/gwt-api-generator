@@ -184,11 +184,11 @@ module.exports = {
     desc = this.marked(desc);
     return (desc).trim().split('\n').join('\n' + spaces + '* ').replace(/\*\//g, "* /");
   },
-  disclaimer: function(bowerData) {
-    var projectName = bowerData.name || "unknown";
-    var projectLicense = bowerData.license || "unknown";
+  disclaimer: function() {
+    var projectName = this.bowerData.name || "unknown";
+    var projectLicense = this.bowerData.license || "unknown";
 
-    var projectAuthors = bowerData.authors || bowerData.author;
+    var projectAuthors = this.bowerData.authors || this.bowerData.author;
     if (projectAuthors && projectAuthors.map) {
       projectAuthors = projectAuthors.map(function(author) {
         return author.name ? author.name : author;

@@ -1,4 +1,4 @@
-<%= disclaimer(bowerData) %>
+<%= disclaimer() %>
 package <%= ns %>.element;
 
 import com.vaadin.polymer.elemental.*;

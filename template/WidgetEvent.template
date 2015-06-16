@@ -1,4 +1,4 @@
-<%= disclaimer(bowerData) %>
+<%= disclaimer() %>
 package <%= ns %>.widget.event;
 
 import com.google.gwt.event.shared.GwtEvent;
