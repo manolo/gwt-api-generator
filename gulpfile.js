@@ -14,10 +14,10 @@ var rename = require("gulp-rename");
 
 var clientDirBase = (args.javaDir || 'src/main/java/').replace(/,+$/, "");
 var publicDirBase = (args.resourcesDir || 'src/main/resources/').replace(/,+$/, "");
-var ns = args.groupId || "com.vaadin.components.gwt.polymer";
-var artifactId = args.artifactId || "gwt-polymer-elements";
+var ns = args.groupId || "com.vaadin.polymer";
+var artifactId = args.artifactId || "elements";
 
-var clientDir = process.cwd() + '/' + clientDirBase + '/' + ns.replace(/\./g,'/') + "/client/";
+var clientDir = process.cwd() + '/' + clientDirBase + '/' + ns.replace(/\./g,'/') + "/";
 var publicDir = process.cwd() + '/' +  publicDirBase + '/' + ns.replace(/\./g,'/') + "/public/";
 var libDir = __dirname + '/lib/';
 var bowerDir = publicDir + "bower_components/";
@@ -131,12 +131,14 @@ gulp.task('analyze', ['clean:target'], function() {
 // dir is relative to the namespace (gwt client) folder.
 function parseTemplate(template, obj, name, dir, suffix, bowerData) {
   var file = helpers.camelCase(name) + suffix;
-  var path = clientDir + dir + file;
+  var prefix = obj.name.split('-')[0].replace(/\./g,'');
+  var path = clientDir + prefix + '/' + dir + file;
   gutil.log("Generating: ", name, path);
 
   var tpl = _.template(fs.readFileSync(__dirname + '/template/' + template + '.template'));
-  obj.ns = ns;
+  obj.ns = ns + '.' + prefix;
   obj.bowerData = bowerData;
+
   fs.ensureFileSync(path);
   fs.writeFileSync(path, new Buffer(tpl(_.merge({}, null, obj, helpers))));
 }
@@ -184,8 +186,13 @@ gulp.task('generate:widget-events', ['parse'], function() {
 
 gulp.task('generate:gwt-module', function() {
   return gulp.src(__dirname + "/template/GwtModule.template")
-    .pipe(rename(helpers.camelCase(artifactId)+".gwt.xml"))
+    .pipe(rename("Elements.gwt.xml"))
     .pipe(gulp.dest(publicDir + "../"));
+});
+
+gulp.task('copy:static-gwt-module', function() {
+  return gulp.src(__dirname + "/template/Elements.gwt.xml")
+    .pipe(gulp.dest(process.cwd() + '/' +  publicDirBase + '/com/vaadin/polymer/'));
 });
 
 
@@ -209,12 +216,10 @@ gulp.task('copy:pom', function() {
   fs.writeFileSync(process.cwd() + "/pom.xml", new Buffer(tpl(_.merge({}, null, obj, helpers))));
 });
 
-gulp.task('copy-files', ['copy:src', 'copy:resources']);
-
 gulp.task('default', function(){
   if(args.pom) {
-    runSequence('clean', 'bower:install', 'generate', 'copy:lib', 'copy:pom');
+    runSequence('clean', 'bower:install', 'generate', 'copy:lib', 'copy:static-gwt-module', 'copy:pom');
   } else {
-    runSequence('clean', 'bower:install', 'generate', 'copy:lib');
+    runSequence('clean', 'bower:install', 'generate', 'copy:lib', 'copy:static-gwt-module');
   }
 });
