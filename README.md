@@ -1,4 +1,4 @@
-# Vaadin Metathesis
+# gwt-api-generator
 
 A generator for creating GWT JSInterop classes from Javascript libraries and Frameworks, such as Polymer.
 
@@ -6,15 +6,15 @@ A generator for creating GWT JSInterop classes from Javascript libraries and Fra
 
 - Install
 ```shell
-$ npm install -g vaadin/metathesis
+$ npm install -g vaadin/gwt-api-generator
 ```
 - Generate classes from [paper-elements](https://elements.polymer-project.org/browse?package=paper-elements)
 ```shell
-$ metathesis polymer --package=PolymerElements/paper-elements
+$ gwt-api-generator --package=PolymerElements/paper-elements
 ```
 - Package a jar of the classes using an example `pom.xml`
 ```shell
-$ metathesis polymer --package=PolymerElements/paper-elements --pom
+$ gwt-api-generator --package=PolymerElements/paper-elements --pom
 $ mvn package
 ```
 

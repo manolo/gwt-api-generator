@@ -1,4 +1,4 @@
-package com.vaadin.components.gwt.polymer.client;
+package com.vaadin.polymer;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;

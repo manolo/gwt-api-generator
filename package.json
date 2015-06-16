@@ -1,5 +1,5 @@
 {
-  "name": "metathesis",
+  "name": "gwt-api-generator",
   "version": "0.9.0",
   "description": "",
   "author": "Vaadin Ltd",
@@ -21,7 +21,7 @@
     "marked": "latest"
   },
   "bin": {
-    "metathesis": "./bin/metathesis.js"
+    "gwt-api-generator": "./bin/gwt-api-generator.js"
   },
   "keywords": [
     "vaadin",

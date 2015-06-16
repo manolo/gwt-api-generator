@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module>
-    <inherits name='com.vaadin.components.gwt.polymer.PolymerElements'/>
+   <source path="" />
+    <inherits name='com.vaadin.polymer.Elements'/>
 </module>
