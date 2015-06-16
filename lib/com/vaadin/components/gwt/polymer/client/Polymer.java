@@ -4,8 +4,10 @@ import java.util.HashSet;
 import java.util.Set;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.user.client.Timer;
 import com.vaadin.components.gwt.polymer.client.webapi.Function;
 
 public abstract class Polymer {
@@ -78,24 +80,49 @@ public abstract class Polymer {
         }
     }
 
+
+
     /**
      * Returns a new instance of the Element. It loads the web component
      * from the bower_components/src url if it was not loaded yet.
      */
-    public static <T> T createElement(String tagName, String... imports) {
+    public static <T> T createElement(final String tagName, final String... imports) {
         @SuppressWarnings("unchecked")
         final T e = (T)Document.get().createElement(tagName);
-        if (!isRegisteredElement(e)) {
-            for (String src : imports) {
-                ensureTag(tagName, src, new Function() {
-                    public Object call(Object arg) {
-                        reasignProperties(e);
-                        return null;
-                    }
-                }, null);
-            }
-        }
+        ensureCustomElement(e, tagName, imports);
         return e;
+    }
+
+    public static <T> void ensureCustomElement(final T elem,
+            final String tagName, final String... dependencies) {
+
+        // FIXME(manolo): figure out a better way to do this
+        final String[] imports = dependencies.length == 1 && dependencies[0].contains("icon") ? new String[] {
+                "iron-icons/iron-icons.html", dependencies[0] }
+                : dependencies;
+
+        // Do stuff asynchronously so as developer has an early version
+        // if the created element to assign properties.
+        new Timer() {
+            JavaScriptObject saved;
+            int nImports = imports.length;
+            Function reasign = new Function() {
+                public Object call(Object arg) {
+                    if (--nImports == 0) {
+                        reasignProperties(elem, saved);
+                    }
+                    return null;
+                }
+            };
+            public void run() {
+                if (!isRegisteredElement(elem) && nImports > 0) {
+                    saved = saveProperties(elem);
+                    for (String src : imports) {
+                        ensureTag(tagName, src, saved == null ? null : reasign, null);
+                    }
+                }
+            }
+        }.schedule(10);
     }
 
     /**
@@ -129,6 +156,7 @@ public abstract class Polymer {
      */
     private native static Element importHrefImpl(String href, Function onload, Function onerror)
     /*-{
+        // TODO(manolo): use Polymer.Base.importHref when it works in FF
         var l = $doc.createElement('link');
         l.rel = 'import';
         l.href = href;
@@ -147,19 +175,29 @@ public abstract class Polymer {
     }-*/;
 
     /**
-     * Read all element properties and set then again so as on-change handlers are
-     * run. This is useful when a component is loaded the first time.
+     * Reassign saved properties.
      */
-    private static native void reasignProperties(Object e)
+    private static native void reasignProperties(Object e, Object o)
     /*-{
+        for (i in o) {
+            e[i] = o[i];
+        }
+    }-*/;
+
+    /**
+     * Read all element properties and save in a JS object, so as we can
+     * reassign then once the element is registered
+     */
+    private static native JavaScriptObject saveProperties(Object e)
+    /*-{
+        var r = {}, b;
         for (i in e) {
-            if (!i.startsWith('_') && Object.prototype.hasOwnProperty.call(e, i) && e[i] !== undefined && typeof e[i] != 'object') {
-                console.log("Reassigning property: ", i, e[i], e);
-                var o = e[i];
-                console.log(i, e[i], typeof e[i]);
-                e[i] = undefined;
-                e[i] = o;
+            if (e.hasOwnProperty(i)) {
+                b = true;
+                r[i] = e[i];
+                delete(e[i]);
             }
         }
+        return b ? r : null;
     }-*/;
 }
