@@ -4,7 +4,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.Timer;
@@ -80,8 +79,6 @@ public abstract class Polymer {
         }
     }
 
-
-
     /**
      * Returns a new instance of the Element. It loads the web component
      * from the bower_components/src url if it was not loaded yet.
@@ -93,36 +90,43 @@ public abstract class Polymer {
         return e;
     }
 
-    public static <T> void ensureCustomElement(final T elem,
-            final String tagName, final String... dependencies) {
+    public static <T> void ensureCustomElement(final T elem, String tagName,
+            String... imports) {
 
-        // FIXME(manolo): figure out a better way to do this
-        final String[] imports = dependencies.length == 1 && dependencies[0].contains("icon") ? new String[] {
-                "iron-icons/iron-icons.html", dependencies[0] }
-                : dependencies;
+        if (isRegisteredElement(elem)) {
+            return;
+        }
 
-        // Do stuff asynchronously so as developer has an early version
-        // if the created element to assign properties.
+        // Delay this so as the developer gets an early version of the element and
+        // can assign properties soon.
         new Timer() {
-            JavaScriptObject saved;
-            int nImports = imports.length;
-            Function reasign = new Function() {
-                public Object call(Object arg) {
-                    if (--nImports == 0) {
-                        reasignProperties(elem, saved);
-                    }
-                    return null;
-                }
-            };
             public void run() {
-                if (!isRegisteredElement(elem) && nImports > 0) {
-                    saved = saveProperties(elem);
-                    for (String src : imports) {
-                        ensureTag(tagName, src, saved == null ? null : reasign, null);
-                    }
-                }
+                // We need to remove ownProperties from the element when it's not
+                // registered because a bug in Polymer 1.0.x
+                // https://github.com/Polymer/polymer/issues/1882
+                saveProperties(elem);
             }
-        }.schedule(10);
+        }.schedule(0);
+
+        //
+        new Timer() {
+            public void run() {
+                // Restore saved ownProperties
+                reasignProperties(elem);
+            }
+        }.schedule(5);
+
+        imports = fixImports(imports);
+        for (String src : fixImports(imports)) {
+            ensureTag(tagName, src, null, null);
+        }
+    }
+
+    private static String[] fixImports(String[] imports) {
+        // FIXME(manolo): figure out a better way to do this
+        return imports.length > 1 && imports[0].matches(".*[^\\w]import[^\\w].*") ?
+            new String[] {"iron-icons/iron-icons.html", imports[0]} :
+            imports;
     }
 
     /**
@@ -175,29 +179,39 @@ public abstract class Polymer {
     }-*/;
 
     /**
-     * Reassign saved properties.
+     * Reassign saved properties before the element was registered.
      */
-    private static native void reasignProperties(Object e, Object o)
+    private static native void reasignProperties(Object e)
     /*-{
-        for (i in o) {
-            e[i] = o[i];
+        if (e && e.__o) {
+            var id = setInterval(function() {
+                if (e.constructor !== $wnd.HTMLElement) {
+                    clearInterval(id);
+                    for (i in e.__o) {
+                        e[i] = e.__o[i];
+                    }
+                    delete e.__o;
+                }
+            }, 0);
         }
     }-*/;
 
     /**
-     * Read all element properties and save in a JS object, so as we can
-     * reassign then once the element is registered
+     * Read all element properties and save in a JS object in the element,
+     * so as we can reassign then once the element is registered.
      */
-    private static native JavaScriptObject saveProperties(Object e)
+    private static native boolean saveProperties(Object e)
     /*-{
-        var r = {}, b;
-        for (i in e) {
-            if (e.hasOwnProperty(i)) {
-                b = true;
-                r[i] = e[i];
-                delete(e[i]);
+        if (e && e.constructor === $wnd.HTMLElement) {
+            var o = {};
+            for (i in e) {
+                if (e.hasOwnProperty(i)) {
+                    b = true;
+                    o[i] = e[i];
+                    delete(e[i]);
+                    e.__o = o;
+                }
             }
         }
-        return b ? r : null;
     }-*/;
 }
