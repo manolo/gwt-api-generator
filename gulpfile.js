@@ -68,18 +68,32 @@ gulp.task('bower:install', ['clean'], function() {
     }));
 });
 
+function getBehaviorPropertiesRecursively(item, name) {
+  var properties = [];
+
+  var behavior = helpers.findBehavior(name)
+  if (behavior) {
+    behavior.properties.forEach(function(prop) {
+      prop.isBehavior = true;
+      prop.behavior = helpers.className(item.is);
+      properties.push(prop);
+    });
+
+    if(behavior.behaviors) {
+      behavior.behaviors.forEach(function(b) {
+        properties = _.union(properties, getBehaviorPropertiesRecursively(item,b));
+      });
+    }
+  }
+
+  return properties;
+}
+
 gulp.task('parse', ['analyze'], function(cb) {
   global.parsed.forEach(function(item) {
     if (!helpers.isBehavior(item) && item.behaviors && item.behaviors.length) {
       item.behaviors.forEach(function(name) {
-        var behavior = helpers.findBehavior(name)
-        if (behavior) {
-          behavior.properties.forEach(function(prop) {
-            prop.isBehavior = true;
-            prop.behavior = helpers.className(item.is);
-            item.properties.push(prop);
-          });
-        }
+        item.properties = _.union(item.properties, getBehaviorPropertiesRecursively(item, name));
       });
     }
     // Hydrolysis duplicates attributes
@@ -103,7 +117,7 @@ gulp.task('analyze', ['clean:target'], function() {
     ])
     .pipe(map(function(file, cb) {
       hyd.Analyzer.analyze(bowerDir + file.relative).then(function(result) {
-        var jsonArray = result.elements && result.elements[0] ? result.elements : result.behaviors;
+        var jsonArray = _.union(result.elements, result.behaviors);
         jsonArray.forEach(function(item) {
           var path = file.relative.replace(/\\/, '/');
           if (item.is) {

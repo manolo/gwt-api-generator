@@ -11,7 +11,6 @@ module.exports = {
   javaKeywords: ['for', 'switch'], // TODO: if it's necessary add other keywords as well
   findBehavior: function(name) {
     for (var i = 0; i < global.parsed.length; i++) {
-      console.log(this.className(global.parsed[i].is), this.className(name), global.parsed[i].is, name);
       if (this.className(global.parsed[i].is) == this.className(name)) {
         return global.parsed[i];
       }
