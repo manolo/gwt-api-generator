@@ -8,6 +8,7 @@ var gutil = require('gulp-util');
 var _ = require('lodash');
 var runSequence = require('run-sequence');
 var helpers = require("./template/helpers");
+var custom = require("./template/custom");
 var hyd = require("hydrolysis");
 var StreamFromArray = require('stream-from-array');
 var rename = require("gulp-rename");
@@ -48,24 +49,8 @@ gulp.task('bower:install', ['clean'], function() {
   }
 
   return bower({ cmd: 'install', cwd: publicDir}, [args.package])
-    .pipe(map(function(file, cb){
-      // iron-a11y-keys lacks the fire-keys-pressed annotation.
-      if (/iron-a11y-keys.html/.test(file.relative)) {
-        var s = "/**\n" +
-                " * @event keys-pressed\n" +
-                " * @param {Object} detail\n" +
-                " *  @param {boolean} detail.shift true if shift key is pressed\n" +
-                " *  @param {boolean} detail.ctrl true if ctrl key is pressed\n" +
-                " *  @param {boolean} detail.meta true if meta key is pressed\n" +
-                " *  @param {boolean} detail.alt true if alt key is pressed\n" +
-                " *  @param {String} detail.key the normalized key\n" +
-                " */\n";
-        file.contents = new Buffer(String(file.contents)
-          .replace(/(\n.*?_fireKeysPressed:)/, s + '$1')
-        );
-      }
-      cb(null, file);
-    }));
+    .pipe(map(custom.customise))
+    .pipe(gulp.dest(bowerDir));
 });
 
 function getBehaviorPropertiesRecursively(item, name) {
