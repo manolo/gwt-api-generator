@@ -1,4 +1,5 @@
 "use strict";
+
 var args = require('minimist')(process.argv.slice(2));
 var gulp = require('gulp');
 var bower = require('gulp-bower')
@@ -7,13 +8,17 @@ var fs = require('fs-extra');
 var gutil = require('gulp-util');
 var _ = require('lodash');
 var runSequence = require('run-sequence');
-var helpers = require("./template/helpers");
-var custom = require("./template/custom");
 var hyd = require("hydrolysis");
 var StreamFromArray = require('stream-from-array');
 var rename = require("gulp-rename");
+var marked = require('marked');
 
 var currentDir = process.cwd() + '/';
+
+var helpers = require(currentDir + "template/helpers");
+var custom = require(currentDir + "template/custom");
+require('require-dir')(currentDir + 'template/tasks/');
+
 var clientDirBase = currentDir + (args.javaDir || 'src/main/java/').replace(/,+$/, "");
 var publicDirBase = currentDir + (args.resourcesDir || 'src/main/resources/').replace(/,+$/, "");
 var ns = args.groupId || "com.vaadin.polymer";
@@ -24,7 +29,8 @@ var publicDir = publicDirBase + '/' + ns.replace(/\./g,'/') + "/public/";
 var libDir = __dirname + '/lib/';
 var tplDir = __dirname + '/template/';
 var bowerDir = publicDir + "bower_components/";
-var marked = require('marked');
+
+var bowerPackages = (args.package || 'PolymerElements/paper-elements').split(/[, ]+/);
 
 
 // Using global because if we try to pass it to templates via the helper or any object
@@ -44,15 +50,8 @@ gulp.task('clean:resources', function() {
 gulp.task('clean', ['clean:target', 'clean:resources']);
 
 gulp.task('bower:install', ['clean'], function() {
-  if(!args.package) {
-    args.package = ['PolymerElements/paper-elements'];
-  } else {
-    args.package = args.package.replace(' ', ',').split(',')
-  }
-
-  return bower({ cmd: 'install', cwd: publicDir}, [args.package])
-    .pipe(map(custom.customise))
-    .pipe(gulp.dest(bowerDir));
+  console.log(bowerPackages)
+  return bower({ cmd: 'install', cwd: publicDir}, [bowerPackages]);
 });
 
 function getBehaviorPropertiesRecursively(item, name) {
@@ -212,8 +211,8 @@ gulp.task('copy:pom', function() {
 
 gulp.task('default', function(){
   if(args.pom) {
-    runSequence('clean', 'bower:install', 'generate', 'copy:lib', 'copy:static-gwt-module', 'copy:pom');
+    runSequence('clean', 'bower:install', 'pre-parse', 'generate', 'copy:lib', 'copy:static-gwt-module', 'copy:pom');
   } else {
-    runSequence('clean', 'bower:install', 'generate', 'copy:lib', 'copy:static-gwt-module');
+    runSequence('clean', 'bower:install', 'pre-parse', 'generate', 'copy:lib', 'copy:static-gwt-module');
   }
 });
