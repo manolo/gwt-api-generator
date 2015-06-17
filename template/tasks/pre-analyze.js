@@ -4,12 +4,14 @@ var gulp = require('gulp');
 var map = require('map-stream');
 var global = require('./global-variables');
 
-// iron-a11y-keys lacks the fire-keys-pressed annotation.
 gulp.task('pre-analyze:missing-events', function() {
   return gulp
-    .src([global.bowerDir + "*/iron-a11y-keys.html"])
+    .src([global.bowerDir + "*/iron-a11y-keys.html",
+          global.bowerDir + "*/paper-tabs.html"
+          ])
     .pipe(map(function(file, cb) {
       file.contents = new Buffer(String(file.contents)
+          // iron-a11y-keys lacks the fire-keys-pressed annotation.
           .replace(/(\n.*?_fireKeysPressed:)/, function(m, $1) {
              console.log("WARNING: patching " + file.relative + " event keys-pressed");
              return  "\n" +
@@ -22,7 +24,16 @@ gulp.task('pre-analyze:missing-events', function() {
                      " *  @param {boolean} detail.alt true if alt key is pressed\n" +
                      " *  @param {String} detail.key the normalized key\n" +
                      " */" + $1;
-          }));
+          })
+          // paper-tabs lacks select and deselect event annotations.
+          .replace(/(\n.*?')(iron-select|iron-deselect)(':)/g, function(m, $1, $2, $3) {
+            console.log("WARNING: patching " + file.relative + " event " + $2);
+            return "\n/**\n" +
+                   " * @event " + $2 + "\n" +
+                   " */" + $1 + $2 + $3;
+          })
+
+      );
       cb(null, file);
     }))
     .pipe(gulp.dest(global.bowerDir));
