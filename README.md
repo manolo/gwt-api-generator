@@ -4,26 +4,41 @@ Vaadin gwt-api-generator is a tool that produces GWT APIs for JavaScript librari
 
 Currently the generator only supports Web Components written in Polymer 1.0 syntax. Support for other type of JavaScript sources might be added in the future.
 
-Original motivation behind the project was to provide GWT community an easy access to the elements in Vaadin Components library.
+Original motivation behind the project was to provide GWT community an easy access to the elements in [Vaadin Components](https://github.com/vaadin/components) library.
 
-### Installation and Usage
+## Installation and Usage
 
-- Install
+- Installation
 ```shell
-$ npm install -g vaadin/gwt-api-generator
+$ sudo npm install -g vaadin/gwt-api-generator
 ```
-- Generate classes from [paper-elements](https://elements.polymer-project.org/browse?package=paper-elements)
+- Generating the resources for a library
 ```shell
 $ gwt-api-generator --package=PolymerElements/paper-elements
 ```
-- Package a jar of the classes using an example `pom.xml`
+- Generating the resources with a custom groupId and artifactId
+```shell
+$ gwt-api-generator --package=PolymerElements/paper-elements --groupId=com.foo --artifactId=bar
+```
+- Generating the resources for a non-maven structure
+```shell
+$ gwt-api-generator --package=PolymerElements/paper-elements --javaDir=src --resourcesDir=src
+```
+- Packaging the result as a ready-to-use jar file
 ```shell
 $ gwt-api-generator --package=PolymerElements/paper-elements --pom
 $ mvn package
 ```
 
-- There's also a pre-built example package in the Maven central containing all the resources needed for using Polymer [paper-elements](https://elements.polymer-project.org/browse?package=paper-elements) and [iron-elements](https://elements.polymer-project.org/browse?package=iron-elements) in a GWT application. Just include the following dependency and start building:
 
+## Pre-built packages
+
+### Paper elements and Iron elements
+
+There's a pre-built example package in the Maven Central containing all the resources needed for using Polymer [paper-elements](https://elements.polymer-project.org/browse?package=paper-elements) and [iron-elements](https://elements.polymer-project.org/browse?package=iron-elements) in a GWT application. Build script and a demo for the project is available [here](https://github.com/vaadin/gwt-polymer).
+To start using the library...
+
+- Include the following dependency to pom.xml:
 ```XML
 <dependency>
    <groupId>com.vaadin.polymer</groupId>
@@ -33,7 +48,14 @@ $ mvn package
 </dependency>
 ```
 
-### About GWT 2.7/2.8 compatibility
+- Inherit the package GWT module in .gwt.xml file:
+```XML
+<inherits name="com.vaadin.polymer.Elements"/>
+```
+
+Remember to add the JSInterop flag to the compiler in order to make it run: `-XjsInteropMode JS`
+
+## About GWT 2.7/2.8 compatibility
 
 Vaadin gwt-api-generator produces @JsType interfaces for JS Element level access from Java Objects.
 Generated classes are written using Java 1.7 syntax, and rely on GWT JSInterop available as an experimental feature from GWT 2.7.0.
