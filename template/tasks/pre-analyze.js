@@ -2,17 +2,12 @@
 var args = require('minimist')(process.argv.slice(2));
 var gulp = require('gulp');
 var map = require('map-stream');
-
-var ns = args.groupId || "com.vaadin.polymer";
-var currentDir = process.cwd() + '/';
-var publicDirBase = currentDir + (args.resourcesDir || 'src/main/resources/').replace(/,+$/, "");
-var publicDir = publicDirBase + '/' + ns.replace(/\./g,'/') + "/public/";
-var bowerDir = publicDir + "bower_components/";
+var global = require('./global-variables');
 
 // iron-a11y-keys lacks the fire-keys-pressed annotation.
 gulp.task('pre-analyze:missing-events', function() {
   return gulp
-    .src([bowerDir + "*/iron-a11y-keys.html"])
+    .src([global.bowerDir + "*/iron-a11y-keys.html"])
     .pipe(map(function(file, cb) {
       file.contents = new Buffer(String(file.contents)
           .replace(/(\n.*?_fireKeysPressed:)/, function(m, $1) {
@@ -30,13 +25,13 @@ gulp.task('pre-analyze:missing-events', function() {
           }));
       cb(null, file);
     }))
-    .pipe(gulp.dest(bowerDir));
+    .pipe(gulp.dest(global.bowerDir));
 });
 
 // Hydrolysis does not support yet new events syntax
 gulp.task('pre-analyze:new-syntax-events', function() {
   return gulp
-    .src([bowerDir + "*/*.html"])
+    .src([global.bowerDir + "*/*.html"])
     .pipe(map(function(file, cb) {
       file.contents = new Buffer(
           String(file.contents).replace(/([ \t]+\* +)@event +([\w\-]+) +\{\{(.+)\}\} *detail.*\n/g, function(m, $1, $2, $3) {
@@ -54,7 +49,7 @@ gulp.task('pre-analyze:new-syntax-events', function() {
         }));
       cb(null, file);
     }))
-    .pipe(gulp.dest(bowerDir));
+    .pipe(gulp.dest(global.bowerDir));
 });
 
 gulp.task('pre-analyze', ['pre-analyze:missing-events','pre-analyze:new-syntax-events'])

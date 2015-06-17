@@ -5,6 +5,7 @@ var gulp = require('gulp');
 var bower = require('gulp-bower')
 var map = require('map-stream');
 var fs = require('fs-extra');
+var globalVar = require('./template/tasks/global-variables');
 var gutil = require('gulp-util');
 var _ = require('lodash');
 var runSequence = require('run-sequence');
@@ -13,24 +14,11 @@ var StreamFromArray = require('stream-from-array');
 var rename = require("gulp-rename");
 var marked = require('marked');
 
-var currentDir = process.cwd() + '/';
 var libDir = __dirname + '/lib/';
 var tplDir = __dirname + '/template/';
 
 var helpers = require(tplDir + "helpers");
 require('require-dir')(tplDir + 'tasks');
-
-var clientDirBase = currentDir + (args.javaDir || 'src/main/java/').replace(/,+$/, "");
-var publicDirBase = currentDir + (args.resourcesDir || 'src/main/resources/').replace(/,+$/, "");
-var ns = args.groupId || "com.vaadin.polymer";
-var artifactId = args.artifactId || "elements";
-
-var clientDir = clientDirBase + '/' + ns.replace(/\./g,'/') + "/";
-var publicDir = publicDirBase + '/' + ns.replace(/\./g,'/') + "/public/";
-var bowerDir = publicDir + "bower_components/";
-
-var bowerPackages = (args.package || 'PolymerElements/paper-elements').split(/[, ]+/);
-
 
 // Using global because if we try to pass it to templates via the helper or any object
 // we need to call merge which makes a copy of the structure per template slowing down
@@ -38,19 +26,19 @@ var bowerPackages = (args.package || 'PolymerElements/paper-elements').split(/[,
 global.parsed = []; // we store all parsed objects so as we can iterate or find behaviors
 
 gulp.task('clean:target', function() {
-  fs.removeSync(clientDir + 'element');
-  fs.removeSync(clientDir + 'widget');
+  fs.removeSync(globalVar.clientDir + 'element');
+  fs.removeSync(globalVar.clientDir + 'widget');
 });
 
 gulp.task('clean:resources', function() {
-  fs.removeSync(publicDir);
+  fs.removeSync(globalVar.publicDir);
 });
 
 gulp.task('clean', ['clean:target', 'clean:resources']);
 
 gulp.task('bower:install', ['clean'], function() {
-  console.log(bowerPackages)
-  return bower({ cmd: 'install', cwd: publicDir}, [bowerPackages]);
+  console.log(globalVar.bowerPackages)
+  return bower({ cmd: 'install', cwd: globalVar.publicDir}, [globalVar.bowerPackages]);
 });
 
 function getBehaviorPropertiesRecursively(item, name) {
@@ -90,18 +78,18 @@ gulp.task('parse', ['analyze'], function(cb) {
 });
 
 gulp.task('analyze', ['clean:target', 'pre-analyze'], function() {
-  return gulp.src([bowerDir + "*/*.html",
+  return gulp.src([globalVar.bowerDir + "*/*.html",
     // ignore all demo.html, index.html and metadata.html files
-    "!" + bowerDir + "*/*demo.html",
-    "!" + bowerDir + "*/*index.html",
-    "!" + bowerDir + "*/*metadata.html",
+    "!" + globalVar.bowerDir + "*/*demo.html",
+    "!" + globalVar.bowerDir + "*/*index.html",
+    "!" + globalVar.bowerDir + "*/*metadata.html",
     // includes a set of js files only, and some do not exist
-    "!" + bowerDir + "*/*web-animations.html",
+    "!" + globalVar.bowerDir + "*/*web-animations.html",
     // Not useful in gwt and also has spurious event names
-    "!" + bowerDir + "*/*iron-jsonp-library.html",
+    "!" + globalVar.bowerDir + "*/*iron-jsonp-library.html",
     ])
     .pipe(map(function(file, cb) {
-      hyd.Analyzer.analyze(bowerDir + file.relative).then(function(result) {
+      hyd.Analyzer.analyze(globalVar.bowerDir + file.relative).then(function(result) {
         var jsonArray = _.union(result.elements, result.behaviors);
         jsonArray.forEach(function(item) {
           var path = file.relative.replace(/\\/, '/');
@@ -126,11 +114,11 @@ gulp.task('analyze', ['clean:target', 'pre-analyze'], function() {
 function parseTemplate(template, obj, name, dir, suffix) {
   var file = helpers.camelCase(name) + suffix;
   var prefix = obj.name.split('-')[0].replace(/\./g,'');
-  var path = clientDir + prefix + '/' + dir + file;
+  var path = globalVar.clientDir + prefix + '/' + dir + file;
   gutil.log("Generating: ", name, path);
 
   var tpl = _.template(fs.readFileSync(tplDir + template + '.template'));
-  obj.ns = ns + '.' + prefix;
+  obj.ns = globalVar.ns + '.' + prefix;
   fs.ensureFileSync(path);
   fs.writeFileSync(path, new Buffer(tpl(_.merge({}, null, obj, helpers))));
 }
@@ -179,12 +167,12 @@ gulp.task('generate:widget-events', ['parse'], function() {
 gulp.task('generate:gwt-module', function() {
   return gulp.src(tplDir + "GwtModule.template")
     .pipe(rename("Elements.gwt.xml"))
-    .pipe(gulp.dest(publicDir + "../"));
+    .pipe(gulp.dest(globalVar.publicDir + "../"));
 });
 
 gulp.task('copy:static-gwt-module', function() {
   return gulp.src(tplDir + "Elements.gwt.xml")
-    .pipe(gulp.dest(publicDirBase + '/com/vaadin/polymer/'));
+    .pipe(gulp.dest(globalVar.publicDirBase + '/com/vaadin/polymer/'));
 });
 
 
@@ -198,14 +186,14 @@ gulp.task('generate', ['generate:elements-all', 'generate:widgets-all', 'generat
 
 gulp.task('copy:lib', function() {
   return gulp.src(libDir + '**')
-    .pipe(gulp.dest(clientDirBase));
+    .pipe(gulp.dest(globalVar.clientDirBase));
 });
 
 gulp.task('copy:pom', function() {
   var tpl = _.template(fs.readFileSync(tplDir + "pom.template"));
-  var obj = {groupId: ns, artifactId: artifactId};
-  fs.ensureFileSync(currentDir + "pom.xml");
-  fs.writeFileSync(currentDir + "pom.xml", new Buffer(tpl(_.merge({}, null, obj, helpers))));
+  var obj = {groupId: globalVar.ns, artifactId: globalVar.artifactId};
+  fs.ensureFileSync(globalVar.currentDir + "pom.xml");
+  fs.writeFileSync(globalVar.currentDir + "pom.xml", new Buffer(tpl(_.merge({}, null, obj, helpers))));
 });
 
 gulp.task('default', function(){
