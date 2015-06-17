@@ -10,7 +10,7 @@ Original motivation behind the project was to provide GWT community an easy acce
 
 - Installation
 ```shell
-$ sudo npm install -g vaadin/gwt-api-generator
+$ npm install -g vaadin/gwt-api-generator
 ```
 - Generating the resources for a library
 ```shell
@@ -35,7 +35,7 @@ $ mvn package
 
 ### Paper elements and Iron elements
 
-There's a pre-built example package in the Maven Central containing all the resources needed for using Polymer [paper-elements](https://elements.polymer-project.org/browse?package=paper-elements) and [iron-elements](https://elements.polymer-project.org/browse?package=iron-elements) in a GWT application. Build script, demo and usage instructions for the project are available [here](https://github.com/vaadin/gwt-polymer).
+There's a pre-built example package in the Maven Central containing all the resources needed for using Polymer [paper-elements](https://elements.polymer-project.org/browse?package=paper-elements) and [iron-elements](https://elements.polymer-project.org/browse?package=iron-elements) in a GWT application. Build script, demo and usage instructions for the project are available [here](https://github.com/vaadin/gwt-polymer-elements).
 
 ## About GWT 2.7/2.8 compatibility
 
