@@ -139,31 +139,16 @@ module.exports = {
   capitalizeFirstLetter: function(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
   },
-  computeGetter: function(item) {
-    var name = item.name;
-    if (this.startsWith(name, "detail.")) {
-      name = name.substring("detail.".length);
-    }
-    if (this.javaKeywords.indexOf(name) >= 0) {
-      return this.computeGetterWithPrefix(item);
-    } else {
-      return this.computeMethodName(name);
-    }
-  },
   computeGetterWithPrefix: function(item) {
     var name = item.name.replace(/^detail\./,'');
-    var prefix = /^boolean/i.test(item.type) ? 'is' : 'get';
+    // replaced isXXX methods with getXXX temporary because of bug in JsInterop
+    // because in the case of isNarrow, the JS generated is something like $object.arrow
+    //var prefix = /^boolean/i.test(item.type) ? 'is' : 'get';
+    var prefix = 'get';
     if (this.startsWith(name, prefix)) {
       return name;
     } else {
       return prefix + this.capitalizeFirstLetter(this.computeMethodName(name));
-    }
-  },
-  computeSetter: function(item) {
-    if (this.javaKeywords.indexOf(item.name) >= 0) {
-      return this.computeSetterWithPrefix(item);
-    } else {
-      return this.computeMethodName(item.name);
     }
   },
   computeSetterWithPrefix: function(item) {
