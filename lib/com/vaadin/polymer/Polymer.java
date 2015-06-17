@@ -1,6 +1,7 @@
 package com.vaadin.polymer;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import com.google.gwt.core.client.GWT;
@@ -12,24 +13,6 @@ import com.vaadin.polymer.elemental.Function;
 public abstract class Polymer {
 
     private static Set<String> urlImported = new HashSet<>();
-
-    /**
-     * Ensures that the tagName has been registered, otherwise injects
-     * the appropriate &lt;import&gt; tag in the document header and
-     * notifies via callbacks whether the component is available.
-     *
-     * @param tagName
-     * @param url component path relative to bower_components folder.
-     *        if null it imports bower_components/tagName/tagName.html
-     * @param onload
-     * @param onerror
-     */
-    private static void ensureTag(final String tagName, String src, Function onload, Function onerror) {
-        if (src == null) {
-            src = tagName + "/" + tagName + ".html";
-        }
-        importHref(src, onload, onerror);
-    }
 
     /**
      * Inserts the appropriate &lt;import&gt; of a component given by url.
@@ -53,20 +36,62 @@ public abstract class Polymer {
     /**
      * Inserts the appropriate &lt;import&gt; of a component given by url.
      *
-     * @param href either an absolute url or a path relative to bower_components folder.
+     * @param hrefOrTag it can be an absolute url, a relative path or a tag name.
+     *                  - if it is a relative path, we prefix it with bower_components
+     *                  in case it is not already prefixed.
+     *                  - if it is a tag, we compose the relative url:
+     *                  bower_components/tagName/tagName.html
      * @param ok callback to run in case of success
      * @param err callback to run in case of failure
      */
-    public static void importHref(String href, Function ok, Function err) {
-        if (!href.startsWith("http")) {
-            if (!href.startsWith("bower_components")) {
-                href = "bower_components/" + href;
+    public static void importHref(String hrefOrTag, Function ok, Function err) {
+        if (!hrefOrTag.startsWith("http")) {
+            // It's a tag
+            if (hrefOrTag.matches("[\\w-]+")) {
+                hrefOrTag = hrefOrTag + "/" + hrefOrTag + ".html";
             }
-            href = GWT.getModuleBaseForStaticFiles() + href;
+            // It's not prefixed with the bower_components convention
+            if (!hrefOrTag.startsWith("bower_components")) {
+                hrefOrTag = "bower_components/" + hrefOrTag;
+            }
+            hrefOrTag = GWT.getModuleBaseForStaticFiles() + hrefOrTag;
         }
-        if (!urlImported.contains(href)) {
-            urlImported.add(href);
-            importHrefImpl(href, ok, err);
+        if (!urlImported.contains(hrefOrTag)) {
+            urlImported.add(hrefOrTag);
+            importHrefImpl(hrefOrTag, ok, err);
+        }
+    }
+
+    /**
+     * Inserts the appropriate &lt;import&gt; of a list of components
+     *
+     * @param hrefs a list of absolute urls or relative paths to load.
+     * @param ok callback to run in case of all import success
+     * @param err callback to run in case of failure
+     */
+    public static void importHref(final List<String> hrefs, final Function ok) {
+        importHref(hrefs, ok, null);
+    }
+
+    /**
+     * Inserts the appropriate &lt;import&gt; of a list of components
+     *
+     * @param hrefs a list of absolute urls or relative paths to load.
+     * @param ok callback to run in case of all import success
+     * @param err callback to run in case of failure
+     */
+    public static void importHref(final List<String> hrefs, final Function ok, Function err) {
+        Function allOk = new Function() {
+            int count = hrefs.size();
+            public Object call(Object arg) {
+                if (--count == 0) {
+                    ok.call(arg);
+                }
+                return null;
+            }
+        };
+        for (String href : hrefs) {
+            importHref(href, allOk, err);
         }
     }
 
@@ -77,12 +102,15 @@ public abstract class Polymer {
     public static <T> T createElement(final String tagName, final String... imports) {
         @SuppressWarnings("unchecked")
         final T e = (T)Document.get().createElement(tagName);
-        ensureCustomElement(e, tagName, imports);
+        if (imports.length > 0) {
+            ensureCustomElement(e, imports);
+        } else {
+            ensureCustomElement(e, tagName);
+        }
         return e;
     }
 
-    public static <T> void ensureCustomElement(final T elem, String tagName,
-            String... imports) {
+    public static <T> void ensureCustomElement(final T elem, String... imports) {
 
         if (isRegisteredElement(elem)) {
             return;
@@ -109,7 +137,7 @@ public abstract class Polymer {
 
         imports = fixImports(imports);
         for (String src : fixImports(imports)) {
-            ensureTag(tagName, src, null, null);
+            importHref(src, null, null);
         }
     }
 
@@ -157,12 +185,12 @@ public abstract class Polymer {
         l.href = href;
         if (onload) {
           l.onload = function() {
-             onload.@com.vaadin.polymer.elemental.Function::call(*)();
+             onload.@com.vaadin.polymer.elemental.Function::call(*)(href);
           }
         }
         if (onerror) {
           l.onerror = function() {
-              onerror.@com.vaadin.polymer.elemental.Function::call(*)();
+              onerror.@com.vaadin.polymer.elemental.Function::call(*)(href);
           }
         }
         $doc.head.appendChild(l);
