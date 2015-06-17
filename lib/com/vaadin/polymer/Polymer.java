@@ -15,29 +15,6 @@ public abstract class Polymer {
 
     /**
      * Ensures that the tagName has been registered, otherwise injects
-     * the appropriate &lt;import&gt; tag in the document header.
-     *
-     * It loads the component from following the convention:
-     * bower_components/tagName/tagName.html
-     */
-    public static void ensureTag(String tagName) {
-        ensureTag(tagName, null);
-    }
-
-    /**
-     * Ensures that the tagName has been registered, otherwise injects
-     * the appropriate &lt;import&gt; tag in the document header.
-     *
-     * @param tagName
-     * @param url component path relative to bower_components folder.
-     *        if null it imports bower_components/tagName/tagName.html
-     */
-    public static void ensureTag(final String tagName, String src) {
-        ensureTag(tagName, src, null, null);
-    }
-
-    /**
-     * Ensures that the tagName has been registered, otherwise injects
      * the appropriate &lt;import&gt; tag in the document header and
      * notifies via callbacks whether the component is available.
      *
@@ -47,32 +24,46 @@ public abstract class Polymer {
      * @param onload
      * @param onerror
      */
-    public static void ensureTag(final String tagName, String src, Function onload, Function onerror) {
+    private static void ensureTag(final String tagName, String src, Function onload, Function onerror) {
         if (src == null) {
             src = tagName + "/" + tagName + ".html";
-        }
-        if (!src.startsWith("http")) {
-            if (!src.startsWith("bower_components")) {
-                src = "bower_components/" + src;
-            }
-            src = GWT.getModuleBaseForStaticFiles() + src;
         }
         importHref(src, onload, onerror);
     }
 
     /**
      * Inserts the appropriate &lt;import&gt; of a component given by url.
-     * @deprecated use {@link #importHref(String, Function, Function)} instead
+     *
+     * @param href either an absolute url or a path relative to bower_components folder.
      */
-    public static void ensureHTMLImport(final String href) {
+    public static void importHref(String href) {
         importHref(href, null, null);
     }
 
     /**
-     * Inserts the appropriate &lt;import&gt; of a component given by url
-     * and notifies via callback whether the component is available.
+     * Inserts the appropriate &lt;import&gt; of a component given by url.
+     *
+     * @param href either an absolute url or a path relative to bower_components folder.
+     * @param ok callback to run in case of success
      */
-    public static void importHref(final String href, Function ok, Function err) {
+    public static void importHref(String href, Function ok) {
+        importHref(href, ok, null);
+    }
+
+    /**
+     * Inserts the appropriate &lt;import&gt; of a component given by url.
+     *
+     * @param href either an absolute url or a path relative to bower_components folder.
+     * @param ok callback to run in case of success
+     * @param err callback to run in case of failure
+     */
+    public static void importHref(String href, Function ok, Function err) {
+        if (!href.startsWith("http")) {
+            if (!href.startsWith("bower_components")) {
+                href = "bower_components/" + href;
+            }
+            href = GWT.getModuleBaseForStaticFiles() + href;
+        }
         if (!urlImported.contains(href)) {
             urlImported.add(href);
             importHrefImpl(href, ok, err);
