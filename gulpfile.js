@@ -13,14 +13,16 @@ var hyd = require("hydrolysis");
 var StreamFromArray = require('stream-from-array');
 var rename = require("gulp-rename");
 
-var clientDirBase = (args.javaDir || 'src/main/java/').replace(/,+$/, "");
-var publicDirBase = (args.resourcesDir || 'src/main/resources/').replace(/,+$/, "");
+var currentDir = process.cwd() + '/';
+var clientDirBase = currentDir + (args.javaDir || 'src/main/java/').replace(/,+$/, "");
+var publicDirBase = currentDir + (args.resourcesDir || 'src/main/resources/').replace(/,+$/, "");
 var ns = args.groupId || "com.vaadin.polymer";
 var artifactId = args.artifactId || "elements";
 
-var clientDir = process.cwd() + '/' + clientDirBase + '/' + ns.replace(/\./g,'/') + "/";
-var publicDir = process.cwd() + '/' +  publicDirBase + '/' + ns.replace(/\./g,'/') + "/public/";
+var clientDir = clientDirBase + '/' + ns.replace(/\./g,'/') + "/";
+var publicDir = publicDirBase + '/' + ns.replace(/\./g,'/') + "/public/";
 var libDir = __dirname + '/lib/';
+var tplDir = __dirname + '/template/';
 var bowerDir = publicDir + "bower_components/";
 var marked = require('marked');
 
@@ -129,7 +131,7 @@ function parseTemplate(template, obj, name, dir, suffix) {
   var path = clientDir + prefix + '/' + dir + file;
   gutil.log("Generating: ", name, path);
 
-  var tpl = _.template(fs.readFileSync(__dirname + '/template/' + template + '.template'));
+  var tpl = _.template(fs.readFileSync(tplDir + template + '.template'));
   obj.ns = ns + '.' + prefix;
   fs.ensureFileSync(path);
   fs.writeFileSync(path, new Buffer(tpl(_.merge({}, null, obj, helpers))));
@@ -177,14 +179,14 @@ gulp.task('generate:widget-events', ['parse'], function() {
 });
 
 gulp.task('generate:gwt-module', function() {
-  return gulp.src(__dirname + "/template/GwtModule.template")
+  return gulp.src(tplDir + "GwtModule.template")
     .pipe(rename("Elements.gwt.xml"))
     .pipe(gulp.dest(publicDir + "../"));
 });
 
 gulp.task('copy:static-gwt-module', function() {
-  return gulp.src(__dirname + "/template/Elements.gwt.xml")
-    .pipe(gulp.dest(process.cwd() + '/' +  publicDirBase + '/com/vaadin/polymer/'));
+  return gulp.src(tplDir + "Elements.gwt.xml")
+    .pipe(gulp.dest(publicDirBase + '/com/vaadin/polymer/'));
 });
 
 
@@ -198,14 +200,14 @@ gulp.task('generate', ['generate:elements-all', 'generate:widgets-all', 'generat
 
 gulp.task('copy:lib', function() {
   return gulp.src(libDir + '**')
-    .pipe(gulp.dest(process.cwd() + '/' + clientDirBase));
+    .pipe(gulp.dest(clientDirBase));
 });
 
 gulp.task('copy:pom', function() {
-  var tpl = _.template(fs.readFileSync(__dirname + "/template/pom.template"));
+  var tpl = _.template(fs.readFileSync(tplDir + "pom.template"));
   var obj = {groupId: ns, artifactId: artifactId};
-  fs.ensureFileSync(process.cwd() + "/pom.xml");
-  fs.writeFileSync(process.cwd() + "/pom.xml", new Buffer(tpl(_.merge({}, null, obj, helpers))));
+  fs.ensureFileSync(currentDir + "pom.xml");
+  fs.writeFileSync(currentDir + "pom.xml", new Buffer(tpl(_.merge({}, null, obj, helpers))));
 });
 
 gulp.task('default', function(){
