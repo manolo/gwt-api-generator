@@ -35,25 +35,7 @@ $ mvn package
 
 ### Paper elements and Iron elements
 
-There's a pre-built example package in the Maven Central containing all the resources needed for using Polymer [paper-elements](https://elements.polymer-project.org/browse?package=paper-elements) and [iron-elements](https://elements.polymer-project.org/browse?package=iron-elements) in a GWT application. Build script and a demo for the project is available [here](https://github.com/vaadin/gwt-polymer).
-To start using the library...
-
-- Include the following dependency to pom.xml:
-```XML
-<dependency>
-   <groupId>com.vaadin.polymer</groupId>
-   <artifactId>elements</artifactId>
-   <version>1.0-alpha1</version>
-   <scope>provided</scope>
-</dependency>
-```
-
-- Inherit the package GWT module in .gwt.xml file:
-```XML
-<inherits name="com.vaadin.polymer.Elements"/>
-```
-
-Remember to add the JSInterop flag to the compiler in order to make it run: `-XjsInteropMode JS`
+There's a pre-built example package in the Maven Central containing all the resources needed for using Polymer [paper-elements](https://elements.polymer-project.org/browse?package=paper-elements) and [iron-elements](https://elements.polymer-project.org/browse?package=iron-elements) in a GWT application. Build script, demo and usage instructions for the project are available [here](https://github.com/vaadin/gwt-polymer).
 
 ## About GWT 2.7/2.8 compatibility
 
