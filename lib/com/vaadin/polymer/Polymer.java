@@ -111,7 +111,6 @@ public abstract class Polymer {
     }
 
     public static <T> void ensureCustomElement(final T elem, String... imports) {
-
         if (isRegisteredElement(elem)) {
             return;
         }
@@ -135,17 +134,9 @@ public abstract class Polymer {
             }
         }.schedule(5);
 
-        imports = fixImports(imports);
-        for (String src : fixImports(imports)) {
+        for (String src : imports) {
             importHref(src, null, null);
         }
-    }
-
-    private static String[] fixImports(String[] imports) {
-        // FIXME(manolo): figure out a better way to do this
-        return imports.length > 1 && imports[0].matches(".*[^\\w]import[^\\w].*") ?
-            new String[] {"iron-icons/iron-icons.html", imports[0]} :
-            imports;
     }
 
     /**
