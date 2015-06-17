@@ -12,6 +12,9 @@ public interface Element extends Node {
     String getInnerHTML();
 
     @JsProperty
+    String getTextContent();
+
+    @JsProperty
     DOMTokenList getClassList();
 
     @JsProperty
