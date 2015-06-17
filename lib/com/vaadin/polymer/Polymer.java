@@ -112,7 +112,7 @@ public abstract class Polymer {
         new Timer() {
             public void run() {
                 // Restore saved ownProperties
-                reasignProperties(elem);
+                restoreProperties(elem);
             }
         }.schedule(5);
 
@@ -179,9 +179,10 @@ public abstract class Polymer {
     }-*/;
 
     /**
-     * Reassign saved properties before the element was registered.
+     * Restore all properties saved previously to the element was
+     * registered.
      */
-    private static native void reasignProperties(Object e)
+    private static native void restoreProperties(Object e)
     /*-{
         if (e && e.__o) {
             var id = setInterval(function() {
@@ -198,7 +199,7 @@ public abstract class Polymer {
 
     /**
      * Read all element properties and save in a JS object in the element,
-     * so as we can reassign then once the element is registered.
+     * so as we can restore then once the element is registered.
      */
     private static native boolean saveProperties(Object e)
     /*-{
