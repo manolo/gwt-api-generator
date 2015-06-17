@@ -11,7 +11,7 @@ var publicDir = publicDirBase + '/' + ns.replace(/\./g, '/') + "/public/";
 
 module.exports = {
   ns: ns,
-  artifactId: args.artifactId || "elements",
+  artifactId: args.artifactId || "gwt-polymer-elements",
   currentDir: currentDir,
   clientDirBase: clientDirBase,
   publicDirBase: publicDirBase,
