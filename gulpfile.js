@@ -89,7 +89,7 @@ gulp.task('parse', ['analyze'], function(cb) {
   cb();
 });
 
-gulp.task('analyze', ['clean:target'], function() {
+gulp.task('analyze', ['clean:target', 'pre-analyze'], function() {
   return gulp.src([bowerDir + "*/*.html",
     // ignore all demo.html, index.html and metadata.html files
     "!" + bowerDir + "*/*demo.html",
@@ -210,8 +210,8 @@ gulp.task('copy:pom', function() {
 
 gulp.task('default', function(){
   if(args.pom) {
-    runSequence('clean', 'bower:install', 'pre-parse', 'generate', 'copy:lib', 'copy:static-gwt-module', 'copy:pom');
+    runSequence('clean', 'bower:install', 'generate', 'copy:lib', 'copy:static-gwt-module', 'copy:pom');
   } else {
-    runSequence('clean', 'bower:install', 'pre-parse', 'generate', 'copy:lib', 'copy:static-gwt-module');
+    runSequence('clean', 'bower:install', 'generate', 'copy:lib', 'copy:static-gwt-module');
   }
 });

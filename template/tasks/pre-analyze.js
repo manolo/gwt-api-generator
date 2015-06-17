@@ -10,7 +10,7 @@ var publicDir = publicDirBase + '/' + ns.replace(/\./g,'/') + "/public/";
 var bowerDir = publicDir + "bower_components/";
 
 // iron-a11y-keys lacks the fire-keys-pressed annotation.
-gulp.task('pre-parse:missing-events', function() {
+gulp.task('pre-analyze:missing-events', function() {
   return gulp
     .src([bowerDir + "*/iron-a11y-keys.html"])
     .pipe(map(function(file, cb) {
@@ -34,7 +34,7 @@ gulp.task('pre-parse:missing-events', function() {
 });
 
 // Hydrolysis does not support yet new events syntax
-gulp.task('pre-parse:new-syntax-events', function() {
+gulp.task('pre-analyze:new-syntax-events', function() {
   return gulp
     .src([bowerDir + "*/*.html"])
     .pipe(map(function(file, cb) {
@@ -57,4 +57,4 @@ gulp.task('pre-parse:new-syntax-events', function() {
     .pipe(gulp.dest(bowerDir));
 });
 
-gulp.task('pre-parse', ['pre-parse:missing-events','pre-parse:new-syntax-events'])
+gulp.task('pre-analyze', ['pre-analyze:missing-events','pre-analyze:new-syntax-events'])
