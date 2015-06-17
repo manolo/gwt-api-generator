@@ -149,7 +149,7 @@ public abstract class Polymer {
      */
     private native static boolean isRegisteredElement(Object e)
     /*-{
-        return !!e && e.constructor !== $wnd.HTMLElement;
+        return !!e && e.constructor !== $wnd.HTMLElement && e.constructor != $wnd.HTMLUnknownElement;
     }-*/;
 
     /**
@@ -186,7 +186,7 @@ public abstract class Polymer {
     /*-{
         if (e && e.__o) {
             var id = setInterval(function() {
-                if (e.constructor !== $wnd.HTMLElement) {
+                if (@com.vaadin.polymer.Polymer::isRegisteredElement(*)(e)) {
                     clearInterval(id);
                     for (i in e.__o) {
                         e[i] = e.__o[i];
@@ -203,7 +203,7 @@ public abstract class Polymer {
      */
     private static native boolean saveProperties(Element e)
     /*-{
-        if (e && e.constructor === $wnd.HTMLElement) {
+        if (!@com.vaadin.polymer.Polymer::isRegisteredElement(*)(e)) {
             var o = {};
             for (i in e) {
                 if (e.hasOwnProperty(i)) {
