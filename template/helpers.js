@@ -184,11 +184,22 @@ module.exports = {
     return (desc).trim().split('\n').join('\n' + spaces + '* ').replace(/\*\//g, "* /");
   },
   disclaimer: function() {
-    return "/**\n" +
-           " * Copyright (c) 2015 Vaadin Components.\n" +
-           " * This code was generated with Vaadin GWT Generator, an\n" +
-           " * Apache 2.0 Licensed library developed at Vaadin Labs.\n" +
-           " */";
+    var projectName = this.bowerData.name || "unknown";
+    var projectLicense = this.bowerData.license || "unknown";
+
+    var projectAuthors = this.bowerData.authors || this.bowerData.author;
+    if (projectAuthors && projectAuthors.map) {
+      projectAuthors = projectAuthors.map(function(author) {
+        return author.name ? author.name : author;
+      }).toString();
+    }
+    projectAuthors = projectAuthors || "unknown author";
+
+    return "/*\n" +
+    " * This code was generated with Vaadin Web Component GWT API Generator, \n" +
+    " * from " + projectName + " project by " + projectAuthors + "\n" +
+    " * that is licensed with " + projectLicense + " license.\n" +
+    " */";
   },
   j2s: function(json, msg) {
     msg = msg || '';

@@ -123,6 +123,11 @@ gulp.task('analyze', ['clean:target'], function() {
           if (item.is) {
             item.name = item.is;
             item.path = path;
+
+            var bowerFile = file.base + path.split("/")[0] + "/bower.json";
+            var bowerFileContent = fs.readFileSync(bowerFile);
+            item.bowerData = bowerFileContent ? JSON.parse(bowerFileContent) : {};
+
             // Save all items in an array for later processing
             global.parsed.push(item);
           }
@@ -146,6 +151,7 @@ function parseTemplate(template, obj, name, dir, suffix) {
 
   var tpl = _.template(fs.readFileSync(__dirname + '/template/' + template + '.template'));
   obj.ns = ns + '.' + prefix;
+
   fs.ensureFileSync(path);
   fs.writeFileSync(path, new Buffer(tpl(_.merge({}, null, obj, helpers))));
 }
@@ -164,6 +170,7 @@ gulp.task('generate:events', ['parse'], function() {
    .on('data', function(item) {
       if (item.events) {
         item.events.forEach(function(event) {
+          event.bowerData = item.bowerData;
           parseTemplate('ElementEvent', event, event.name, 'element/event/', 'Event.java');
         });
       }
@@ -184,6 +191,7 @@ gulp.task('generate:widget-events', ['parse'], function() {
    .on('data', function(item) {
       if (item.events) {
         item.events.forEach(function(event) {
+          event.bowerData = item.bowerData;
           parseTemplate('WidgetEvent', event, event.name, 'widget/event/', 'Event.java');
           parseTemplate('WidgetEventHandler', event, event.name, 'widget/event/', 'EventHandler.java');
         });
