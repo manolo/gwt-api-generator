@@ -142,6 +142,7 @@ module.exports = {
   computeGetterWithPrefix: function(item) {
     var name = item.name.replace(/^detail\./,'');
     // replaced isXXX methods with getXXX temporary because of bug in JsInterop
+    // because in the case of isNarrow, the JS generated is something like $object.arrow
     //var prefix = /^boolean/i.test(item.type) ? 'is' : 'get';
     var prefix = 'get';
     if (this.startsWith(name, prefix)) {
