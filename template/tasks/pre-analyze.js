@@ -30,6 +30,8 @@ gulp.task('pre-analyze:missing-events', function() {
             console.log("WARNING: patching " + file.relative + " event " + $2);
             return "\n/**\n" +
                    " * @event " + $2 + "\n" +
+                   " * @param {Object} detail\n" +
+                   " *  @param {Object} detail.item the item element\n" +
                    " */" + $1 + $2 + $3;
           })
 
