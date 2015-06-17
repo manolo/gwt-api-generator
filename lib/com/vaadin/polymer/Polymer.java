@@ -104,7 +104,7 @@ public abstract class Polymer {
                 // We need to remove ownProperties from the element when it's not
                 // registered because a bug in Polymer 1.0.x
                 // https://github.com/Polymer/polymer/issues/1882
-                saveProperties(elem);
+                saveProperties((Element)elem);
             }
         }.schedule(0);
 
@@ -112,7 +112,7 @@ public abstract class Polymer {
         new Timer() {
             public void run() {
                 // Restore saved ownProperties
-                restoreProperties(elem);
+                restoreProperties((Element)elem);
             }
         }.schedule(5);
 
@@ -182,7 +182,7 @@ public abstract class Polymer {
      * Restore all properties saved previously to the element was
      * registered.
      */
-    private static native void restoreProperties(Object e)
+    private static native void restoreProperties(Element e)
     /*-{
         if (e && e.__o) {
             var id = setInterval(function() {
@@ -201,7 +201,7 @@ public abstract class Polymer {
      * Read all element properties and save in a JS object in the element,
      * so as we can restore then once the element is registered.
      */
-    private static native boolean saveProperties(Object e)
+    private static native boolean saveProperties(Element e)
     /*-{
         if (e && e.constructor === $wnd.HTMLElement) {
             var o = {};
