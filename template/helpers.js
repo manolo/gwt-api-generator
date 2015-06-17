@@ -1,3 +1,5 @@
+var _ = require('lodash');
+
 module.exports = {
   marked: require('marked').setOptions({
     gfm: true,
@@ -18,6 +20,32 @@ module.exports = {
   },
   isBehavior: function(item) {
     return ((item && item.type) || this.type) == 'behavior';
+  },
+  getNestedBehaviors: function(item, name) {
+    var _this = this;
+    var properties = [];
+    var events = [];
+
+    var behavior = this.findBehavior(name)
+    if (behavior) {
+      events = behavior.events;
+
+      behavior.properties.forEach(function(prop) {
+        prop.isBehavior = true;
+        prop.behavior = _this.className(item.is);
+        properties.push(prop);
+      });
+
+      if(behavior.behaviors) {
+        behavior.behaviors.forEach(function(b) {
+          var nestedBehaviors = _this.getNestedBehaviors(item, b);
+          properties = _.union(properties, nestedBehaviors.properties);
+          events = _.union(events, nestedBehaviors.events);
+        });
+      }
+    }
+
+    return {properties: properties, events: events};
   },
   className: function (name) {
     return this.camelCase(name || this['name']);
