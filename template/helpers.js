@@ -88,6 +88,9 @@ module.exports = {
       return m.toUpperCase().replace(/[-\.]/g, '');
     });
   },
+  hyphenize: function(s) {
+    return s.replace(/([A-Z])/g, "-$1").toLowerCase();
+  },
   computeMethodName: function(s) {
     return (s || '').replace(/-\w/g, function (m) {
       return m.toUpperCase().replace(/-/, '');
@@ -126,9 +129,6 @@ module.exports = {
   },
   hasEvents: function() {
     return this.hasItems(this.events);
-  },
-  hasAttributes: function() {
-    return this.hasItems(this.attributes);
   },
   hasProperties: function() {
     return this.hasItems(this.properties);
@@ -175,20 +175,6 @@ module.exports = {
       }, this);
     }
     return result.join(', ');
-  },
-  extraSetter: function(attribute) {
-    var type = this.computeType(attribute.type);
-    if (type === 'String') {
-      return '';
-    } else if (type === 'boolean') {
-      return 'public void ' + this.computeSetterWithPrefix(attribute) + '(String ' + attribute.name + ') {\n' +
-        '        setBooleanAttribute("' + attribute.name + '", true);\n' +
-        '    }';
-    } else {
-      return 'public void ' + this.computeSetterWithPrefix(attribute) + '(String ' + this.computeMethodName(attribute.name) + ') {\n' +
-        '        getElement().setAttribute("' + attribute.name + '", ' + this.computeMethodName(attribute.name) + ');\n' +
-        '    }';
-    }
   },
   getDescription: function(spaces, o) {
     o = o || this;

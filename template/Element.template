@@ -16,17 +16,6 @@ public interface <%= elementClassName() %> extends HTMLElement {
     public static final String TAG = "<%= name %>";
     public static final String SRC = "<%= path %>";
 
-<% if (hasAttributes()) _.forEach(attributes, function(attribute){ %>
-    /**
-     * <%= getDescription('     ', attribute) %>
-     *
-     * JavaScript Info:
-     * @attribute <%= attribute.name %>
-     * @type <%= attribute.type %>
-     */
-    @JsProperty <%= computeType(attribute.type) %> <%= computeGetterWithPrefix(attribute) %>();
-    @JsProperty void <%= computeSetterWithPrefix(attribute) %>(<%= computeType(attribute.type) %> value);
-<% }); %>
 <% if (hasProperties()) _.forEach(properties, function(item){ if (item.type != 'Function') { %>
     /**
      * <%= getDescription('     ', item) %>

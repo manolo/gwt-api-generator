@@ -47,30 +47,6 @@ public class <%= className() %> extends <%= baseWidgetName() %> {
         return (<%= elementClassName() %>) getElement();
     }
 
-<% if (hasAttributes()) _.forEach(attributes, function(attribute){ %>
-    /**
-     * <%= getDescription('     ', attribute) %>
-     *
-     * JavaScript Info:
-     * @attribute <%= attribute.name %>
-     * @type <%= attribute.type %>
-     */
-    public <%= computeType(attribute.type) %> <%= computeGetterWithPrefix(attribute) %>() {
-        return getPolymerElement().<%= computeGetterWithPrefix(attribute) %>();
-    }
-    /**
-     * <%= getDescription('     ', attribute) %>
-     *
-     * JavaScript Info:
-     * @attribute <%= attribute.name %>
-     * @type <%= attribute.type %>
-     */
-    public void <%= computeSetterWithPrefix(attribute) %>(<%= computeType(attribute.type) %> value) {
-        // getElement().setPropertyObject("<%= attribute.name %>", value);
-        getElement().setAttribute("<%= attribute.name %>", String.valueOf(value));
-    }
-    <%= extraSetter(attribute) %>
-<% }); %>
 <% if (hasProperties()) _.forEach(properties, function(item){ %>
   <% if (item.type != 'Function') { %>
     /**
@@ -84,9 +60,29 @@ public class <%= className() %> extends <%= baseWidgetName() %> {
     public <%= computeType(item.type) %> <%= computeGetterWithPrefix(item) %>(){
         return getPolymerElement().<%= computeGetterWithPrefix(item) %>();
     }
+    /**
+     * <%= getDescription('     ', item) %>
+     *
+     * JavaScript Info:
+     * @property <%= item.name %>
+     * @type <%= item.type %>
+     * <%= item.isBehavior ? ('@behavior ' + item.behavior ) : ''%>
+     */
     public void <%= computeSetterWithPrefix(item) %>(<%= computeType(item.type) %> value) {
         getPolymerElement().<%= computeSetterWithPrefix(item) %>(value);
     }
+   <% if (item.published && computeType(item.type) != 'String') { %>
+    /**
+     * <%= getDescription('     ', item) %>
+     *
+     * JavaScript Info:
+     * @attribute <%= hyphenize(item.name) %>
+     * <%= item.isBehavior ? ('@behavior ' + item.behavior ) : ''%>
+     */
+    public void <%= computeSetterWithPrefix(item) %>(String value) {
+        getPolymerElement().setAttribute("<%= hyphenize(item.name) %>", value);
+    }
+   <% } %>    
   <% } else { %>
     /**
      * <%= getDescription('     ', item) %>
