@@ -191,6 +191,8 @@ public abstract class Polymer {
     /**
      * Restore all properties saved previously to the element was
      * registered.
+     *
+     * Hack for: https://github.com/Polymer/polymer/issues/1882
      */
     private static native void restoreProperties(Element e)
     /*-{
@@ -210,14 +212,18 @@ public abstract class Polymer {
     /**
      * Read all element properties and save in a JS object in the element,
      * so as we can restore then once the element is registered.
+     *
+     * We consider all ownProperties but those beginning or ending with '_'
+     * which is the symbol used by webcomponentjs to store private info.
+     *
+     * Hack for: https://github.com/Polymer/polymer/issues/1882
      */
     private static native boolean saveProperties(Element e)
     /*-{
         if (!@com.vaadin.polymer.Polymer::isRegisteredElement(*)(e)) {
             var o = {};
             for (i in e) {
-                if (e.hasOwnProperty(i)) {
-                    b = true;
+                if (e.hasOwnProperty(i) && !/(^_|_$)/.test(i)) {
                     o[i] = e[i];
                     delete(e[i]);
                     e.__o = o;
