@@ -217,6 +217,10 @@ public abstract class Polymer {
      * which is the symbol used by webcomponentjs to store private info.
      *
      * Hack for: https://github.com/Polymer/polymer/issues/1882
+     *
+     * TODO: this is a temporary workaround, and if the issue is not fixed in
+     * polymer we could eventually implement the fix based on a generated proxy
+     * per component to store for a while any method call.
      */
     private static native boolean saveProperties(Element e)
     /*-{
