@@ -41,6 +41,22 @@ gulp.task('pre-analyze:missing-events', function() {
     .pipe(gulp.dest(global.bowerDir));
 });
 
+gulp.task('pre-analyze:missing-behaviors', function() {
+  return gulp
+    .src([global.bowerDir + "*/paper-button-behavior.html"])
+    .pipe(map(function(file, cb) {
+      file.contents = new Buffer(String(file.contents)
+          // paper-button-behavior is bad documented
+          .replace(/\/\*\* @polymerBehavior \*\//, function(m) {
+             console.log("WARNING: patching " + file.relative);
+             return  "/** @polymerBehavior Polymer.PaperButtonBehavior */";
+          })
+      );
+      cb(null, file);
+    }))
+    .pipe(gulp.dest(global.bowerDir));
+});
+
 // Hydrolysis does not support yet new events syntax
 gulp.task('pre-analyze:new-syntax-events', function() {
   return gulp
@@ -64,4 +80,8 @@ gulp.task('pre-analyze:new-syntax-events', function() {
     .pipe(gulp.dest(global.bowerDir));
 });
 
-gulp.task('pre-analyze', ['pre-analyze:missing-events','pre-analyze:new-syntax-events'])
+gulp.task('pre-analyze', [
+                          'pre-analyze:missing-events',
+                          'pre-analyze:new-syntax-events',
+                          'pre-analyze:missing-behaviors'
+                         ])
