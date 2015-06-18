@@ -80,7 +80,7 @@ public class <%= className() %> extends <%= baseWidgetName() %> {
      * <%= item.isBehavior ? ('@behavior ' + item.behavior ) : ''%>
      */
     public void <%= computeSetterWithPrefix(item) %>(String value) {
-        getPolymerElement().<%= computeSetterWithPrefix(item) %>(value);
+        getPolymerElement().setAttribute("<%= hyphenize(item.name) %>", value);
     }
    <% } %>    
   <% } else { %>

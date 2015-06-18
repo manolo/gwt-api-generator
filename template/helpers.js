@@ -88,6 +88,9 @@ module.exports = {
       return m.toUpperCase().replace(/[-\.]/g, '');
     });
   },
+  hyphenize: function(s) {
+    return s.replace(/([A-Z])/g, "-$1").toLowerCase();
+  },
   computeMethodName: function(s) {
     return (s || '').replace(/-\w/g, function (m) {
       return m.toUpperCase().replace(/-/, '');

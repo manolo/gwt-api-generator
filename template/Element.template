@@ -35,16 +35,6 @@ public interface <%= elementClassName() %> extends HTMLElement {
      * <%= item.isBehavior ? ('@behavior ' + item.behavior ) : ''%>
      */
     @JsProperty void <%= computeSetterWithPrefix(item) %>(<%= computeType(item.type) %> value);
-   <% if (item.published && computeType(item.type) != 'String') { %>
-    /**
-     * <%= getDescription('     ', item) %>
-     *
-     * JavaScript Info:
-     * @attribute <%= item.name %>
-     * <%= item.isBehavior ? ('@behavior ' + item.behavior ) : ''%>
-     */
-    @JsProperty void <%= computeSetterWithPrefix(item) %>(String value); 
-   <% } %>
   <% } else { %>
     /**
      * <%= getDescription('     ', item) %>
