@@ -104,6 +104,9 @@ public class PolymerWidget extends HTMLPanel {
     public void setAutofocus(String autofocus) {
         getElement().setAttribute("autofocus", autofocus);
     }
+    public void setTabindex(int index) {
+        getElement().setAttribute("tabindex", "" + index);
+    }
 
     // TODO: Remove this hacks for paper-menu-button
     public void setLabel(String label) {
