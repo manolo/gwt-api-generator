@@ -76,7 +76,7 @@ public class <%= className() %> extends <%= baseWidgetName() %> {
      * <%= getDescription('     ', item) %>
      *
      * JavaScript Info:
-     * @attribute <%= item.name %>
+     * @attribute <%= hyphenize(item.name) %>
      * <%= item.isBehavior ? ('@behavior ' + item.behavior ) : ''%>
      */
     public void <%= computeSetterWithPrefix(item) %>(String value) {
