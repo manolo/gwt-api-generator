@@ -71,7 +71,7 @@ public class <%= className() %> extends <%= baseWidgetName() %> {
     public void <%= computeSetterWithPrefix(item) %>(<%= computeType(item.type) %> value) {
         getPolymerElement().<%= computeSetterWithPrefix(item) %>(value);
     }
-   <% if (item.published && computeType(item.type) != 'String') { %>
+   <% if (item.published && computeType(item.type) != 'String' && computeType(item.type) != 'boolean') { %>
     /**
      * <%= getDescription('     ', item) %>
      *
