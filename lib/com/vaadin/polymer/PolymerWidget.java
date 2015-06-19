@@ -17,21 +17,17 @@ public class PolymerWidget extends HTMLPanel {
         super(tag, safeHtml.asString());
     }
 
-    public void setDisabled(boolean disabled) {
-        this.setBooleanAttribute("disabled", disabled);
-    }
 
-    public void setDisabled(String disabled) {
-        this.setBooleanAttribute("disabled", Boolean.valueOf(disabled));
+    public void setDisabled(boolean disabled) {
+        setBooleanAttribute("disabled", disabled);
     }
 
     public void setBooleanAttribute(String name, boolean value) {
-        if(value) {
-            this.getElement().setAttribute(name, "");
+        if (value) {
+            getElement().setAttribute(name, "");
         } else {
-            this.getElement().removeAttribute(name);
+            getElement().removeAttribute(name);
         }
-
     }
 
     // TODO: Remove this hack for paper-radio-button
@@ -39,33 +35,11 @@ public class PolymerWidget extends HTMLPanel {
         getElement().setAttribute("name", value);
     }
 
-    // TODO: Remove this hack for paper-tabs
-    public void setLink(String link) {
-        getElement().setAttribute("link", link);
-    }
-
-    public void setToggle(String toggle) {
-        getElement().setAttribute("toggle", toggle);
-    }
-    public void setNoink(String noink) {
-        getElement().setAttribute("noink", noink);
-    }
-    public void setDismissive(String dismissive) {
-        getElement().setAttribute("dismissive", dismissive);
-    }
-    public void setAffirmative(String affirmative) {
-        getElement().setAttribute("affirmative", affirmative);
-    }
-    public void setAutofocus(String autofocus) {
-        getElement().setAttribute("autofocus", autofocus);
+    public void setNoink(boolean noink) {
+        setBooleanAttribute("noink", noink);
     }
     public void setTabindex(int index) {
         getElement().setAttribute("tabindex", "" + index);
-    }
-
-    // TODO: Remove this hacks for paper-menu-button
-    public void setLabel(String label) {
-        getElement().setAttribute("label", label);
     }
 
     public HandlerRegistration addClickHandler(ClickHandler handler) {
