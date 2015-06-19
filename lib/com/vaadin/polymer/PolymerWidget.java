@@ -17,66 +17,21 @@ public class PolymerWidget extends HTMLPanel {
         super(tag, safeHtml.asString());
     }
 
-    public void setHorizontal(boolean horizontal) {
-        setBooleanAttribute("horizontal", horizontal);
-    }
-    public void setHorizontal(String horizontal) {
-        setBooleanAttribute("horizontal", true);
-    }
-
-    public void setLayout(boolean layout) {
-        setBooleanAttribute("layout", layout);
-    }
-    public void setLayout(String layout) {
-        setBooleanAttribute("layout", true);
-    }
-
-    public void setCenter(boolean center) {
-        setBooleanAttribute("center", center);
-    }
-    public void setCenter(String center) {
-        setBooleanAttribute("center", true);
-    }
-
-    public void setFlex(boolean flex) {
-        setBooleanAttribute("flex", flex);
-    }
-    public void setFlex(String flex) {
-        setBooleanAttribute("flex", true);
-    }
-
-    public void setSelfEnd(boolean selfEnd) {
-        setBooleanAttribute("self-end", selfEnd);
-    }
-    public void setSelfEnd(String selfEnd) {
-        setBooleanAttribute("self-end", true);
-    }
-
-
     public void setDisabled(boolean disabled) {
-        setBooleanAttribute("disabled", disabled);
+        this.setBooleanAttribute("disabled", disabled);
     }
+
     public void setDisabled(String disabled) {
-        setBooleanAttribute("disabled", true);
+        this.setBooleanAttribute("disabled", Boolean.valueOf(disabled));
     }
-
-
-    public void setAriaLabel(String ariaLabel) {
-        getElement().setAttribute("ariaLabel", ariaLabel);
-    }
-
-
-    public void setCenterCenter(String centerCenter) {
-        getElement().setAttribute("center-center", centerCenter);
-    }
-
 
     public void setBooleanAttribute(String name, boolean value) {
-        if (value) {
-            getElement().setAttribute(name, "");
+        if(value) {
+            this.getElement().setAttribute(name, "");
         } else {
-            getElement().removeAttribute(name);
+            this.getElement().removeAttribute(name);
         }
+
     }
 
     // TODO: Remove this hack for paper-radio-button
