@@ -15,7 +15,7 @@ import com.google.gwt.core.client.JavaScriptObject;
 /**
  * <%= getDescription(' ') %>
  */
-public class <%= className() %> extends <%= baseWidgetName() %> {
+public class <%= className() %> extends <%= base ? base : 'PolymerWidget' %> {
     /**
      * Default Constructor.
      */
@@ -82,7 +82,7 @@ public class <%= className() %> extends <%= baseWidgetName() %> {
     public void <%= computeSetterWithPrefix(item) %>(String value) {
         getPolymerElement().setAttribute("<%= hyphenize(item.name) %>", value);
     }
-   <% } %>    
+   <% } %>
   <% } else { %>
     /**
      * <%= getDescription('     ', item) %>

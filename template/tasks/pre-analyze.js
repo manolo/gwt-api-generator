@@ -50,13 +50,12 @@ gulp.task('pre-analyze:new-syntax-events', function() {
           String(file.contents).replace(/([ \t]+\* +)@event +([\w\-]+) +\{\{(.+)\}\} *detail.*\n/g, function(m, $1, $2, $3) {
             var ret = $1 + "@event " + $2 + "\n" +
                       $1 + " @param {Object} detail\n";
-            
+
             var detail = $3.split(/ *, */);
             for (i in detail) {
-              console.log(detail[i])
               ret += detail[i].replace(/(\w+): *(\w+)/g, $1 + "  @param {$2} detail.$1 \n")
             }
-  
+
             console.log("WARNING: patching event: " + $2 + " in component " + file.relative);
             return ret;
         }));

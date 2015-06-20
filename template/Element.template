@@ -11,7 +11,7 @@ import com.google.gwt.core.client.js.JsType;
  * <%= getDescription(' ') %>
  */
 @JsType
-public interface <%= elementClassName() %> extends HTMLElement {
+public interface <%= elementClassName() %> extends <%= base ? base : 'HTMLElement' %> {
 
     public static final String TAG = "<%= name %>";
     public static final String SRC = "<%= path %>";
