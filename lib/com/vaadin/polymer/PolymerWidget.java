@@ -47,6 +47,10 @@ public class PolymerWidget extends HTMLPanel {
         getElement().setAttribute("tabindex", "" + index);
     }
 
+    public void setAriaLabel(String label) {
+        getElement().setAttribute("aria-label", label);
+    }
+
     public void setAttributes(String attributes) {
         for (String attr : attributes.split(";")) {
             String tokens[] = attr.split(":");
