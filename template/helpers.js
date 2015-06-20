@@ -74,15 +74,6 @@ module.exports = {
     }
     return "extends " + e.join(',');
   },
-  baseWidgetName: function () {
-    var e = this['extends'];
-    if (e && e.match(/[A-Z\-]/)) {
-      // CoreResizable -> CoreResizable, core-drop-downBase -> CoreDropdownBase
-      return this.camelCase(e);
-    } else {
-      return 'PolymerWidget';
-    }
-  },
   camelCase: function(s) {
     return (s || '').replace(/^Polymer\./, '').replace(/[^\-\w\.]/g,'').replace(/(\b|-|\.)\w/g, function (m) {
       return m.toUpperCase().replace(/[-\.]/g, '');

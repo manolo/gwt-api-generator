@@ -37,7 +37,6 @@ gulp.task('clean:resources', function() {
 gulp.task('clean', ['clean:target', 'clean:resources']);
 
 gulp.task('bower:install', ['clean'], function() {
-  console.log(globalVar.bowerPackages)
   return bower({ cmd: 'install', cwd: globalVar.publicDir}, [globalVar.bowerPackages]);
 });
 
@@ -61,6 +60,8 @@ gulp.task('parse', ['analyze'], function(cb) {
 
 gulp.task('analyze', ['clean:target', 'pre-analyze'], function() {
   return gulp.src([globalVar.bowerDir + "*/*.html",
+    // vaadin components
+    globalVar.bowerDir + "*/vaadin-*/vaadin-*.html",
     // ignore all demo.html, index.html and metadata.html files
     "!" + globalVar.bowerDir + "*/*demo.html",
     "!" + globalVar.bowerDir + "*/*index.html",
@@ -96,25 +97,46 @@ gulp.task('analyze', ['clean:target', 'pre-analyze'], function() {
     }));
 });
 
-// Parse a template. It should be in the /template/ folder and have .template ext.
-// dir is relative to the namespace (gwt client) folder.
+// Parse a template and generates a .java file.
+// template: file in the templates folder
+// obj:      context object for the template
+// name:     name of the item parsed
+// dir:      folder relative to the client folder to write the file
+// suffix:   extra suffix for the name
 function parseTemplate(template, obj, name, dir, suffix) {
-  var file = helpers.camelCase(name) + suffix;
-  var prefix = obj.name.split('-')[0].replace(/\./g,'');
-  var path = globalVar.clientDir + prefix + '/' + dir + file;
-  gutil.log("Generating: ", name, path);
+  var className = helpers.camelCase(name) + suffix;
+  // If there is a base .java file we extend it.
+  var classBase = helpers.camelCase(name) + suffix + "Base";
 
-  var tpl = _.template(fs.readFileSync(tplDir + template + '.template'));
+  var prefix = obj.name.split('-')[0].replace(/\./g,'');
   obj.ns = globalVar.ns + '.' + prefix;
-  fs.ensureFileSync(path);
-  fs.writeFileSync(path, new Buffer(tpl(_.merge({}, null, obj, helpers))));
+
+  var targetPath = globalVar.clientDir + prefix + '/' + dir;
+  var targetFile = targetPath + className + ".java";
+  fs.ensureFileSync(targetFile);
+
+  var baseFile = libDir + globalVar.nspath + '/' + prefix + '/' + dir + classBase + ".java";
+  if (!fs.existsSync(baseFile)) {
+    var baseFile = './lib/' + globalVar.nspath + '/' + prefix + '/' + dir + classBase + ".java";
+  }
+  if (fs.existsSync(baseFile)) {
+    obj.base = classBase;
+    gutil.log("Copying: ", baseFile);
+    fs.copySync(baseFile, targetPath + classBase + ".java");
+  } else {
+    obj.base = '';
+  }
+
+  gutil.log("Generating: ", targetFile);
+  var tpl = _.template(fs.readFileSync(tplDir + template + '.template'));
+  fs.writeFileSync(targetFile, new Buffer(tpl(_.merge({}, null, obj, helpers))));
 }
 
 gulp.task('generate:elements', ['parse'], function() {
   return StreamFromArray(global.parsed,{objectMode: true})
    .on('data', function(item) {
      if (!helpers.isBehavior(item)) {
-       parseTemplate('Element', item, item.is, 'element/', 'Element.java');
+       parseTemplate('Element', item, item.is, 'element/', 'Element');
      }
    })
 });
@@ -125,7 +147,7 @@ gulp.task('generate:events', ['parse'], function() {
       if (item.events) {
         item.events.forEach(function(event) {
           event.bowerData = item.bowerData;
-          parseTemplate('ElementEvent', event, event.name, 'element/event/', 'Event.java');
+          parseTemplate('ElementEvent', event, event.name, 'element/event/', 'Event');
         });
       }
    })
@@ -135,7 +157,7 @@ gulp.task('generate:widgets', ['parse'], function() {
   return StreamFromArray(global.parsed,{objectMode: true})
    .on('data', function(item) {
       if (!helpers.isBehavior(item)) {
-        parseTemplate('Widget', item, item.is, 'widget/', '.java');
+        parseTemplate('Widget', item, item.is, 'widget/', '');
       }
    })
 });
@@ -146,8 +168,8 @@ gulp.task('generate:widget-events', ['parse'], function() {
       if (item.events) {
         item.events.forEach(function(event) {
           event.bowerData = item.bowerData;
-          parseTemplate('WidgetEvent', event, event.name, 'widget/event/', 'Event.java');
-          parseTemplate('WidgetEventHandler', event, event.name, 'widget/event/', 'EventHandler.java');
+          parseTemplate('WidgetEvent', event, event.name, 'widget/event/', 'Event');
+          parseTemplate('WidgetEventHandler', event, event.name, 'widget/event/', 'EventHandler');
         });
       }
    })

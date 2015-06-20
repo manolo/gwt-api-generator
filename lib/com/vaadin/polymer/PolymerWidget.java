@@ -17,7 +17,6 @@ public class PolymerWidget extends HTMLPanel {
         super(tag, safeHtml.asString());
     }
 
-
     public void setDisabled(boolean disabled) {
         setBooleanAttribute("disabled", disabled);
     }
@@ -28,6 +27,12 @@ public class PolymerWidget extends HTMLPanel {
         } else {
             getElement().removeAttribute(name);
         }
+    }
+
+    public boolean getBooleanAttribute(String value) {
+        return getElement().hasAttribute(value)
+                && (getElement().getAttribute(value).isEmpty()
+                    || Boolean.parseBoolean(getElement().getAttribute(value)));
     }
 
     // TODO: Remove this hack for paper-radio-button
