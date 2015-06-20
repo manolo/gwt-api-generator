@@ -1,17 +1,14 @@
-/*
- * This code was generated with Vaadin Web Component GWT API Generator, 
- * from paper-button project by The Polymer Authors
- * that is licensed with http://polymer.github.io/LICENSE.txt license.
- */
 package com.vaadin.polymer.paper.widget;
 
-import com.google.gwt.safehtml.shared.SafeHtml;
 import com.vaadin.polymer.PolymerWidget;
 
+/**
+ * Customized class to add behaviors not supported by hydrolysis yet.
+ */
 public abstract class PaperButtonBase extends PolymerWidget {
-    
-    public PaperButtonBase(String tag, SafeHtml safeHtml) {
-        super(tag, safeHtml);
+
+    public PaperButtonBase(String tag, String src, String html) {
+        super(tag, src, html);
     }
 
     public void setToggles(boolean value) {

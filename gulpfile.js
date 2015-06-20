@@ -115,14 +115,14 @@ function parseTemplate(template, obj, name, dir, suffix) {
   var targetFile = targetPath + className + ".java";
   fs.ensureFileSync(targetFile);
 
-  var baseFile = libDir + global.nspath + '/' + prefix + '/' + dir + classBase + ".java";
+  var baseFile = libDir + globalVar.nspath + '/' + prefix + '/' + dir + classBase + ".java";
   if (!fs.existsSync(baseFile)) {
-    var baseFile = './lib/' + global.nspath + '/' + prefix + '/' + dir + classBase + ".java";
+    var baseFile = './lib/' + globalVar.nspath + '/' + prefix + '/' + dir + classBase + ".java";
   }
   if (fs.existsSync(baseFile)) {
     obj.base = classBase;
     gutil.log("Copying: ", baseFile);
-    fs.copySync(baseFile, targetPath);
+    fs.copySync(baseFile, targetPath + classBase + ".java");
   } else {
     obj.base = '';
   }
