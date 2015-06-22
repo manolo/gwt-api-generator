@@ -51,7 +51,7 @@ public class PolymerWidget extends HTMLPanel {
         getElement().setAttribute("aria-label", label);
     }
 
-    public void setMarkerAttributes(String attributes) {
+    public void setAddAttributes(String attributes) {
         for (String attr : attributes.trim().split(" ")) {
             setBooleanAttribute(attr, true);
         }
