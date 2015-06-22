@@ -10,6 +10,7 @@
     <maven.compiler.target>1.7</maven.compiler.target>
     <additionalparam>-Xdoclint:none</additionalparam>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <gwtVersion>2.8.0-SNAPSHOT</gwtVersion>
   </properties>
 
   <distributionManagement>
@@ -24,7 +25,7 @@
     <dependency>
       <groupId>com.google.gwt</groupId>
       <artifactId>gwt-user</artifactId>
-      <version>2.7.0</version>
+      <version>${gwtVersion}</version>
       <scope>provided</scope>
     </dependency>
   </dependencies>
@@ -38,6 +39,32 @@
         <directory>src/main/resources</directory>
       </resource>
     </resources>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-source-plugin</artifactId>
+        <executions>
+            <execution>
+                <id>attach-sources</id>
+                <goals>
+                    <goal>jar-no-fork</goal>
+                </goals>
+            </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <executions>
+            <execution>
+                <id>attach-javadocs</id>
+                <goals>
+                    <goal>jar</goal>
+                </goals>
+            </execution>
+        </executions>
+      <plugin>
+    </plugins>
   </build>
 
 </project>
