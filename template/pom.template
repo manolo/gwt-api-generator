@@ -19,12 +19,12 @@
     </license>
   </licenses>
  <% } %>
- <% if (pkg.org) { %>
+ <% if (pkg.organization) { %>
   <organization>
-    <name><%= pkg.org.name %></name>
-    <url><%= pkg.org.url %></url>
+    <name><%= pkg.organization.name %></name>
+    <url><%= pkg.organization.url %></url>
   </organization>
-  <url><%= pkg.org.url %></url>
+  <url><%= pkg.organization.url %></url>
  <% } %>
  <% if (pkg.scm) { %>
   <scm>
