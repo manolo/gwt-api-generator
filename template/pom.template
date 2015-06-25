@@ -1,9 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project>
+  <parent>
+    <groupId>org.sonatype.oss</groupId>
+    <artifactId>oss-parent</artifactId>
+    <version>4</version>
+  </parent>
+
   <modelVersion>4.0.0</modelVersion>
-  <groupId><%= groupId %></groupId>
+  <groupId><%= ns %></groupId>
+  <version><%= pkg.pom.version %>-SNAPSHOT</version>
   <artifactId><%= artifactId %></artifactId>
-  <version>1.0-SNAPSHOT</version>
+  <name><%= pkg.name || artifactId %></name>
+  <description><%= pkg.description || artifactId %></description>
+ <% if (pkg.license) { %>
+  <licenses>
+    <license>
+      <name><%= pkg.license %></name>
+    </license>
+  </licenses>
+ <% } %>
+ <% if (pkg.pom.organization) { %>
+  <organization>
+    <name><%= pkg.pom.organization.name %></name>
+    <url><%= pkg.pom.organization.url %></url>
+  </organization>
+  <url><%= pkg.pom.organization.url %></url>
+ <% } %>
+ <% if (pkg.pom.scm) { %>
+  <scm>
+    <connection><%= pkg.pom.scm.connection %></connection>
+    <developerConnection><%= pkg.pom.scm.developerConnection %></developerConnection>
+    <url><%= pkg.pom.scm.url %></url>
+  </scm>
+ <% } %>
+  <developers>
+    <developer>
+      <id><%= pkg.author %></id>
+      <name><%= pkg.author %></name>
+    </developer>
+  </developers>
+
 
   <properties>
     <maven.compiler.source>1.7</maven.compiler.source>
@@ -38,6 +74,32 @@
         <directory>src/main/resources</directory>
       </resource>
     </resources>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-source-plugin</artifactId>
+        <executions>
+            <execution>
+                <id>attach-sources</id>
+                <goals>
+                    <goal>jar-no-fork</goal>
+                </goals>
+            </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <executions>
+            <execution>
+                <id>attach-javadocs</id>
+                <goals>
+                    <goal>jar</goal>
+                </goals>
+            </execution>
+        </executions>
+      </plugin>
+    </plugins>
   </build>
 
 </project>

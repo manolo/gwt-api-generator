@@ -202,9 +202,16 @@ gulp.task('copy:lib', function() {
 
 gulp.task('copy:pom', function() {
   var tpl = _.template(fs.readFileSync(tplDir + "pom.template"));
-  var obj = {groupId: globalVar.ns, artifactId: globalVar.artifactId};
-  fs.ensureFileSync(globalVar.currentDir + "pom.xml");
-  fs.writeFileSync(globalVar.currentDir + "pom.xml", new Buffer(tpl(_.merge({}, null, obj, helpers))));
+  var pom = globalVar.currentDir + "pom.xml";
+
+  var pkgFile = globalVar.currentDir + 'package.json';
+  var pkgContent = fs.readFileSync(pkgFile);
+  globalVar.pkg = pkgContent ? JSON.parse(pkgContent) : {};
+  globalVar.pkg.pom = globalVar.pkg.pom || {};
+  globalVar.pkg.pom.version = args.version || globalVar.pkg.pom.version || globalVar.pkg.version;
+
+  fs.ensureFileSync(pom);
+  fs.writeFileSync(pom, new Buffer(tpl(_.merge({}, null, globalVar, helpers))));
 });
 
 gulp.task('default', function(){
