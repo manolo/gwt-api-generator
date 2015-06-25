@@ -9,6 +9,7 @@ import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.Timer;
 import com.vaadin.polymer.elemental.Function;
+import com.vaadin.polymer.elemental.HTMLElement;
 
 public abstract class Polymer {
 
@@ -188,6 +189,14 @@ public abstract class Polymer {
         return l;
     }-*/;
 
+    public static void ready(HTMLElement e, Function f) {
+        onReady((Element)e, f);
+    }
+
+    public static void ready(Element e, Function f) {
+        onReady(e, f);
+    }
+
     /**
      * Restore all properties saved previously to the element was
      * registered.
@@ -197,16 +206,32 @@ public abstract class Polymer {
     private static native void restoreProperties(Element e)
     /*-{
         if (e && e.__o) {
-            var id = setInterval(function() {
-                if (@com.vaadin.polymer.Polymer::isRegisteredElement(*)(e)) {
-                    clearInterval(id);
-                    for (i in e.__o) {
-                        e[i] = e.__o[i];
-                    }
-                    delete e.__o;
+            @com.vaadin.polymer.Polymer::onReady(*)(e, function(){
+                for (i in e.__o) {
+                    e[i] = e.__o[i];
                 }
-            }, 0);
+                delete e.__o;
+            });
         }
+    }-*/;
+
+    private static native void onReady(Element e, Object f)
+    /*-{
+        var id = setInterval(function() {
+            if (@com.vaadin.polymer.Polymer::isRegisteredElement(*)(e)) {
+                clearInterval(id);
+                if (typeof f == 'function') {
+                    f(e);
+                } else {
+                    f.@com.vaadin.polymer.elemental.Function::call(*)(e);
+                }
+                for (i in e.__o) {
+                    e[i] = e.__o[i];
+                }
+                delete e.__o;
+            }
+        }, 0);
+
     }-*/;
 
     /**
