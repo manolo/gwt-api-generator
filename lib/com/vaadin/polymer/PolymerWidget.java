@@ -7,6 +7,7 @@ import com.google.gwt.regexp.shared.MatchResult;
 import com.google.gwt.regexp.shared.RegExp;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.user.client.ui.HTMLPanel;
+import com.vaadin.polymer.elemental.Function;
 
 public class PolymerWidget extends HTMLPanel {
 
@@ -72,5 +73,9 @@ public class PolymerWidget extends HTMLPanel {
 
     public HandlerRegistration addClickHandler(ClickHandler handler) {
         return addDomHandler(handler, ClickEvent.getType());
+    }
+
+    public void ready(Function f) {
+        Polymer.ready(getElement(), f);
     }
 }
