@@ -60,6 +60,8 @@ public abstract class Polymer {
         if (!urlImported.contains(hrefOrTag)) {
             urlImported.add(hrefOrTag);
             importHrefImpl(hrefOrTag, ok, err);
+        } else if (ok != null) {
+            ok.call(hrefOrTag);
         }
     }
 
