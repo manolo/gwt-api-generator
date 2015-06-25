@@ -215,23 +215,27 @@ public abstract class Polymer {
         }
     }-*/;
 
+    /**
+     * If an element is not ready, loops until it gets ready, then
+     * run a Function (JsFunction or JavaFunction)
+     */
     private static native void onReady(Element e, Object f)
     /*-{
-        var id = setInterval(function() {
-            if (@com.vaadin.polymer.Polymer::isRegisteredElement(*)(e)) {
-                clearInterval(id);
-                if (typeof f == 'function') {
-                    f(e);
-                } else {
-                    f.@com.vaadin.polymer.elemental.Function::call(*)(e);
-                }
-                for (i in e.__o) {
-                    e[i] = e.__o[i];
-                }
-                delete e.__o;
-            }
-        }, 0);
-
+        function isReady(f) {
+          if (@com.vaadin.polymer.Polymer::isRegisteredElement(*)(e)) {
+            if (typeof f == 'function')
+              f(e);
+            else
+              f.@com.vaadin.polymer.elemental.Function::call(*)(e);
+            return true;
+          }
+        }
+        if (!isReady(f)) {
+          var id = setInterval(function() {
+            if (isReady(f))
+               clearInterval(id);
+          }, 0);
+        }
     }-*/;
 
     /**
