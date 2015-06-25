@@ -58,8 +58,17 @@ public abstract class Polymer {
             hrefOrTag = GWT.getModuleBaseForStaticFiles() + hrefOrTag;
         }
         if (!urlImported.contains(hrefOrTag)) {
-            urlImported.add(hrefOrTag);
-            importHrefImpl(hrefOrTag, ok, err);
+            final String href = hrefOrTag;
+            importHrefImpl(href, new Function() {
+                public Object call(Object arg) {
+                    // Don't update the list until the import is actually loaded
+                    urlImported.add(href);
+                    if (ok != null) {
+                        ok.call(arg);
+                    }
+                    return null;
+                }
+            }, err);
         } else if (ok != null) {
             ok.call(hrefOrTag);
         }
