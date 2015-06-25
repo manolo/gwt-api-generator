@@ -45,7 +45,7 @@ public abstract class Polymer {
      * @param ok callback to run in case of success
      * @param err callback to run in case of failure
      */
-    public static void importHref(String hrefOrTag, Function ok, Function err) {
+    public static void importHref(String hrefOrTag, final Function ok, Function err) {
         if (!hrefOrTag.startsWith("http")) {
             // It's a tag
             if (hrefOrTag.matches("[\\w-]+")) {
