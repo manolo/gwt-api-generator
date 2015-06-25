@@ -8,7 +8,7 @@
 
   <modelVersion>4.0.0</modelVersion>
   <groupId><%= ns %></groupId>
-  <version><%= pkg.version %>-SNAPSHOT</version>
+  <version><%= pkg.pom.version %>-SNAPSHOT</version>
   <artifactId><%= artifactId %></artifactId>
   <name><%= pkg.name || artifactId %></name>
   <description><%= pkg.description || artifactId %></description>
@@ -19,18 +19,18 @@
     </license>
   </licenses>
  <% } %>
- <% if (pkg.organization) { %>
+ <% if (pkg.pom.organization) { %>
   <organization>
-    <name><%= pkg.organization.name %></name>
-    <url><%= pkg.organization.url %></url>
+    <name><%= pkg.pom.organization.name %></name>
+    <url><%= pkg.pom.organization.url %></url>
   </organization>
-  <url><%= pkg.organization.url %></url>
+  <url><%= pkg.pom.organization.url %></url>
  <% } %>
- <% if (pkg.scm) { %>
+ <% if (pkg.pom.scm) { %>
   <scm>
-    <connection><%= pkg.scm.connection %></connection>
-    <developerConnection><%= pkg.scm.developerConnection %></developerConnection>
-    <url><%= pkg.scm.url %></url>
+    <connection><%= pkg.pom.scm.connection %></connection>
+    <developerConnection><%= pkg.pom.scm.developerConnection %></developerConnection>
+    <url><%= pkg.pom.scm.url %></url>
   </scm>
  <% } %>
   <developers>
