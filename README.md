@@ -8,10 +8,12 @@ Original motivation behind the project was to provide GWT community an easy acce
 
 ## Installation and Usage
 
-- Installation: we want to make the gwt-api-generator command available in your path, so you might use `sudo` command to install it as super user in unix systems.
+- Installation
 ```shell
-$ sudo npm install -g vaadin/gwt-api-generator
+$ npm install -g vaadin/gwt-api-generator
 ```
+> If you've installed node and npm using `sudo`, installing packages globally will also require you to use `sudo`. See [http://givan.se/do-not-sudo-npm/](http://givan.se/do-not-sudo-npm/) how to remedy the situation.
+
 - Generating the resources for a library
 ```shell
 $ gwt-api-generator --package=PolymerElements/paper-elements
