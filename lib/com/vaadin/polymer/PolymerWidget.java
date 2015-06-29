@@ -62,7 +62,8 @@ public class PolymerWidget extends HTMLPanel {
      */
     public void setAttributes(String attributes) {
         for (String attr : attributes.trim().replace(" *([;:]) *", "$1").split("[; ]+")) {
-            MatchResult e = RegExp.compile(" *(\\w+)( *: *)?(\\w*)? *").exec(attr);
+            MatchResult e = RegExp.compile(" *([\\w-]+)( *: *)?(.*)? *").exec(attr);
+
             if (e.getGroup(3) != null) {
                 getElement().setAttribute(e.getGroup(1), e.getGroup(3));
             } else {
