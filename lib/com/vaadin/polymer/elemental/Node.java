@@ -7,7 +7,7 @@ import com.google.gwt.core.client.js.JsType;
 public interface Node extends EventTarget {
 
     @JsProperty
-    NodeList getChildNodes();
+    NodeList<Node> getChildNodes();
 
     @JsProperty
     Node getFirstChild();

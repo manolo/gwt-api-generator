@@ -4,7 +4,7 @@ import com.google.gwt.core.client.js.JsProperty;
 import com.google.gwt.core.client.js.JsType;
 
 @JsType
-public interface NodeList<T extends Node> {
+public interface NodeList<T> {
 
     @JsProperty
     int getLength();
