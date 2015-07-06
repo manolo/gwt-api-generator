@@ -4,10 +4,10 @@ import com.google.gwt.core.client.js.JsProperty;
 import com.google.gwt.core.client.js.JsType;
 
 @JsType
-public interface NodeList<T> {
+public interface NodeList {
 
     @JsProperty
     int getLength();
 
-    T item(int index);
+    <T extends Node> T item(int index);
 }
