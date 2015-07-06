@@ -26,5 +26,5 @@ public interface Element extends Node {
     void removeAttribute(String name);
 
     <T extends Element> T querySelector(String selector);
-    <T extends Element> NodeList<T> querySelectorAll(String selector);
+    NodeList querySelectorAll(String selector);
 }
