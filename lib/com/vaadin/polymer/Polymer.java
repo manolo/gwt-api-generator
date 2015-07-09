@@ -7,6 +7,7 @@ import java.util.Set;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Timer;
 import com.vaadin.polymer.elemental.Function;
 import com.vaadin.polymer.elemental.HTMLElement;
@@ -275,4 +276,44 @@ public abstract class Polymer {
             }
         }
     }-*/;
+
+    /**
+     * Utility method to show a loading element if there is no one in
+     * hosting page.
+     */
+    public static void startLoading() {
+        Element l = DOM.getElementById("loading");
+        if (l == null) {
+            l = DOM.createDiv();
+            l.setAttribute("style", "position:fixed;top:0px;left:0px;width:100%;text-align:center;font-family:arial;font-size:24px;color:#4285f4;");
+            l.setId("loading");
+            l.setInnerText("loading" + "...");
+            Document.get().getBody().appendChild(l);
+        }
+    }
+
+    public static void endLoading(final Element container, Element webcomponent) {
+        endLoading(container, webcomponent, null);
+    }
+
+    /**
+     * Utility method to remove a loading message and show a container when a
+     * web component becomes available.
+     *
+     * @param container : The container to show when the component is available
+     * @param webcomponent : Web component to monitor
+     * @param callback : Calback function
+     */
+    public static void endLoading(final Element container, Element webcomponent, final Function func) {
+        container.getStyle().setOpacity(0);
+        container.getStyle().setProperty("transition", "opacity 1.1s");
+        ready(webcomponent, new Function() {
+            public Object call(Object arg) {
+                container.getOffsetWidth();
+                container.getStyle().setOpacity(1);
+                DOM.getElementById("loading").getStyle().setOpacity(0);
+                return func != null ? func.call(arg) : null;
+            }
+        });
+    }
 }
