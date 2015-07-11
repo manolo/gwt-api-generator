@@ -1,5 +1,7 @@
 package com.vaadin.polymer;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -15,6 +17,7 @@ import com.vaadin.polymer.elemental.HTMLElement;
 public abstract class Polymer {
 
     private static Set<String> urlImported = new HashSet<>();
+    private static HashMap<String, List<Function>> pending = new HashMap<String, List<Function>>();
 
     /**
      * Inserts the appropriate &lt;import&gt; of a component given by url.
@@ -58,20 +61,31 @@ public abstract class Polymer {
             }
             hrefOrTag = GWT.getModuleBaseForStaticFiles() + hrefOrTag;
         }
-        if (!urlImported.contains(hrefOrTag)) {
-            final String href = hrefOrTag;
-            importHrefImpl(href, new Function() {
-                public Object call(Object arg) {
-                    // Don't update the list until the import is actually loaded
-                    urlImported.add(href);
-                    if (ok != null) {
-                        ok.call(arg);
+
+        final String href = hrefOrTag;
+        boolean loading = pending.containsKey(href);
+        if (loading || !urlImported.contains(href)) {
+            if (!loading) {
+                pending.put(href, new ArrayList<Function>());
+            }
+            final List<Function> oks = pending.get(href);
+            if (ok != null) {
+                oks.add(ok);
+            }
+            if (!loading) {
+                importHrefImpl(href, new Function() {
+                    public Object call(Object arg) {
+                        urlImported.add(href);
+                        for (Function ok : oks) {
+                            ok.call(arg);
+                        }
+                        pending.remove(href);
+                        return null;
                     }
-                    return null;
-                }
-            }, err);
+                }, err);
+            }
         } else if (ok != null) {
-            ok.call(hrefOrTag);
+            ok.call(href);
         }
     }
 
@@ -139,7 +153,6 @@ public abstract class Polymer {
             }
         }.schedule(0);
 
-        //
         new Timer() {
             public void run() {
                 // Restore saved ownProperties
@@ -183,6 +196,7 @@ public abstract class Polymer {
      */
     private native static Element importHrefImpl(String href, Function onload, Function onerror)
     /*-{
+        console.log("gwt-polymer loading: ", href.replace(/^.*components\//,''));
         // TODO(manolo): use Polymer.Base.importHref when it works in FF
         var l = $doc.createElement('link');
         l.rel = 'import';
