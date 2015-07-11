@@ -323,11 +323,25 @@ public abstract class Polymer {
         container.getStyle().setProperty("transition", "opacity 1.1s");
         ready(webcomponent, new Function() {
             public Object call(Object arg) {
-                container.getOffsetWidth();
+                // TODO(manolo): is 200 enough?
+                reFlow.schedule(200);
                 container.getStyle().setOpacity(1);
                 DOM.getElementById("loading").getStyle().setOpacity(0);
                 return func != null ? func.call(arg) : null;
             }
         });
     }
+
+    /**
+     * Force a browser re-flow. For some reason in Chrome we need to force
+     * it the very first time we initialize the UI. It seems it happens with
+     * widgets and no with elements but not 100% positive. To test it try
+     * to reload the app in SDM and do not move the mouse, moving or clicking
+     * mouse on body also makes the UI re-draw.
+     */
+    private static Timer reFlow = new Timer() {
+        public void run() {
+            Document.get().getBody().getOffsetWidth();
+        }
+    };
 }
