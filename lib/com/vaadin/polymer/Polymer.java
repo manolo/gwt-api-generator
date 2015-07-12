@@ -323,8 +323,7 @@ public abstract class Polymer {
         container.getStyle().setProperty("transition", "opacity 1.1s");
         ready(webcomponent, new Function() {
             public Object call(Object arg) {
-                // TODO(manolo): is 200 enough?
-                reFlow.schedule(200);
+                reFlow();
                 container.getStyle().setOpacity(1);
                 DOM.getElementById("loading").getStyle().setOpacity(0);
                 return func != null ? func.call(arg) : null;
@@ -338,10 +337,18 @@ public abstract class Polymer {
      * widgets and no with elements but not 100% positive. To test it try
      * to reload the app in SDM and do not move the mouse, moving or clicking
      * mouse on body also makes the UI re-draw.
+     *
      */
-    private static Timer reFlow = new Timer() {
-        public void run() {
-            Document.get().getBody().getOffsetWidth();
-        }
-    };
+    private static native void reFlow()
+    /*-{
+      if (navigator.userAgent.toLowerCase().indexOf('chrome') > -1) {
+        var c = 0;
+        var id = setInterval(function() {
+         // Using $doc.body.offsetWidth in an if, otherwise closure
+         // compiler prunes it.
+         if (c++ >= 20 && $doc.body.offsetWidth > 0)
+          clearInterval(id);
+       }, 50);
+      }
+    }-*/;
 }
