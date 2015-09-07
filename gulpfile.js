@@ -47,7 +47,18 @@ gulp.task('parse', ['analyze'], function(cb) {
       item.behaviors.forEach(function(name) {
         var nestedBehaviors = helpers.getNestedBehaviors(item, name);
         item.properties = _.union(item.properties, nestedBehaviors.properties);
-        item.events = _.union(item.events, nestedBehaviors.events);
+
+        // merge events
+        if (nestedBehaviors.events && nestedBehaviors.events.length) {
+          nestedBehaviors.events.forEach(function (event) {
+            var notDuplicate = _.filter(item.events, function (e) {
+                return e.name == event.name;
+              }).length == 0;
+            if (notDuplicate) {
+              item.events.push(event);
+            }
+          });
+        }
       });
     }
     // Hydrolysis duplicates attributes
