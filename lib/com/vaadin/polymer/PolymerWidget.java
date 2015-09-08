@@ -6,6 +6,7 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.regexp.shared.MatchResult;
 import com.google.gwt.regexp.shared.RegExp;
 import com.google.gwt.safehtml.shared.SafeHtml;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.vaadin.polymer.elemental.Function;
 
@@ -78,5 +79,10 @@ public class PolymerWidget extends HTMLPanel {
 
     public void ready(Function f) {
         Polymer.ready(getElement(), f);
+    }
+
+    public void jsinteropError() {
+        Window.alert(
+            "GWT-Polymer ERROR: Double check that you are compiling your project with the `-XjsInteropMode JS` flag");
     }
 }
