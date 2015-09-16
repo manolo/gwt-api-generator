@@ -34,6 +34,8 @@ $ gwt-api-generator --package=PolymerElements/paper-elements --pom
 $ mvn package
 ```
 
+> Bower can be configured by placing a `.bowerrc` into the folder where `gwt-api-generator` command is run.
+
 ## Pre-built packages
 
 ### Paper and Iron elements
