@@ -7,7 +7,7 @@ var global = require('./global-variables');
 gulp.task('pre-analyze:missing-events', function() {
   return gulp
     .src([global.bowerDir + "*/iron-a11y-keys.html",
-          global.bowerDir + "*/paper-tabs.html"
+          global.bowerDir + "*/iron-selectable.html"
           ])
     .pipe(map(function(file, cb) {
       file.contents = new Buffer(String(file.contents)
@@ -25,16 +25,13 @@ gulp.task('pre-analyze:missing-events', function() {
                      " *  @param {String} detail.key the normalized key\n" +
                      " */" + $1;
           })
-          // paper-tabs lacks select and deselect event annotations.
-          .replace(/(\n.*?')(iron-select|iron-deselect)(':)/g, function(m, $1, $2, $3) {
-            console.log("WARNING: patching " + file.relative + " event " + $2);
-            return "\n/**\n" +
-                   " * @event " + $2 + "\n" +
-                   " * @param {Object} detail\n" +
-                   " *  @param {Object} detail.item the item element\n" +
-                   " */" + $1 + $2 + $3;
+          // iron-selectable lacks details
+          .replace(/(\n.*)(@event )(iron-select|iron-deselect|iron-activate)/g, function(m, $1, $2, $3) {
+            console.log("WARNING: patching " + file.relative + " event " + $3);
+            return $1 + $2 + $3 +
+                   $1 + " @param {Object} detail" +
+                   $1 + "  @param {Object} detail.item the item element";
           })
-
       );
       cb(null, file);
     }))
