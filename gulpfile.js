@@ -10,6 +10,7 @@ var gutil = require('gulp-util');
 var _ = require('lodash');
 var runSequence = require('run-sequence');
 var hyd = require("hydrolysis");
+var jsonfile = require('jsonfile');
 var StreamFromArray = require('stream-from-array');
 var rename = require("gulp-rename");
 var marked = require('marked');
@@ -36,7 +37,21 @@ gulp.task('clean:resources', function() {
 
 gulp.task('clean', ['clean:target', 'clean:resources']);
 
-gulp.task('bower:install', ['clean'], function() {
+gulp.task('bower:configure', ['clean:resources'], function(done) {
+  jsonfile.readFile('.bowerrc', function (err, obj) {
+    if (!err) {
+      fs.copySync('.bowerrc', globalVar.publicDir + '/.bowerrc');
+
+      if(obj.directory) {
+        globalVar.bowerDir = globalVar.publicDir + '/' + obj.directory;
+      }
+    }
+
+    done();
+  });
+});
+
+gulp.task('bower:install', ['clean', 'bower:configure'], function() {
   return bower({ cmd: 'install', cwd: globalVar.publicDir}, [globalVar.bowerPackages]);
 });
 
