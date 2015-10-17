@@ -1,7 +1,5 @@
 package com.vaadin.polymer;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -17,7 +15,6 @@ import com.vaadin.polymer.elemental.HTMLElement;
 public abstract class Polymer {
 
     private static Set<String> urlImported = new HashSet<>();
-    private static HashMap<String, List<Function>> pending = new HashMap<String, List<Function>>();
 
     /**
      * Inserts the appropriate &lt;import&gt; of a component given by url.
@@ -38,18 +35,8 @@ public abstract class Polymer {
         importHref(href, ok, null);
     }
 
-    /**
-     * Inserts the appropriate &lt;import&gt; of a component given by url.
-     *
-     * @param hrefOrTag it can be an absolute url, a relative path or a tag name.
-     *                  - if it is a relative path, we prefix it with bower_components
-     *                  in case it is not already prefixed.
-     *                  - if it is a tag, we compose the relative url:
-     *                  bower_components/tagName/tagName.html
-     * @param ok callback to run in case of success
-     * @param err callback to run in case of failure
-     */
-    public static void importHref(String hrefOrTag, final Function ok, Function err) {
+
+    private static String absoluteHref(String hrefOrTag) {
         if (!hrefOrTag.startsWith("http")) {
             // It's a tag
             if (hrefOrTag.matches("[\\w-]+")) {
@@ -61,32 +48,55 @@ public abstract class Polymer {
             }
             hrefOrTag = GWT.getModuleBaseForStaticFiles() + hrefOrTag;
         }
+        return hrefOrTag;
+    }
 
-        final String href = hrefOrTag;
-        boolean loading = pending.containsKey(href);
-        if (loading || !urlImported.contains(href)) {
-            if (!loading) {
-                pending.put(href, new ArrayList<Function>());
-            }
-            final List<Function> oks = pending.get(href);
-            if (ok != null) {
-                oks.add(ok);
-            }
-            if (!loading) {
-                importHrefImpl(href, new Function() {
-                    public Object call(Object arg) {
-                        urlImported.add(href);
-                        for (Function ok : oks) {
-                            ok.call(arg);
-                        }
-                        pending.remove(href);
-                        return null;
-                    }
-                }, err);
-            }
-        } else if (ok != null) {
-            ok.call(href);
+    private static native void whenPolymerLoaded(Function ok)
+    /*-{
+        if (!$wnd.Polymer) {
+            var l = $doc.createElement('link');
+            l.rel = 'import';
+            l.href = @com.vaadin.polymer.Polymer::absoluteHref(*)('polymer');
+            l.onload = function(){
+              ok.@com.vaadin.polymer.elemental.Function::call(*)();
+            };
+            $doc.head.appendChild(l);
+        } else {
+           ok.@com.vaadin.polymer.elemental.Function::call(*)();
         }
+    }-*/;
+
+    /**
+     * Inserts the appropriate &lt;import&gt; of a component given by url.
+     *
+     * @param hrefOrTag it can be an absolute url, a relative path or a tag name.
+     *                  - if it is a relative path, we prefix it with bower_components
+     *                  in case it is not already prefixed.
+     *                  - if it is a tag, we compose the relative url:
+     *                  bower_components/tagName/tagName.html
+     * @param ok callback to run in case of success
+     * @param err callback to run in case of failure
+     */
+    public static void importHref(String hrefOrTag, final Function ok, final Function err) {
+        final String href = absoluteHref(hrefOrTag);
+        if (!urlImported.contains(href)) {
+            urlImported.add(href);
+            whenPolymerLoaded(new Function() {
+                public Object call(Object arg) {
+                    importHrefImpl(href,ok, err);
+                    return null;
+                }
+            });
+        }
+    }
+
+    /**
+     * Inserts the appropriate &lt;import&gt; of a list of components
+     *
+     * @param hrefs a list of absolute urls or relative paths to load.
+     */
+    public static void importHref(final List<String> hrefs) {
+        importHref(hrefs, null, null);
     }
 
     /**
@@ -108,7 +118,7 @@ public abstract class Polymer {
      * @param err callback to run in case of failure
      */
     public static void importHref(final List<String> hrefs, final Function ok, Function err) {
-        Function allOk = new Function() {
+        Function allOk = ok == null ? ok : new Function() {
             int count = hrefs.size();
             public Object call(Object arg) {
                 if (--count == 0) {
@@ -141,7 +151,6 @@ public abstract class Polymer {
         if (isRegisteredElement(elem)) {
             return;
         }
-
         // Delay this so as the developer gets an early version of the element and
         // can assign properties soon.
         new Timer() {
@@ -152,17 +161,18 @@ public abstract class Polymer {
                 saveProperties((Element)elem);
             }
         }.schedule(0);
-
-        new Timer() {
-            public void run() {
-                // Restore saved ownProperties
-                restoreProperties((Element)elem);
-            }
-        }.schedule(5);
-
+        // Import all necessary stuff for this element
         for (String src : imports) {
             importHref(src, null, null);
         }
+        // Wait until everything is ready
+        whenReady(new Function(){
+            public Object call(Object arg) {
+                // Restore saved ownProperties
+                restoreProperties((Element)elem);
+                return null;
+            }
+        }, (Element)elem);
     }
 
     /**
@@ -194,33 +204,22 @@ public abstract class Polymer {
      * This could be done via Polymer importHref, but the method needs a custom element
      * instance to be run.
      */
-    private native static Element importHrefImpl(String href, Function onload, Function onerror)
+    private native static void importHrefImpl(String href, Function onload, Function onerror)
     /*-{
-        console.log("gwt-polymer loading: ", href.replace(/^.*components\//,''));
-        // TODO(manolo): use Polymer.Base.importHref when it works in FF
-        var l = $doc.createElement('link');
-        l.rel = 'import';
-        l.href = href;
-        if (onload) {
-          l.onload = function() {
-             onload.@com.vaadin.polymer.elemental.Function::call(*)(href);
-          }
-        }
-        if (onerror) {
-          l.onerror = function() {
-              onerror.@com.vaadin.polymer.elemental.Function::call(*)(href);
-          }
-        }
-        $doc.head.appendChild(l);
-        return l;
+        console.log("gwt-polymer loading: ", href.replace(/^.*components\//,''), onload, onerror);
+        $wnd.Polymer.Base.importHref(href, function() {
+             if (onload) onload.@com.vaadin.polymer.elemental.Function::call(*)(href);
+        }, function() {
+             if (onerror) onerror.@com.vaadin.polymer.elemental.Function::call(*)(href);
+        });
     }-*/;
 
     public static void ready(HTMLElement e, Function f) {
-        onReady((Element)e, f);
+        whenReady(f, (Element)e);
     }
 
     public static void ready(Element e, Function f) {
-        onReady(e, f);
+        whenReady(f, e);
     }
 
     /**
@@ -242,27 +241,43 @@ public abstract class Polymer {
     }-*/;
 
     /**
+     * Executes a function after all imports have been loaded.
+     */
+    public static void whenReady(Object f) {
+        whenReady(f, null);
+    }
+
+    /**
+     * Executes a function after all imports have been loaded and when the
+     * passed element is ready to use.
+     */
+    public static native void whenReady(Object f, Element e)
+    /*-{
+        function done() {
+          if (typeof f == 'function') {
+            f(e);
+          } else {
+            f.@com.vaadin.polymer.elemental.Function::call(*)(e);
+          }
+        }
+        $wnd.HTMLImports.whenReady(!e ? done : function() {
+          var id = setInterval(function() {
+            if (@com.vaadin.polymer.Polymer::isRegisteredElement(*)(e)) {
+              clearInterval(id);
+              done();
+            }
+          }, 0);
+        });
+    }-*/;
+
+    /**
      * If an element is not ready, loops until it gets ready, then
      * run a Function (JsFunction or JavaFunction)
      */
-    private static native void onReady(Element e, Object f)
-    /*-{
-        function isReady(f) {
-          if (@com.vaadin.polymer.Polymer::isRegisteredElement(*)(e)) {
-            if (typeof f == 'function')
-              f(e);
-            else
-              f.@com.vaadin.polymer.elemental.Function::call(*)(e);
-            return true;
-          }
-        }
-        if (!isReady(f)) {
-          var id = setInterval(function() {
-            if (isReady(f))
-               clearInterval(id);
-          }, 0);
-        }
-    }-*/;
+    @Deprecated
+    private static  void onReady(Element e, Object f) {
+        whenReady(f, e);
+    }
 
     /**
      * Read all element properties and save in a JS object in the element,
