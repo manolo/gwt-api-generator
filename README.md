@@ -4,7 +4,7 @@ Vaadin gwt-api-generator is a tool that produces GWT Java APIs for JavaScript li
 
 Currently the generator only supports Web Components written in Polymer 1.0 syntax. Support for other type of JavaScript sources might be added in the future.
 
-Original motivation behind the project was to provide GWT community an easy access to the elements in [Vaadin Components](https://github.com/vaadin/vaadin-elements) library.
+Original motivation behind the project was to provide GWT community an easy access to the elements in [Vaadin Elements](https://github.com/vaadin/vaadin-elements) library.
 
 ## Installation and Usage
 
