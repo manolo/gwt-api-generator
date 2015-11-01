@@ -41,18 +41,20 @@ gulp.task('bower:configure', ['clean:resources'], function(done) {
   jsonfile.readFile('.bowerrc', function (err, obj) {
     if (!err) {
       fs.copySync('.bowerrc', globalVar.publicDir + '/.bowerrc');
-
       if(obj.directory) {
         globalVar.bowerDir = globalVar.publicDir + '/' + obj.directory;
       }
     }
-
     done();
   });
 });
 
-gulp.task('bower:install', ['clean', 'bower:configure'], function() {
-  return bower({ cmd: 'install', cwd: globalVar.publicDir}, [globalVar.bowerPackages]);
+gulp.task('bower:install', ['clean', 'bower:configure'], function(done) {
+  if (globalVar.bowerPackages) {
+    return bower({ cmd: 'install', cwd: globalVar.publicDir}, [globalVar.bowerPackages]);
+  } else {
+    return gulp.src('./bower_components/**/*', {base: '.'}).pipe(gulp.dest(globalVar.publicDir));
+  }
 });
 
 gulp.task('parse', ['analyze'], function(cb) {
