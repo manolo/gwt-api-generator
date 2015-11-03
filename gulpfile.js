@@ -118,7 +118,7 @@ gulp.task('analyze', ['clean:target', 'pre-analyze'], function() {
         });
         cb(null, file);
       })
-      .catch(function(e){
+      ['catch'](function(e){
         gutil.log(e.stack);
         cb(null, file);
       });
@@ -136,7 +136,8 @@ function parseTemplate(template, obj, name, dir, suffix) {
   // If there is a base .java file we extend it.
   var classBase = helpers.camelCase(name) + suffix + "Base";
 
-  var prefix = obj.name.split('-')[0].replace(/\./g,'');
+  var prefix = /-/.test(obj.name) || !obj.path ? obj.name : obj.path.replace(/.*\//,'');
+  prefix = prefix.split('-')[0].replace(/\./g,'');
   obj.ns = globalVar.ns + '.' + prefix;
 
   var targetPath = globalVar.clientDir + prefix + '/' + dir;
@@ -160,11 +161,23 @@ function parseTemplate(template, obj, name, dir, suffix) {
   fs.writeFileSync(targetFile, new Buffer(tpl(_.merge({}, null, obj, helpers))));
 }
 
-gulp.task('generate:elements', ['parse'], function() {
+gulp.task('generate:elements:old', ['parse'], function() {
   return StreamFromArray(global.parsed,{objectMode: true})
    .on('data', function(item) {
      if (!helpers.isBehavior(item)) {
        parseTemplate('Element', item, item.is, 'element/', 'Element');
+     }
+   })
+});
+
+gulp.task('generate:elements', ['parse'], function() {
+  return StreamFromArray(global.parsed,{objectMode: true})
+   .on('data', function(item) {
+     if (!helpers.isBehavior(item)) {
+       parseTemplate('Element', item, item.is, '', 'Element');
+     }
+     if (helpers.isBehavior(item)) {
+       parseTemplate('Behavior', item, item.is, '', '');
      }
    })
 });
@@ -175,7 +188,7 @@ gulp.task('generate:events', ['parse'], function() {
       if (item.events) {
         item.events.forEach(function(event) {
           event.bowerData = item.bowerData;
-          parseTemplate('ElementEvent', event, event.name, 'element/event/', 'Event');
+          parseTemplate('ElementEvent', event, event.name, 'event/', 'Event');
         });
       }
    })

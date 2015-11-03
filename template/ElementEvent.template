@@ -1,5 +1,5 @@
 <%= disclaimer() %>
-package <%= ns %>.element.event;
+package <%= ns %>.event;
 
 import com.vaadin.polymer.elemental.*;
 import com.google.gwt.core.client.JavaScriptObject;

@@ -1,7 +1,7 @@
 <%= disclaimer() %>
 package <%= ns %>.widget;
 
-import <%= ns %>.element.*;
+import <%= ns %>.*;
 <% if (hasEvents()) _.forEach(events, function(event){ %>
 import <%= event.ns %>.widget.event.<%= camelCase(event.name) %>Event;
 import <%= event.ns %>.widget.event.<%= camelCase(event.name) %>EventHandler;
@@ -30,10 +30,10 @@ public class <%= className() %> extends <%= base ? base : 'PolymerWidget' %> {
         super(<%= elementClassName() %>.TAG, <%= elementClassName() %>.SRC, html);
 <% if (hasEvents()) _.forEach(events, function(event){ %>
         getPolymerElement().addEventListener(
-                <%= event.ns %>.element.event.<%= camelCase(event.name) %>Event.NAME,
-                new <%= event.ns %>.element.event.<%= camelCase(event.name) %>Event.Listener() {
+                <%= event.ns %>.event.<%= camelCase(event.name) %>Event.NAME,
+                new <%= event.ns %>.event.<%= camelCase(event.name) %>Event.Listener() {
             @Override
-            protected void handleEvent(<%= event.ns %>.element.event.<%= camelCase(event.name) %>Event event) {
+            protected void handleEvent(<%= event.ns %>.event.<%= camelCase(event.name) %>Event event) {
                 fireEvent(new <%= camelCase(event.name) %>Event(event));
             }
         });

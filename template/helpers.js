@@ -21,6 +21,9 @@ module.exports = {
   isBehavior: function(item) {
     return ((item && item.type) || this.type) == 'behavior';
   },
+  isJso: function(item) {
+    return ((item && item.type) || this.type) == 'jso';
+  },
   getNestedBehaviors: function(item, name) {
     var _this = this;
     var properties = [];
@@ -91,13 +94,14 @@ module.exports = {
     return (s || '').replace(/[^\w\-\.:]/g, '');
   },
   computeType: function(t) {
+    if (!t) return 'Object';
     if (/^string$/i.test(t)) return 'String';
     if (/^boolean/i.test(t)) return 'boolean';
     if (/^array/i.test(t)) return 'JsArray';
     if (/^element/i.test(t)) return 'Element';
     if (/^number/i.test(t)) return 'double';
     if (/^function/i.test(t)) return 'Function';
-    return "JavaScriptObject";
+    return this.findBehavior(t) ? t: "JavaScriptObject";
   },
   removeDuplicates: function(arr, prop) {
     for (var i = 0; i < arr.length; i++) {
@@ -166,6 +170,12 @@ module.exports = {
       }, this);
     }
     return result.join(', ');
+  },
+  returnString: function(method) {
+    if (method['return'] && method['return']['type']) {
+      return this.computeType(method['return']['type'])
+    }
+    return 'void';
   },
   getDescription: function(spaces, o) {
     o = o || this;
