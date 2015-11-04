@@ -134,8 +134,14 @@ function parseTemplate(template, obj, name, dir, suffix) {
   // If there is a base .java file we extend it.
   var classBase = helpers.camelCase(name) + suffix + "Base";
 
-  var prefix = /-/.test(obj.name) || !obj.path ? obj.name : obj.path.replace(/.*\//,'');
+  // We have to compute the appropriate namespace for the component.
+  // first we try the name from its bower.json, then the sub-folder name in
+  // bower_components, and finally the name. Then we take the first part before
+  // the '-' symbol.
+  var prefix = obj.bowerData && obj.bowerData.name || obj.path || name;
+  prefix = prefix.replace(/.*\/+(.+)\/+[^\/]+/, '$1');
   prefix = prefix.split('-')[0].replace(/\./g,'');
+
   obj.ns = globalVar.ns + '.' + prefix;
 
   var targetPath = globalVar.clientDir + prefix + '/' + dir;
@@ -158,15 +164,6 @@ function parseTemplate(template, obj, name, dir, suffix) {
   var tpl = _.template(fs.readFileSync(tplDir + template + '.template'));
   fs.writeFileSync(targetFile, new Buffer(tpl(_.merge({}, null, obj, helpers))));
 }
-
-gulp.task('generate:elements:old', ['parse'], function() {
-  return StreamFromArray(global.parsed,{objectMode: true})
-   .on('data', function(item) {
-     if (!helpers.isBehavior(item)) {
-       parseTemplate('Element', item, item.is, 'element/', 'Element');
-     }
-   })
-});
 
 gulp.task('generate:elements', ['parse'], function() {
   return StreamFromArray(global.parsed,{objectMode: true})
