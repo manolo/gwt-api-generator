@@ -168,11 +168,10 @@ function parseTemplate(template, obj, name, dir, suffix) {
 gulp.task('generate:elements', ['parse'], function() {
   return StreamFromArray(global.parsed,{objectMode: true})
    .on('data', function(item) {
-     if (!helpers.isBehavior(item)) {
-       parseTemplate('Element', item, item.is, '', 'Element');
-     }
      if (helpers.isBehavior(item)) {
        parseTemplate('Behavior', item, item.is, '', '');
+     } else {
+       parseTemplate('Element', item, item.is, '', 'Element');
      }
    })
 });
