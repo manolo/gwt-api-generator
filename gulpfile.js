@@ -78,8 +78,6 @@ gulp.task('parse', ['analyze'], function(cb) {
         }
       });
     }
-    // Hydrolysis duplicates attributes
-    helpers.removeDuplicates(item.properties, 'name');
     // We don't want to wrap any private api
     helpers.removePrivateApi(item.properties, 'name');
   });

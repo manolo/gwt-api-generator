@@ -27,6 +27,7 @@ module.exports = {
   getNestedBehaviors: function(item, name) {
     var _this = this;
     var properties = [];
+
     var events = [];
 
     var behavior = this.findBehavior(name)
@@ -36,6 +37,7 @@ module.exports = {
       behavior.properties.forEach(function(prop) {
         prop.isBehavior = true;
         prop.behavior = _this.className(item.is);
+        prop.signature = _this.signParamString(prop);
         properties.push(prop);
       });
 
@@ -103,14 +105,63 @@ module.exports = {
     if (/^function/i.test(t)) return 'Function';
     return this.findBehavior(t) ? t: "JavaScriptObject";
   },
-  removeDuplicates: function(arr, prop) {
-    for (var i = 0; i < arr.length; i++) {
-      for (var j = arr.length - 1; j > i; j--) {
-        if (arr[i][prop] == arr[j][prop]) {
-          arr.splice(j, 1);
+  getGetters: function(properties) {
+    var ret = [];
+    var done = {};
+    _.forEach(properties, function(item){
+      if (item.type != 'Function') {
+        item.getter = item.getter || this.computeGetterWithPrefix(item);
+        if (!done[item.getter]) {
+          ret.push(item);
+          done[item.getter] = true;
         }
       }
-    }
+    }.bind(this));
+    return ret;
+  },
+  getSetters: function(properties) {
+    var ret = [];
+    var done = {};
+    _.forEach(properties, function(item){
+      if (item.type != 'Function') {
+        item.setter = item.setter || (this.computeSetterWithPrefix(item) + '(' + this.computeType(item.type) + ' value)');
+        if (!done[item.setter]) {
+          ret.push(item);
+          done[item.setter] = true;
+        }
+      }
+    }.bind(this));
+    return ret;
+  },
+  getStringSetters: function(properties) {
+    var ret = [];
+    var arr = this.getSetters(properties);
+    _.forEach(arr, function(item) {
+      var itType = this.computeType(item.type) ;
+      if (item.published && itType != 'String' && itType != 'boolean') {
+        for (var j = 0; j< arr.length; j++) {
+          if (arr[j].name == item.name && arr[j].type == 'String') {
+            return;
+          }
+        }
+        ret.push(item);
+      }
+    }.bind(this));
+    return ret;
+  },
+  getMethods: function(properties) {
+    var ret = [];
+    var done = {};
+    _.forEach(properties, function(item){
+      if (item.type == 'Function') {
+        item.method = item.method || item.name + '(' + this.typedParamsString(item) + ')';
+        if (!done[item.method]) {
+          ret.push(item);
+          done[item.method] = true;
+        }
+      }
+    }.bind(this));
+    return ret;
   },
   removePrivateApi: function(arr, prop) {
     for (var i = arr.length - 1; i >= 0; i--) {
@@ -151,6 +202,19 @@ module.exports = {
   },
   startsWith: function (str, substr){
     return str.indexOf(substr) === 0;
+  },
+  signParamString: function(method) {
+    if (method.type != 'Function') {
+      return method.type;
+    }
+    var result = [];
+    if (method.params) {
+      method.params.forEach(function(param) {
+        var type = this.computeType(param.type);
+        result.push(type);
+      }, this);
+    }
+    return result.join(',');
   },
   typedParamsString: function(method) {
     var result = [];

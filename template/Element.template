@@ -16,7 +16,7 @@ public interface <%= elementClassName() %> extends <%= base ? base : 'HTMLElemen
     public static final String TAG = "<%= name %>";
     public static final String SRC = "<%= path %>";
 
-<% if (hasProperties()) _.forEach(properties, function(item){ if (item.type != 'Function') { %>
+<% _.forEach(getGetters(properties), function(item) { %>
     /**
      * <%= getDescription('     ', item) %>
      *
@@ -25,7 +25,9 @@ public interface <%= elementClassName() %> extends <%= base ? base : 'HTMLElemen
      * @type <%= item.type %>
      * <%= item.isBehavior ? ('@behavior ' + item.behavior ) : ''%>
      */
-    @JsProperty <%= computeType(item.type) %> <%= computeGetterWithPrefix(item) %>();
+    @JsProperty <%= computeType(item.type) %> <%= item.getter %>();
+<% }); %>
+<% _.forEach(getSetters(properties), function(item) { %>
     /**
      * <%= getDescription('     ', item) %>
      *
@@ -34,8 +36,9 @@ public interface <%= elementClassName() %> extends <%= base ? base : 'HTMLElemen
      * @type <%= item.type %>
      * <%= item.isBehavior ? ('@behavior ' + item.behavior ) : ''%>
      */
-    @JsProperty void <%= computeSetterWithPrefix(item) %>(<%= computeType(item.type) %> value);
-  <% } else { %>
+    @JsProperty void <%= item.setter %>;
+<% }); %>
+<% _.forEach(getMethods(properties), function(item) { %>
     /**
      * <%= getDescription('     ', item) %>
      *
@@ -45,6 +48,6 @@ public interface <%= elementClassName() %> extends <%= base ? base : 'HTMLElemen
      * <%= item.isBehavior ? ('@behavior ' + item.behavior ) : ''%>
      * <%= item.return && item.return.type ? '@return {' + returnString(item) + '}' : ''%>
      */
-    <%= returnString(item) %> <%= item.name %>(<%= typedParamsString(item) %>);
-<% }}); %>
+    <%= returnString(item) %> <%= item.method %>;
+<% }); %>
 }
