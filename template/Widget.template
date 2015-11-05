@@ -52,7 +52,7 @@ public class <%= className() %> extends <%= base ? base : 'PolymerWidget' %> {
         }
     }
 
-<% _.forEach(getGetters(properties), function(item) { %>
+<% _.forEach(getGettersAndSetters(properties), function(item) { %>
     /**
      * <%= getDescription('     ', item) %>
      *
@@ -64,8 +64,6 @@ public class <%= className() %> extends <%= base ? base : 'PolymerWidget' %> {
     public <%= computeType(item.type) %> <%= item.getter %>() {
         return getPolymerElement().<%= computeGetterWithPrefix(item) %>();
     }
-<% }); %>
-<% _.forEach(getSetters(properties), function(item) { %>
     /**
      * <%= getDescription('     ', item) %>
      *
@@ -78,7 +76,7 @@ public class <%= className() %> extends <%= base ? base : 'PolymerWidget' %> {
         getPolymerElement().<%= computeSetterWithPrefix(item) %>(value);
     }
 <% }); %>
-<% if (className() == 'PaperSlider')  _.forEach(getStringSetters(properties), function(item) { %>
+<% _.forEach(getStringSetters(properties), function(item) { %>
     /**
      * <%= getDescription('     ', item) %>
      *

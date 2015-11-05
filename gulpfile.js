@@ -134,12 +134,14 @@ function parseTemplate(template, obj, name, dir, suffix) {
   // If there is a base .java file we extend it.
   var classBase = helpers.camelCase(name) + suffix + "Base";
 
-  // We have to compute the appropriate namespace for the component.
-  // first we try the name from its bower.json, then the sub-folder name in
-  // bower_components, and finally the name. Then we take the first part before
-  // the '-' symbol.
-  var prefix = obj.bowerData && obj.bowerData.name || obj.path || name;
-  prefix = prefix.replace(/.*\/+(.+)\/+[^\/]+/, '$1');
+  // We have to compute the appropriate name-space for the component.
+  var prefix =
+    // For events we prefer the first word of the name if they are standard ones.
+    /^Event/.test(suffix) && /^(polymer|iron|paper|neon)-/.test(name) ? name :
+    // Otherwise we try the name from its bower.json, then the sub-folder name in
+    // bower_components, and finally from its name.
+    obj.bowerData && obj.bowerData.name || obj.path.replace(/.*\/+(.+)\/+[^\/]+/, '$1') || name;
+  //  Then we take the first part before first dash
   prefix = prefix.split('-')[0].replace(/\./g,'');
 
   obj.ns = globalVar.ns + '.' + prefix;

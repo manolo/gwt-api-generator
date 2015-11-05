@@ -16,7 +16,7 @@ public interface <%= className() %> {
     public static final String TAG = "<%= name %>";
     public static final String SRC = "<%= path %>";
 
-<% _.forEach(getGetters(properties), function(item) { %>
+<% _.forEach(getGettersAndSetters(properties), function(item) { %>
     /**
      * <%= getDescription('     ', item) %>
      *
@@ -26,8 +26,6 @@ public interface <%= className() %> {
      * <%= item.isBehavior ? ('@behavior ' + item.behavior ) : ''%>
      */
     @JsProperty <%= computeType(item.type) %> <%= item.getter %>();
-<% }); %>
-<% _.forEach(getSetters(properties), function(item) { %>
     /**
      * <%= getDescription('     ', item) %>
      *

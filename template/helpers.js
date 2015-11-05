@@ -105,12 +105,21 @@ module.exports = {
     if (/^function/i.test(t)) return 'Function';
     return this.findBehavior(t) ? t: "JavaScriptObject";
   },
-  getGetters: function(properties) {
+  sortProperties: function(properties) {
+    properties.sort(function(a, b) {
+      var t1 = this.computeType(a.type);
+      var t2 = this.computeType(b.type);
+      return t1 == t2 ? 0: t1 == 'String' ? 1 : -1;
+    }.bind(this));
+  },
+  getGettersAndSetters: function(properties) {
+    this.sortProperties(properties);
     var ret = [];
     var done = {};
     _.forEach(properties, function(item){
       if (item.type != 'Function') {
         item.getter = item.getter || this.computeGetterWithPrefix(item);
+        item.setter = item.setter || (this.computeSetterWithPrefix(item) + '(' + this.computeType(item.type) + ' value)');
         if (!done[item.getter]) {
           ret.push(item);
           done[item.getter] = true;
@@ -119,23 +128,9 @@ module.exports = {
     }.bind(this));
     return ret;
   },
-  getSetters: function(properties) {
-    var ret = [];
-    var done = {};
-    _.forEach(properties, function(item){
-      if (item.type != 'Function') {
-        item.setter = item.setter || (this.computeSetterWithPrefix(item) + '(' + this.computeType(item.type) + ' value)');
-        if (!done[item.setter]) {
-          ret.push(item);
-          done[item.setter] = true;
-        }
-      }
-    }.bind(this));
-    return ret;
-  },
   getStringSetters: function(properties) {
     var ret = [];
-    var arr = this.getSetters(properties);
+    var arr = this.getGettersAndSetters(properties);
     _.forEach(arr, function(item) {
       var itType = this.computeType(item.type) ;
       if (item.published && itType != 'String' && itType != 'boolean') {
