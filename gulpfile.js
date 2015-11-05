@@ -49,7 +49,7 @@ gulp.task('bower:configure', ['clean:resources'], function(done) {
   });
 });
 
-gulp.task('bower:install', ['clean', 'bower:configure'], function(done) {
+gulp.task('bower:install', ['clean', 'bower:configure'], function() {
   if (globalVar.bowerPackages) {
     return bower({ cmd: 'install', cwd: globalVar.publicDir}, [globalVar.bowerPackages]);
   } else {

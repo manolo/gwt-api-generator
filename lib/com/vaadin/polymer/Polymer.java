@@ -275,7 +275,7 @@ public abstract class Polymer {
      * run a Function (JsFunction or JavaFunction)
      */
     @Deprecated
-    private static  void onReady(Element e, Object f) {
+    private static void onReady(Element e, Object f) {
         whenReady(f, e);
     }
 
