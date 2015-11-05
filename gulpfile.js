@@ -239,9 +239,15 @@ gulp.task('copy:pom', function() {
   var tpl = _.template(fs.readFileSync(tplDir + "pom.template"));
   var pom = globalVar.currentDir + "pom.xml";
 
+  // Try to get some configuration from a package.json
+  // otherwise use default values
   var pkgFile = globalVar.currentDir + 'package.json';
-  var pkgContent = fs.readFileSync(pkgFile);
-  globalVar.pkg = pkgContent ? JSON.parse(pkgContent) : {};
+  globalVar.pkg = {};
+  try {
+    var pkgContent = fs.readFileSync(pkgFile);
+    globalVar.pkg = JSON.parse(pkgContent);
+  } catch(ignore) {
+  }
   globalVar.pkg.pom = globalVar.pkg.pom || {};
   globalVar.pkg.pom.version = args.version || globalVar.pkg.pom.version || globalVar.pkg.version;
 
