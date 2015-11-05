@@ -12,7 +12,7 @@ module.exports = {
   }),
   javaKeywords: ['for', 'switch'], // TODO: if it's necessary add other keywords as well
   findBehavior: function(name) {
-    for (var i = 0; i < global.parsed.length; i++) {
+    for (var i = 0; name && i < global.parsed.length; i++) {
       if (this.className(global.parsed[i].is) == this.className(name)) {
         return global.parsed[i];
       }
@@ -103,23 +103,26 @@ module.exports = {
     if (/^element/i.test(t)) return 'Element';
     if (/^number/i.test(t)) return 'double';
     if (/^function/i.test(t)) return 'Function';
-    return this.findBehavior(t) ? t: "JavaScriptObject";
+    var b = this.findBehavior(t);
+    return b ? this.className(b.name) : "JavaScriptObject";
   },
   sortProperties: function(properties) {
+
+  },
+  getGettersAndSetters: function(properties) {
+    // Sorting properties so String methods are at end
     properties.sort(function(a, b) {
       var t1 = this.computeType(a.type);
       var t2 = this.computeType(b.type);
       return t1 == t2 ? 0: t1 == 'String' ? 1 : -1;
     }.bind(this));
-  },
-  getGettersAndSetters: function(properties) {
-    this.sortProperties(properties);
     var ret = [];
     var done = {};
     _.forEach(properties, function(item){
       if (item.type != 'Function') {
         item.getter = item.getter || this.computeGetterWithPrefix(item);
         item.setter = item.setter || (this.computeSetterWithPrefix(item) + '(' + this.computeType(item.type) + ' value)');
+        // JsInterop does not support a property with two signatures
         if (!done[item.getter]) {
           ret.push(item);
           done[item.getter] = true;
@@ -145,12 +148,21 @@ module.exports = {
     return ret;
   },
   getMethods: function(properties) {
+    // Sorting properties so Object methods are at first
+    properties.sort(function(a, b) {
+      var t1 = this.typedParamsString(a);
+      var t2 = this.typedParamsString(b);
+      return t1 == t2 ? 0: /^Object/.test(t1) ? -1 : 1;
+    }.bind(this));
+
     var ret = [];
     var done = {};
     _.forEach(properties, function(item){
       if (item.type == 'Function') {
         item.method = item.method || item.name + '(' + this.typedParamsString(item) + ')';
-        if (!done[item.method]) {
+        // JsInterop + SDM do not support method overloading if one signature is object
+        var other = item.method.replace(/String/, 'Object');
+        if (!done[other] && !done[item.method]) {
           ret.push(item);
           done[item.method] = true;
         }
