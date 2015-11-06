@@ -21,9 +21,6 @@ module.exports = {
   isBehavior: function(item) {
     return ((item && item.type) || this.type) == 'behavior';
   },
-  isJso: function(item) {
-    return ((item && item.type) || this.type) == 'jso';
-  },
   getNestedBehaviors: function(item, name) {
     var _this = this;
     var properties = [];
@@ -104,22 +101,27 @@ module.exports = {
     if (/^number/i.test(t)) return 'double';
     if (/^function/i.test(t)) return 'Function';
     var b = this.findBehavior(t);
-    return b ? this.className(b.name) : "JavaScriptObject";
+    if (b) {
+      var c = this.camelCase(t);
+      return c != t ? c + 'Element' : c;
+    }
+
+    return "JavaScriptObject";
   },
   sortProperties: function(properties) {
 
   },
   getGettersAndSetters: function(properties) {
-    // Sorting properties so String methods are at end
+    // Sorting properties so no-typed and String methods are at end
     properties.sort(function(a, b) {
       var t1 = this.computeType(a.type);
       var t2 = this.computeType(b.type);
-      return t1 == t2 ? 0: t1 == 'String' ? 1 : -1;
+      return t1 == t2 ? 0: !a.type && b.type ? 1 : a.type && !b.type ? -1: t1 == 'String' ? 1 : -1;
     }.bind(this));
     var ret = [];
     var done = {};
     _.forEach(properties, function(item){
-      if (item.type != 'Function') {
+      if (item.published || !item.private && item.type && !/function/i.test(item.type)) {
         item.getter = item.getter || this.computeGetterWithPrefix(item);
         item.setter = item.setter || (this.computeSetterWithPrefix(item) + '(' + this.computeType(item.type) + ' value)');
         // JsInterop does not support a property with two signatures
@@ -136,7 +138,7 @@ module.exports = {
     var arr = this.getGettersAndSetters(properties);
     _.forEach(arr, function(item) {
       var itType = this.computeType(item.type) ;
-      if (item.published && itType != 'String' && itType != 'boolean') {
+      if (itType != 'String' && itType != 'boolean') {
         for (var j = 0; j< arr.length; j++) {
           if (arr[j].name == item.name && arr[j].type == 'String') {
             return;
@@ -158,7 +160,7 @@ module.exports = {
     var ret = [];
     var done = {};
     _.forEach(properties, function(item){
-      if (item.type == 'Function') {
+      if (!item.private && !item.published && /function/i.test(item.type)) {
         item.method = item.method || item.name + '(' + this.typedParamsString(item) + ')';
         // JsInterop + SDM do not support method overloading if one signature is object
         var other = item.method.replace(/String/, 'Object');
