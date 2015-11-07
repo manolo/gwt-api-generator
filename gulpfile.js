@@ -232,9 +232,13 @@ gulp.task('generate', ['generate:elements-all', 'generate:widgets-all', 'generat
   gutil.log('Done.');
 });
 
-gulp.task('copy:lib', function() {
-  return gulp.src(libDir + '**')
-    .pipe(gulp.dest(globalVar.clientDirBase));
+gulp.task('copy:lib', function(done) {
+  if (args.excludeLib) {
+    done();
+  } else {
+    return gulp.src(libDir + '**')
+      .pipe(gulp.dest(globalVar.clientDirBase));
+  }
 });
 
 gulp.task('copy:pom', function() {
