@@ -94,7 +94,11 @@ module.exports = {
   },
   computeType: function(t) {
     if (!t) return 'Object';
-    if (/^string$/i.test(t)) return 'String';
+    // TODO: Sometimes type have a syntax like: (number|string)
+    // We should be able to overload those methods instead of using
+    // Object, but JsInterop does not support well overloading
+    if (/.*\|.*/.test(t)) return 'Object';
+    if (/^string/i.test(t)) return 'String';
     if (/^boolean/i.test(t)) return 'boolean';
     if (/^array/i.test(t)) return 'JsArray';
     if (/^element/i.test(t)) return 'Element';
@@ -109,7 +113,6 @@ module.exports = {
     return "JavaScriptObject";
   },
   sortProperties: function(properties) {
-
   },
   getGettersAndSetters: function(properties) {
     // Sorting properties so no-typed and String methods are at end
@@ -119,16 +122,38 @@ module.exports = {
       return t1 == t2 ? 0: !a.type && b.type ? 1 : a.type && !b.type ? -1: t1 == 'String' ? 1 : -1;
     }.bind(this));
     var ret = [];
+    // We use done hash to avoid generate same property with different signature (unsupported in JsInterop)
     var done = {};
-    _.forEach(properties, function(item){
-      if (item.published || !item.private && item.type && !/function/i.test(item.type)) {
+    // We use cache to catch especial cases of getter/setter no defined in the
+    // properties block but as 'set foo:{}, get foo:{}' pairs. The hack is that
+    // first we see a method with the a valid type (setter) and then we visit
+    // a method with the same name but empty type (getter).
+    var cache = {};
+
+    _.forEach(properties, function(item) {
+      // We consider as properties:
+      if (
+          // Items with the published tag (those defined in the properties section)
+          item.published ||
+          // Non function items
+          !item.private && item.type && !/function/i.test(item.type) ||
+          // Properties defined with customized get/set syntax
+          !item.type && cache[item.name] && cache[item.name].type) {
+
+        // defined with customized get/set, if we are here is because
+        // this item.type is undefined and cached one has the correct type
+        item = cache[item.name] ? cache[item.name] : item;
+
         item.getter = item.getter || this.computeGetterWithPrefix(item);
         item.setter = item.setter || (this.computeSetterWithPrefix(item) + '(' + this.computeType(item.type) + ' value)');
+
         // JsInterop does not support a property with two signatures
         if (!done[item.getter]) {
           ret.push(item);
           done[item.getter] = true;
         }
+      } else {
+        cache[item.name] = item;
       }
     }.bind(this));
     return ret;
@@ -138,7 +163,7 @@ module.exports = {
     var arr = this.getGettersAndSetters(properties);
     _.forEach(arr, function(item) {
       var itType = this.computeType(item.type) ;
-      if (itType != 'String' && itType != 'boolean') {
+      if (!/(Function|String|boolean)/.test(itType)) {
         for (var j = 0; j< arr.length; j++) {
           if (arr[j].name == item.name && arr[j].type == 'String') {
             return;
@@ -157,14 +182,24 @@ module.exports = {
       return t1 == t2 ? 0: /^Object/.test(t1) ? -1 : 1;
     }.bind(this));
 
+    // Skip functions with name equal to a getter/setter
+    var gsetters = {};
+    _.forEach(properties, function(item) {
+      if (item.getter) {
+        gsetters[item.getter] = true;
+        gsetters[item.setter] = true;
+        gsetters[item.name] = true;
+      }
+    }.bind(this));
+
     var ret = [];
     var done = {};
-    _.forEach(properties, function(item){
-      if (!item.private && !item.published && /function/i.test(item.type)) {
+    _.forEach(properties, function(item) {
+      if (!gsetters[item.name] && !item.getter && !item.private && !item.published && /function/i.test(item.type)) {
         item.method = item.method || item.name + '(' + this.typedParamsString(item) + ')';
         // JsInterop + SDM do not support method overloading if one signature is object
         var other = item.method.replace(/String/, 'Object');
-        if (!done[other] && !done[item.method]) {
+        if (!gsetters[item.method] && !done[other] && !done[item.method]) {
           ret.push(item);
           done[item.method] = true;
         }
