@@ -5,6 +5,9 @@ import java.util.List;
 import java.util.Set;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.JavaScriptObject;
+import com.google.gwt.core.client.JsArray;
+import com.google.gwt.core.client.js.JsType;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.DOM;
@@ -13,6 +16,85 @@ import com.vaadin.polymer.elemental.Function;
 import com.vaadin.polymer.elemental.HTMLElement;
 
 public abstract class Polymer {
+
+    public static PolymerBase Base;
+
+    @JsType
+    public interface PolymerBase {
+        /**
+         * Returns the first node in this element’s local DOM that matches selector.
+         */
+        Element $$(String selector);
+
+        /**
+         * Toggles the named boolean class on the node, adding the class if bool is
+         * truthy and removing it if bool is falsey.
+         */
+        void toggleClass(String name, boolean b, Element node);
+
+        /**
+         * Toggles the named boolean attribute on the node.
+         */
+        void toggleAttribute(String name, boolean b, Element node);
+
+        /**
+         * Moves a boolean attribute from oldNode to newNode, unsetting the attribute
+         * (if set) on oldNode and setting it on newNode
+         */
+        void attributeFollows(String name, Element newNode, Element oldNode);
+
+        /**
+         *  Moves a class from oldNode to newNode, removing the class (if present)
+         *  on oldNode and adding it to newNode.
+         */
+        void classFollows(String name, Element newNode, Element oldNode);
+
+
+        /**
+         * Fires a custom event. The options object can contain the following properties:
+         *    node: Node to fire the event on (defaults to this).
+         *    bubbles: Whether the event should bubble. Defaults to true.
+         *    cancelable: Whether the event can be canceled with preventDefault. Defaults to false.
+         */
+        void fire(String type, JavaScriptObject detail, JavaScriptObject options);
+
+        /**
+         * Calls method asynchronously. If no wait time is specified, runs tasks with microtask
+         * timing (after the current method finishes, but before the next event from the event
+         * queue is processed). Returns a handle that can be used to cancel the task.
+         */
+        Object async(Function method, int wait);
+
+        /**
+         * Cancels the identified async task.
+         */
+        void cancelAsync(Object handle);
+
+        /**
+         *  Applies a CSS transform to the specified node, or host element if no node is
+         *  specified. transform is specified as a string. For example:
+         *    transform('rotateX(90deg)', elm);
+         */
+        void transform(String transform, Element node);
+
+        /**
+         * Transforms the specified node, or host element if no node is specified. For example:
+         *   translate3d('100px', '100px', '100px', elm);
+         */
+        void translate3d(String x, String y, String z, Element node);
+
+        /**
+         *  Dynamically imports an HTML document.
+         */
+        void importHref(String href, Function onload, Function onerror);
+
+        /**
+         * Takes a URL relative to the <dom-module> of an imported Polymer element, and returns
+         * a path relative to the current document. This method can be used, for example,
+         * to refer to an asset delivered alongside an HTML import.
+         */
+        String resolveUrl(String url);
+    }
 
     private static Set<String> urlImported = new HashSet<>();
 
@@ -53,16 +135,22 @@ public abstract class Polymer {
 
     private static native void whenPolymerLoaded(Function ok)
     /*-{
+        function done() {
+          // Set our static reference to Base
+          @com.vaadin.polymer.Polymer::Base = $wnd.Polymer.Base;
+          // Polymer dynamic loaded does not remove unresolved
+          $doc.body.removeAttribute('unresolved');
+          //
+          ok.@com.vaadin.polymer.elemental.Function::call(*)();
+        }
         if (!$wnd.Polymer) {
             var l = $doc.createElement('link');
             l.rel = 'import';
             l.href = @com.vaadin.polymer.Polymer::absoluteHref(*)('polymer');
-            l.onload = function(){
-              ok.@com.vaadin.polymer.elemental.Function::call(*)();
-            };
+            l.onload = done;
             $doc.head.appendChild(l);
         } else {
-           ok.@com.vaadin.polymer.elemental.Function::call(*)();
+           done();
         }
     }-*/;
 
@@ -83,7 +171,7 @@ public abstract class Polymer {
             urlImported.add(href);
             whenPolymerLoaded(new Function() {
                 public Object call(Object arg) {
-                    importHrefImpl(href,ok, err);
+                    Base.importHref(href, ok, err);
                     return null;
                 }
             });
@@ -198,22 +286,6 @@ public abstract class Polymer {
         return !!e && e.constructor !== $wnd.HTMLElement && e.constructor != $wnd.HTMLUnknownElement;
     }-*/;
 
-    /**
-     * Dynamically import a link and monitors when it has been loaded.
-     *
-     * This could be done via Polymer importHref, but the method needs a custom element
-     * instance to be run.
-     */
-    private native static void importHrefImpl(String href, Function onload, Function onerror)
-    /*-{
-        console.log("gwt-polymer loading: ", href.replace(/^.*components\//,''), onload, onerror);
-        $wnd.Polymer.Base.importHref(href, function() {
-             if (onload) onload.@com.vaadin.polymer.elemental.Function::call(*)(href);
-        }, function() {
-             if (onerror) onerror.@com.vaadin.polymer.elemental.Function::call(*)(href);
-        });
-    }-*/;
-
     public static void ready(HTMLElement e, Function f) {
         whenReady(f, (Element)e);
     }
@@ -275,7 +347,7 @@ public abstract class Polymer {
      * run a Function (JsFunction or JavaFunction)
      */
     @Deprecated
-    private static  void onReady(Element e, Object f) {
+    private static void onReady(Element e, Object f) {
         whenReady(f, e);
     }
 
@@ -366,4 +438,27 @@ public abstract class Polymer {
        }, 50);
       }
     }-*/;
+
+    /**
+     * Box a native JS array in a Java List. It does not have any performance
+     * penalty because we directly set the native array of the super ArrayList
+     * implementation.
+     */
+    public static native <T> List<T> asList(JavaScriptObject o)
+    /*-{
+        var l = @java.util.ArrayList::new()();
+        l.@java.util.ArrayList::array = o;
+        return l;
+    }-*/;
+
+    /**
+     * UnBox the native JS array in a Java List. It does not have any performance
+     * penalty because we directly take the native array of the super ArrayList
+     * implementation.
+     */
+    public static native <T extends JavaScriptObject> JsArray<T> asJsArray(List<?> l)
+    /*-{
+        return l.@java.util.ArrayList::array;
+    }-*/;
+
 }

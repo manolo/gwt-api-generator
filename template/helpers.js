@@ -12,7 +12,7 @@ module.exports = {
   }),
   javaKeywords: ['for', 'switch'], // TODO: if it's necessary add other keywords as well
   findBehavior: function(name) {
-    for (var i = 0; i < global.parsed.length; i++) {
+    for (var i = 0; name && i < global.parsed.length; i++) {
       if (this.className(global.parsed[i].is) == this.className(name)) {
         return global.parsed[i];
       }
@@ -24,6 +24,7 @@ module.exports = {
   getNestedBehaviors: function(item, name) {
     var _this = this;
     var properties = [];
+
     var events = [];
 
     var behavior = this.findBehavior(name)
@@ -33,6 +34,7 @@ module.exports = {
       behavior.properties.forEach(function(prop) {
         prop.isBehavior = true;
         prop.behavior = _this.className(item.is);
+        prop.signature = _this.signParamString(prop);
         properties.push(prop);
       });
 
@@ -91,22 +93,119 @@ module.exports = {
     return (s || '').replace(/[^\w\-\.:]/g, '');
   },
   computeType: function(t) {
-    if (/^string$/i.test(t)) return 'String';
+    if (!t) return 'Object';
+    // TODO: Sometimes type have a syntax like: (number|string)
+    // We should be able to overload those methods instead of using
+    // Object, but JsInterop does not support well overloading
+    if (/.*\|.*/.test(t)) return 'Object';
+    if (/^string/i.test(t)) return 'String';
     if (/^boolean/i.test(t)) return 'boolean';
     if (/^array/i.test(t)) return 'JsArray';
     if (/^element/i.test(t)) return 'Element';
     if (/^number/i.test(t)) return 'double';
     if (/^function/i.test(t)) return 'Function';
+    var b = this.findBehavior(t);
+    if (b) {
+      var c = this.camelCase(t);
+      return c != t ? c + 'Element' : c;
+    }
+
     return "JavaScriptObject";
   },
-  removeDuplicates: function(arr, prop) {
-    for (var i = 0; i < arr.length; i++) {
-      for (var j = arr.length - 1; j > i; j--) {
-        if (arr[i][prop] == arr[j][prop]) {
-          arr.splice(j, 1);
+  sortProperties: function(properties) {
+  },
+  getGettersAndSetters: function(properties) {
+    // Sorting properties so no-typed and String methods are at end
+    properties.sort(function(a, b) {
+      var t1 = this.computeType(a.type);
+      var t2 = this.computeType(b.type);
+      return t1 == t2 ? 0: !a.type && b.type ? 1 : a.type && !b.type ? -1: t1 == 'String' ? 1 : -1;
+    }.bind(this));
+    var ret = [];
+    // We use done hash to avoid generate same property with different signature (unsupported in JsInterop)
+    var done = {};
+    // We use cache to catch especial cases of getter/setter no defined in the
+    // properties block but as 'set foo:{}, get foo:{}' pairs. The hack is that
+    // first we see a method with the a valid type (setter) and then we visit
+    // a method with the same name but empty type (getter).
+    var cache = {};
+
+    _.forEach(properties, function(item) {
+      // We consider as properties:
+      if (
+          // Items with the published tag (those defined in the properties section)
+          item.published ||
+          // Non function items
+          !item.private && item.type && !/function/i.test(item.type) ||
+          // Properties defined with customized get/set syntax
+          !item.type && cache[item.name] && cache[item.name].type) {
+
+        // defined with customized get/set, if we are here is because
+        // this item.type is undefined and cached one has the correct type
+        item = cache[item.name] ? cache[item.name] : item;
+
+        item.getter = item.getter || this.computeGetterWithPrefix(item);
+        item.setter = item.setter || (this.computeSetterWithPrefix(item) + '(' + this.computeType(item.type) + ' value)');
+
+        // JsInterop does not support a property with two signatures
+        if (!done[item.getter]) {
+          ret.push(item);
+          done[item.getter] = true;
+        }
+      } else {
+        cache[item.name] = item;
+      }
+    }.bind(this));
+    return ret;
+  },
+  getStringSetters: function(properties) {
+    var ret = [];
+    var arr = this.getGettersAndSetters(properties);
+    _.forEach(arr, function(item) {
+      var itType = this.computeType(item.type) ;
+      if (!/(Function|String|boolean)/.test(itType)) {
+        for (var j = 0; j< arr.length; j++) {
+          if (arr[j].name == item.name && arr[j].type == 'String') {
+            return;
+          }
+        }
+        ret.push(item);
+      }
+    }.bind(this));
+    return ret;
+  },
+  getMethods: function(properties) {
+    // Sorting properties so Object methods are at first
+    properties.sort(function(a, b) {
+      var t1 = this.typedParamsString(a);
+      var t2 = this.typedParamsString(b);
+      return t1 == t2 ? 0: /^Object/.test(t1) ? -1 : 1;
+    }.bind(this));
+
+    // Skip functions with name equal to a getter/setter
+    var gsetters = {};
+    _.forEach(properties, function(item) {
+      if (item.getter) {
+        gsetters[item.getter] = true;
+        gsetters[item.setter] = true;
+        gsetters[item.name] = true;
+      }
+    }.bind(this));
+
+    var ret = [];
+    var done = {};
+    _.forEach(properties, function(item) {
+      if (!gsetters[item.name] && !item.getter && !item.private && !item.published && /function/i.test(item.type)) {
+        item.method = item.method || item.name + '(' + this.typedParamsString(item) + ')';
+        // JsInterop + SDM do not support method overloading if one signature is object
+        var other = item.method.replace(/String/, 'Object');
+        if (!gsetters[item.method] && !done[other] && !done[item.method]) {
+          ret.push(item);
+          done[item.method] = true;
         }
       }
-    }
+    }.bind(this));
+    return ret;
   },
   removePrivateApi: function(arr, prop) {
     for (var i = arr.length - 1; i >= 0; i--) {
@@ -148,6 +247,19 @@ module.exports = {
   startsWith: function (str, substr){
     return str.indexOf(substr) === 0;
   },
+  signParamString: function(method) {
+    if (method.type != 'Function') {
+      return method.type;
+    }
+    var result = [];
+    if (method.params) {
+      method.params.forEach(function(param) {
+        var type = this.computeType(param.type);
+        result.push(type);
+      }, this);
+    }
+    return result.join(',');
+  },
   typedParamsString: function(method) {
     var result = [];
     if (method.params) {
@@ -166,6 +278,12 @@ module.exports = {
       }, this);
     }
     return result.join(', ');
+  },
+  returnString: function(method) {
+    if (method['return'] && method['return']['type']) {
+      return this.computeType(method['return']['type'])
+    }
+    return 'void';
   },
   getDescription: function(spaces, o) {
     o = o || this;

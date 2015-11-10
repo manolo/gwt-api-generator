@@ -14,6 +14,11 @@ $ npm install -g vaadin/gwt-api-generator
 ```
 > If you've installed node and npm using `sudo`, installing packages globally will also require you to use `sudo`. See [http://givan.se/do-not-sudo-npm/](http://givan.se/do-not-sudo-npm/) how to remedy the situation.
 
+- Generating the resourcer for bower packages installed in your bower_components folder
+```shell
+$ bower install my-web-component
+$ gwt-api-generator
+```
 - Generating the resources for a library
 ```shell
 $ gwt-api-generator --package=PolymerElements/paper-elements

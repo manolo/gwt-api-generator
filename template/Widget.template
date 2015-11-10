@@ -1,7 +1,7 @@
 <%= disclaimer() %>
 package <%= ns %>.widget;
 
-import <%= ns %>.element.*;
+import <%= ns %>.*;
 <% if (hasEvents()) _.forEach(events, function(event){ %>
 import <%= event.ns %>.widget.event.<%= camelCase(event.name) %>Event;
 import <%= event.ns %>.widget.event.<%= camelCase(event.name) %>EventHandler;
@@ -30,10 +30,10 @@ public class <%= className() %> extends <%= base ? base : 'PolymerWidget' %> {
         super(<%= elementClassName() %>.TAG, <%= elementClassName() %>.SRC, html);
 <% if (hasEvents()) _.forEach(events, function(event){ %>
         getPolymerElement().addEventListener(
-                <%= event.ns %>.element.event.<%= camelCase(event.name) %>Event.NAME,
-                new <%= event.ns %>.element.event.<%= camelCase(event.name) %>Event.Listener() {
+                <%= event.ns %>.event.<%= camelCase(event.name) %>Event.NAME,
+                new <%= event.ns %>.event.<%= camelCase(event.name) %>Event.Listener() {
             @Override
-            protected void handleEvent(<%= event.ns %>.element.event.<%= camelCase(event.name) %>Event event) {
+            protected void handleEvent(<%= event.ns %>.event.<%= camelCase(event.name) %>Event event) {
                 fireEvent(new <%= camelCase(event.name) %>Event(event));
             }
         });
@@ -52,8 +52,7 @@ public class <%= className() %> extends <%= base ? base : 'PolymerWidget' %> {
         }
     }
 
-<% if (hasProperties()) _.forEach(properties, function(item){ %>
-  <% if (item.type != 'Function') { %>
+<% _.forEach(getGettersAndSetters(properties), function(item) { %>
     /**
      * <%= getDescription('     ', item) %>
      *
@@ -62,7 +61,7 @@ public class <%= className() %> extends <%= base ? base : 'PolymerWidget' %> {
      * @type <%= item.type %>
      * <%= item.isBehavior ? ('@behavior ' + item.behavior ) : ''%>
      */
-    public <%= computeType(item.type) %> <%= computeGetterWithPrefix(item) %>(){
+    public <%= computeType(item.type) %> <%= item.getter %>() {
         return getPolymerElement().<%= computeGetterWithPrefix(item) %>();
     }
     /**
@@ -73,10 +72,11 @@ public class <%= className() %> extends <%= base ? base : 'PolymerWidget' %> {
      * @type <%= item.type %>
      * <%= item.isBehavior ? ('@behavior ' + item.behavior ) : ''%>
      */
-    public void <%= computeSetterWithPrefix(item) %>(<%= computeType(item.type) %> value) {
+    public void <%= item.setter %> {
         getPolymerElement().<%= computeSetterWithPrefix(item) %>(value);
     }
-   <% if (item.published && computeType(item.type) != 'String' && computeType(item.type) != 'boolean') { %>
+<% }); %>
+<% _.forEach(getStringSetters(properties), function(item) { %>
     /**
      * <%= getDescription('     ', item) %>
      *
@@ -87,8 +87,8 @@ public class <%= className() %> extends <%= base ? base : 'PolymerWidget' %> {
     public void <%= computeSetterWithPrefix(item) %>(String value) {
         getPolymerElement().setAttribute("<%= hyphenize(item.name) %>", value);
     }
-   <% } %>
-  <% } else { %>
+<% }); %>
+<% _.forEach(getMethods(properties), function(item) { var retType = returnString(item); %>
     /**
      * <%= getDescription('     ', item) %>
      *
@@ -96,11 +96,11 @@ public class <%= className() %> extends <%= base ? base : 'PolymerWidget' %> {
      * @method <%= item.name %><% if (!!item.params) _.forEach(item.params, function(param) { %>
      * @param {<%= param.type %>} <%= param.name %> <%= param.description %> <% }); %>
      * <%= item.isBehavior ? ('@behavior ' + item.behavior ) : ''%>
+     * <%= item.return && item.return.type ? '@return {' + returnString(item) + '}' : ''%>
      */
-    public void <%= item.name %>(<%= typedParamsString(item) %>) {
-        getPolymerElement().<%= item.name %>(<%= paramsString(item) %>);
+    public <%= retType %> <%= item.method %> {
+        <%= retType != 'void' ? 'return ' : ''%>getPolymerElement().<%= item.name %>(<%= paramsString(item) %>);
     }
-  <% } %>
 <% }); %>
 <% if (hasEvents()) _.forEach(events, function(event){ %>
     /**

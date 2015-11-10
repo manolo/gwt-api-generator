@@ -41,18 +41,21 @@ gulp.task('bower:configure', ['clean:resources'], function(done) {
   jsonfile.readFile('.bowerrc', function (err, obj) {
     if (!err) {
       fs.copySync('.bowerrc', globalVar.publicDir + '/.bowerrc');
-
       if(obj.directory) {
         globalVar.bowerDir = globalVar.publicDir + '/' + obj.directory;
       }
     }
-
     done();
   });
 });
 
 gulp.task('bower:install', ['clean', 'bower:configure'], function() {
-  return bower({ cmd: 'install', cwd: globalVar.publicDir}, [globalVar.bowerPackages]);
+  if (globalVar.bowerPackages) {
+    return bower({ cmd: 'install', cwd: globalVar.publicDir}, [globalVar.bowerPackages]);
+  } else {
+    gutil.log('No --package provided. Using package(s) from bower_components folder.');
+    return gulp.src('./bower_components/**/*', {base: '.'}).pipe(gulp.dest(globalVar.publicDir));
+  }
 });
 
 gulp.task('parse', ['analyze'], function(cb) {
@@ -76,8 +79,6 @@ gulp.task('parse', ['analyze'], function(cb) {
         }
       });
     }
-    // Hydrolysis duplicates attributes
-    helpers.removeDuplicates(item.properties, 'name');
     // We don't want to wrap any private api
     helpers.removePrivateApi(item.properties, 'name');
   });
@@ -116,7 +117,7 @@ gulp.task('analyze', ['clean:target', 'pre-analyze'], function() {
         });
         cb(null, file);
       })
-      .catch(function(e){
+      ['catch'](function(e){
         gutil.log(e.stack);
         cb(null, file);
       });
@@ -134,7 +135,16 @@ function parseTemplate(template, obj, name, dir, suffix) {
   // If there is a base .java file we extend it.
   var classBase = helpers.camelCase(name) + suffix + "Base";
 
-  var prefix = obj.name.split('-')[0].replace(/\./g,'');
+  // We have to compute the appropriate name-space for the component.
+  var prefix =
+    // For events we prefer the first word of the name if they are standard ones.
+    /^Event/.test(suffix) && /^(polymer|iron|paper|neon)-/.test(name) ? name :
+    // Otherwise we try the name from its bower.json, then the sub-folder name in
+    // bower_components, and finally from its name.
+    obj.bowerData && obj.bowerData.name || obj.path.replace(/.*\/+(.+)\/+[^\/]+/, '$1') || name;
+  //  Then we take the first part before first dash
+  prefix = prefix.split('-')[0].replace(/\./g,'');
+
   obj.ns = globalVar.ns + '.' + prefix;
 
   var targetPath = globalVar.clientDir + prefix + '/' + dir;
@@ -161,8 +171,10 @@ function parseTemplate(template, obj, name, dir, suffix) {
 gulp.task('generate:elements', ['parse'], function() {
   return StreamFromArray(global.parsed,{objectMode: true})
    .on('data', function(item) {
-     if (!helpers.isBehavior(item)) {
-       parseTemplate('Element', item, item.is, 'element/', 'Element');
+     if (helpers.isBehavior(item)) {
+       parseTemplate('Behavior', item, item.is, '', '');
+     } else {
+       parseTemplate('Element', item, item.is, '', 'Element');
      }
    })
 });
@@ -173,7 +185,7 @@ gulp.task('generate:events', ['parse'], function() {
       if (item.events) {
         item.events.forEach(function(event) {
           event.bowerData = item.bowerData;
-          parseTemplate('ElementEvent', event, event.name, 'element/event/', 'Event');
+          parseTemplate('ElementEvent', event, event.name, 'event/', 'Event');
         });
       }
    })
@@ -222,17 +234,25 @@ gulp.task('generate', ['generate:elements-all', 'generate:widgets-all', 'generat
 });
 
 gulp.task('copy:lib', function() {
-  return gulp.src(libDir + '**')
-    .pipe(gulp.dest(globalVar.clientDirBase));
+  if (!args.excludeLib) {
+    return gulp.src(libDir + '**')
+      .pipe(gulp.dest(globalVar.clientDirBase));
+  }
 });
 
 gulp.task('copy:pom', function() {
   var tpl = _.template(fs.readFileSync(tplDir + "pom.template"));
   var pom = globalVar.currentDir + "pom.xml";
 
+  // Try to get some configuration from a package.json
+  // otherwise use default values
   var pkgFile = globalVar.currentDir + 'package.json';
-  var pkgContent = fs.readFileSync(pkgFile);
-  globalVar.pkg = pkgContent ? JSON.parse(pkgContent) : {};
+  globalVar.pkg = {};
+  try {
+    var pkgContent = fs.readFileSync(pkgFile);
+    globalVar.pkg = JSON.parse(pkgContent);
+  } catch(ignore) {
+  }
   globalVar.pkg.pom = globalVar.pkg.pom || {};
   globalVar.pkg.pom.version = args.version || globalVar.pkg.pom.version || globalVar.pkg.version;
 
