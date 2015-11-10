@@ -18,7 +18,7 @@ $ npm install -g vaadin/gwt-api-generator
 ```shell
 $ bower install my-web-component
 $ gwt-api-generator
-
+```
 - Generating the resources for a library
 ```shell
 $ gwt-api-generator --package=PolymerElements/paper-elements

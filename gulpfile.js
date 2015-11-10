@@ -53,6 +53,7 @@ gulp.task('bower:install', ['clean', 'bower:configure'], function() {
   if (globalVar.bowerPackages) {
     return bower({ cmd: 'install', cwd: globalVar.publicDir}, [globalVar.bowerPackages]);
   } else {
+    gutil.log('No --package provided. Using package(s) from bower_components folder.');
     return gulp.src('./bower_components/**/*', {base: '.'}).pipe(gulp.dest(globalVar.publicDir));
   }
 });
@@ -232,10 +233,8 @@ gulp.task('generate', ['generate:elements-all', 'generate:widgets-all', 'generat
   gutil.log('Done.');
 });
 
-gulp.task('copy:lib', function(done) {
-  if (args.excludeLib) {
-    done();
-  } else {
+gulp.task('copy:lib', function() {
+  if (!args.excludeLib) {
     return gulp.src(libDir + '**')
       .pipe(gulp.dest(globalVar.clientDirBase));
   }
