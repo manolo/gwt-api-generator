@@ -4,17 +4,19 @@ package <%= ns %>;
 import com.vaadin.polymer.elemental.*;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArray;
-import com.google.gwt.core.client.js.JsProperty;
-import com.google.gwt.core.client.js.JsType;
+import jsinterop.annotations.JsOverlay;
+import jsinterop.annotations.JsProperty;
+import jsinterop.annotations.JsType;
 
 /**
  * <%= getDescription(' ') %>
  */
-@JsType
+@JsType(isNative=true)
+@com.google.gwt.core.client.js.JsType
 public interface <%= elementClassName() %> extends <%= base ? base : 'HTMLElement' %> {
 
-    public static final String TAG = "<%= name %>";
-    public static final String SRC = "<%= path %>";
+    @JsOverlay public static final String TAG = "<%= name %>";
+    @JsOverlay public static final String SRC = "<%= path %>";
 
 <% _.forEach(getGettersAndSetters(properties), function(item) { %>
     /**
@@ -25,6 +27,7 @@ public interface <%= elementClassName() %> extends <%= base ? base : 'HTMLElemen
      * @type <%= item.type %>
      * <%= item.isBehavior ? ('@behavior ' + item.behavior ) : ''%>
      */
+    @com.google.gwt.core.client.js.JsProperty
     @JsProperty <%= computeType(item.type) %> <%= item.getter %>();
     /**
      * <%= getDescription('     ', item) %>
@@ -34,6 +37,7 @@ public interface <%= elementClassName() %> extends <%= base ? base : 'HTMLElemen
      * @type <%= item.type %>
      * <%= item.isBehavior ? ('@behavior ' + item.behavior ) : ''%>
      */
+    @com.google.gwt.core.client.js.JsProperty
     @JsProperty void <%= item.setter %>;
 <% }); %>
 <% _.forEach(getMethods(properties), function(item) { %>

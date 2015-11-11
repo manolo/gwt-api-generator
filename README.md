@@ -56,10 +56,9 @@ Comming soon.
 ## About GWT 2.7/2.8 compatibility
 
 Vaadin gwt-api-generator produces `@JsType` interfaces for JS Element level access from Java Objects.
+
 Generated classes are written using Java 1.7 syntax, and rely on GWT JSInterop available as an experimental feature from GWT 2.7.0.
 
-Notice that even though the generated code is GWT 2.7 compatible for now, it's recommended to use GWT 2.8-SNAPSHOT for better stability.
+But, starting with gwt-api-generator 1.2.1, GWT 2.7.0 is not supported anymore since the experimental version of jsInterop did not suppor JsFunctions.
 
-Produced interfaces don't currently utilize the full GWT 2.8 JSInterop API. For example `@JsFunction` is replaced by generic JavaScriptObject parameters leaving the responsibility of wrapping callbacks to the developer.
-
-The plan is however to support `@JsFunction` among other JSInterop features in future releases so consider GWT 2.7 support deprecated at this point.
+So, please make sure that your project depends on GWT 2.8.0-SNAPSHOT and add the flag -XjsInteropMode=JS_RC to compile it.

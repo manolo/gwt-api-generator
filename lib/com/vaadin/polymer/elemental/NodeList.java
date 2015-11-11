@@ -1,12 +1,15 @@
 package com.vaadin.polymer.elemental;
 
-import com.google.gwt.core.client.js.JsProperty;
-import com.google.gwt.core.client.js.JsType;
+import static jsinterop.annotations.JsPackage.GLOBAL;
+import jsinterop.annotations.JsProperty;
+import jsinterop.annotations.JsType;
 
-@JsType
+@JsType(isNative=true, namespace=GLOBAL)
+@com.google.gwt.core.client.js.JsType
 public interface NodeList {
 
     @JsProperty
+    @com.google.gwt.core.client.js.JsProperty
     int getLength();
 
     <T extends Node> T item(int index);

@@ -31,10 +31,11 @@ public class <%= className() %> extends <%= base ? base : 'PolymerWidget' %> {
 <% if (hasEvents()) _.forEach(events, function(event){ %>
         getPolymerElement().addEventListener(
                 <%= event.ns %>.event.<%= camelCase(event.name) %>Event.NAME,
-                new <%= event.ns %>.event.<%= camelCase(event.name) %>Event.Listener() {
+                new EventListener() {
+
             @Override
-            protected void handleEvent(<%= event.ns %>.event.<%= camelCase(event.name) %>Event event) {
-                fireEvent(new <%= camelCase(event.name) %>Event(event));
+            public void handleEvent(Event event) {
+                fireEvent(new <%= camelCase(event.name) %>Event((<%= event.ns %>.event.<%= camelCase(event.name) %>Event)event));
             }
         });
 <% }); %>

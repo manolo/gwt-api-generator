@@ -1,8 +1,9 @@
 package com.vaadin.polymer.elemental;
 
-import com.google.gwt.core.client.js.JsType;
+import jsinterop.annotations.JsFunction;
 
-@JsType
-public interface EventListener {
-    void handleEvent(Event event);
+@JsFunction
+@com.google.gwt.core.client.js.JsFunction
+public interface EventListener<T extends Event> {
+    void handleEvent(T event);
 }

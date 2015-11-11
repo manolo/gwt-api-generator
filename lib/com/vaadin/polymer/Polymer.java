@@ -4,10 +4,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import jsinterop.annotations.JsType;
+
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArray;
-import com.google.gwt.core.client.js.JsType;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.DOM;
@@ -15,11 +16,13 @@ import com.google.gwt.user.client.Timer;
 import com.vaadin.polymer.elemental.Function;
 import com.vaadin.polymer.elemental.HTMLElement;
 
+@SuppressWarnings({"rawtypes", "unchecked"})
 public abstract class Polymer {
 
     public static PolymerBase Base;
 
-    @JsType
+    @JsType(isNative=true, namespace="Polymer")
+    @com.google.gwt.core.client.js.JsType
     public interface PolymerBase {
         /**
          * Returns the first node in this element’s local DOM that matches selector.
@@ -117,16 +120,19 @@ public abstract class Polymer {
         importHref(href, ok, null);
     }
 
-
     private static String absoluteHref(String hrefOrTag) {
         if (!hrefOrTag.startsWith("http")) {
             // It's a tag
             if (hrefOrTag.matches("[\\w-]+")) {
-                hrefOrTag = hrefOrTag + "/" + hrefOrTag + ".html";
+                hrefOrTag = hrefOrTag + "/" + hrefOrTag;
             }
             // It's not prefixed with the bower_components convention
             if (!hrefOrTag.startsWith("bower_components")) {
                 hrefOrTag = "bower_components/" + hrefOrTag;
+            }
+            // Not ending with html
+            if (!hrefOrTag.matches(".*\\.html$")) {
+                hrefOrTag += ".html";
             }
             hrefOrTag = GWT.getModuleBaseForStaticFiles() + hrefOrTag;
         }
@@ -225,7 +231,6 @@ public abstract class Polymer {
      * from the bower_components/src url if it was not loaded yet.
      */
     public static <T> T createElement(final String tagName, final String... imports) {
-        @SuppressWarnings("unchecked")
         final T e = (T)Document.get().createElement(tagName);
         if (imports.length > 0) {
             ensureCustomElement(e, imports);
@@ -315,7 +320,7 @@ public abstract class Polymer {
     /**
      * Executes a function after all imports have been loaded.
      */
-    public static void whenReady(Object f) {
+    public static void whenReady(Function f) {
         whenReady(f, null);
     }
 
@@ -323,20 +328,13 @@ public abstract class Polymer {
      * Executes a function after all imports have been loaded and when the
      * passed element is ready to use.
      */
-    public static native void whenReady(Object f, Element e)
+    public static native void whenReady(Function f, Element e)
     /*-{
-        function done() {
-          if (typeof f == 'function') {
-            f(e);
-          } else {
-            f.@com.vaadin.polymer.elemental.Function::call(*)(e);
-          }
-        }
-        $wnd.HTMLImports.whenReady(!e ? done : function() {
+        $wnd.HTMLImports.whenReady(!e ? f : function() {
           var id = setInterval(function() {
             if (@com.vaadin.polymer.Polymer::isRegisteredElement(*)(e)) {
               clearInterval(id);
-              done();
+              f(e);
             }
           }, 0);
         });
@@ -348,7 +346,7 @@ public abstract class Polymer {
      */
     @Deprecated
     private static void onReady(Element e, Object f) {
-        whenReady(f, e);
+        whenReady((Function)f, e);
     }
 
     /**
@@ -461,4 +459,18 @@ public abstract class Polymer {
         return l.@java.util.ArrayList::array;
     }-*/;
 
+    public native static <T> T property(Object jso, String name)
+    /*-{
+       return jso[name] || null;
+    }-*/;
+
+    public native static void property(Object jso, String name, Object value)
+    /*-{
+       jso[name] = value;
+    }-*/;
+
+    public static native <T> T cast(Object o)
+    /*-{
+      return o;
+    }-*/;
 }

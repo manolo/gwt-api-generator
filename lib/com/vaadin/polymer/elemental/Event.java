@@ -1,18 +1,23 @@
 package com.vaadin.polymer.elemental;
 
-import com.google.gwt.core.client.js.JsProperty;
-import com.google.gwt.core.client.js.JsType;
+import static jsinterop.annotations.JsPackage.GLOBAL;
+import jsinterop.annotations.JsProperty;
+import jsinterop.annotations.JsType;
 
-@JsType
+@JsType(isNative=true, namespace=GLOBAL)
+@com.google.gwt.core.client.js.JsType
 public interface Event {
 
     @JsProperty
+    @com.google.gwt.core.client.js.JsProperty
     Detail getDetail();
     
     @JsProperty
+    @com.google.gwt.core.client.js.JsProperty
     EventTarget getTarget();
 
-    @JsType
+    @JsType(isNative=true)
+    @com.google.gwt.core.client.js.JsType
     public interface Detail {
     }
 }

@@ -85,4 +85,16 @@ public class PolymerWidget extends HTMLPanel {
         Window.alert(
             "GWT-Polymer ERROR: Double check that you are compiling your project with the `-XjsInteropMode JS` flag");
     }
+
+    public void setClass(String clazz) {
+        getElement().setClassName(clazz);
+    }
+
+    public void setStyle(String style) {
+        getElement().setAttribute("style", style);
+    }
+
+    public void setId(String id) {
+        getElement().setId(id);
+    }
 }

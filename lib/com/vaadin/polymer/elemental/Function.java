@@ -1,10 +1,10 @@
 package com.vaadin.polymer.elemental;
 
-import com.google.gwt.core.client.js.JsFunction;
-
+import jsinterop.annotations.JsFunction;
 
 @JsFunction
-public interface Function  {
-    public Object call(Object arg);
+@com.google.gwt.core.client.js.JsFunction
+public interface Function<RET, ARG>  {
+    public RET call(ARG arg);
 }
 
