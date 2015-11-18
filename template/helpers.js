@@ -107,7 +107,7 @@ module.exports = {
     var b = this.findBehavior(t);
     if (b) {
       var c = this.camelCase(t);
-      return c != t ? c + 'Element' : c;
+      return c.toLowerCase() != t.toLowerCase() ? c + 'Element' : c;
     }
 
     return "JavaScriptObject";
