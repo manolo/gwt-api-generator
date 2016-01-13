@@ -28,17 +28,6 @@ public class <%= className() %> extends <%= base ? base : 'PolymerWidget' %> {
      */
     public <%= className() %>(String html) {
         super(<%= elementClassName() %>.TAG, <%= elementClassName() %>.SRC, html);
-<% if (hasEvents()) _.forEach(events, function(event){ %>
-        getPolymerElement().addEventListener(
-                <%= event.ns %>.event.<%= camelCase(event.name) %>Event.NAME,
-                new EventListener() {
-
-            @Override
-            public void handleEvent(Event event) {
-                fireEvent(new <%= camelCase(event.name) %>Event((<%= event.ns %>.event.<%= camelCase(event.name) %>Event)event));
-            }
-        });
-<% }); %>
     }
 
     /**
@@ -111,7 +100,7 @@ public class <%= className() %> extends <%= base ? base : 'PolymerWidget' %> {
      * @event <%= event.name %>
      */
     public HandlerRegistration add<%= camelCase(event.name) %>Handler(<%= camelCase(event.name) %>EventHandler handler) {
-        return addHandler(handler, <%= camelCase(event.name) %>Event.TYPE);
+        return addDomHandler(handler, <%= camelCase(event.name) %>Event.TYPE);
     }
 <% }); %>
 }

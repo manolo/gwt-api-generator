@@ -1,20 +1,19 @@
 <%= disclaimer() %>
 package <%= ns %>.widget.event;
 
-import com.google.gwt.event.shared.GwtEvent;
+import com.google.gwt.event.dom.client.DomEvent;
 import com.google.gwt.core.client.JavaScriptObject;
 
 /**
  * <%= getDescription(' ') %>
  */
-public class <%= camelCase(name) %>Event extends GwtEvent<<%= camelCase(name) %>EventHandler> {
+public class <%= camelCase(name) %>Event extends DomEvent<<%= camelCase(name) %>EventHandler> {
 
-    public static Type<<%= camelCase(name) %>EventHandler> TYPE = new Type<<%= camelCase(name) %>EventHandler>();
+    public static Type<<%= camelCase(name) %>EventHandler> TYPE = new Type<<%= camelCase(name) %>EventHandler>(
+       <%= ns %>.event.<%= camelCase(name) %>Event.NAME, new <%= camelCase(name) %>Event());
 
-    private <%= ns %>.event.<%= camelCase(name) %>Event nativeEvent;
 
-    public <%= camelCase(name) %>Event(<%= ns %>.event.<%= camelCase(name) %>Event nativeEvent) {
-        this.nativeEvent = nativeEvent;
+    public <%= camelCase(name) %>Event() {
     }
 
     public Type<<%= camelCase(name) %>EventHandler> getAssociatedType() {
@@ -25,15 +24,16 @@ public class <%= camelCase(name) %>Event extends GwtEvent<<%= camelCase(name) %>
         handler.on<%= camelCase(name) %>(this);
     }
 
-    public <%= ns %>.event.<%= camelCase(name) %>Event getNativeEvent() {
-        return nativeEvent;
+    public <%= ns %>.event.<%= camelCase(name) %>Event getPolymerEvent() {
+        return (<%= ns %>.event.<%= camelCase(name) %>Event)super.getNativeEvent();
     }
+
 <% if (hasParams())  _.forEach(params, function(param){ %>
     /**
      * <%= getDescription('     ', param) %>
      */
     public <%= computeType(param.type) %> <%= computeGetterWithPrefix(param) %>() {
-        return getNativeEvent().getDetail().<%= computeGetterWithPrefix(param) %>();
+        return getPolymerEvent().getDetail().<%= computeGetterWithPrefix(param) %>();
     }
 <% }); %>
 }
