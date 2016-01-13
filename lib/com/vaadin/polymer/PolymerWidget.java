@@ -8,7 +8,7 @@ import com.google.gwt.regexp.shared.RegExp;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.HTMLPanel;
-import com.vaadin.polymer.elemental.Function;
+import com.vaadin.polymer.elemental.*;
 
 public class PolymerWidget extends HTMLPanel {
 
@@ -96,5 +96,14 @@ public class PolymerWidget extends HTMLPanel {
 
     public void setId(String id) {
         getElement().setId(id);
+    }
+
+    /**
+     * Polymer’s custom property shim evaluates and applies custom property values once at element creation time.
+     * In order to have an element (and its subtree) re- evaluate custom property values due to dynamic changes
+     * such as application of CSS classes, etc., call updateStyles().
+     */
+    public void updateStyles() {
+        ((HTMLElement)getElement()).updateStyles();
     }
 }
