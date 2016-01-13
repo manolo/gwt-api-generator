@@ -181,6 +181,8 @@ public abstract class Polymer {
                     return null;
                 }
             });
+        } else {
+            Base.importHref(href, ok, err);
         }
     }
 
