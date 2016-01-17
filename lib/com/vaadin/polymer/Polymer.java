@@ -479,14 +479,28 @@ public abstract class Polymer {
         return l.@java.util.ArrayList::array;
     }-*/;
 
+    /**
+     * Utility method for getting a property for a JS object
+     */
     public native static <T> T property(Object jso, String name)
     /*-{
        return jso[name] || null;
     }-*/;
 
+    /**
+     * Utility method for setting properties to JS objects.
+     */
     public native static void property(Object jso, String name, Object value)
     /*-{
        jso[name] = value;
+    }-*/;
+
+    /**
+     * Utility method for calling a JS object function.
+     */
+    public native static <T> T apply(Object jso, String methodName, Object... args)
+    /*-{
+       return jso[methodName].apply(jso, args);
     }-*/;
 
     public static native <T> T cast(Object o)
@@ -494,4 +508,3 @@ public abstract class Polymer {
       return o;
     }-*/;
 }
-
