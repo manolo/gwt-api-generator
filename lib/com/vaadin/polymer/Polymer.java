@@ -24,11 +24,9 @@ public abstract class Polymer {
     public static Base Base;
 
     @JsType(isNative=true, name="Polymer")
-    @com.google.gwt.core.client.js.JsType
     public interface PolymerRoot {
 
         @JsType(isNative=true, namespace="Polymer")
-        @com.google.gwt.core.client.js.JsType
         public interface Base {
             /**
              * Returns the first node in this element’s local DOM that matches selector.

@@ -12,7 +12,6 @@ import jsinterop.annotations.JsType;
  * <%= getDescription(' ') %>
  */
 @JsType(isNative=true)
-@com.google.gwt.core.client.js.JsType
 public interface <%= elementClassName() %> extends <%= base ? base : 'HTMLElement' %> {
 
     @JsOverlay public static final String TAG = "<%= name %>";
@@ -27,7 +26,6 @@ public interface <%= elementClassName() %> extends <%= base ? base : 'HTMLElemen
      * @type <%= item.type %>
      * <%= item.isBehavior ? ('@behavior ' + item.behavior ) : ''%>
      */
-    @com.google.gwt.core.client.js.JsProperty
     @JsProperty <%= computeType(item.type) %> <%= item.getter %>();
     /**
      * <%= getDescription('     ', item) %>
@@ -37,7 +35,6 @@ public interface <%= elementClassName() %> extends <%= base ? base : 'HTMLElemen
      * @type <%= item.type %>
      * <%= item.isBehavior ? ('@behavior ' + item.behavior ) : ''%>
      */
-    @com.google.gwt.core.client.js.JsProperty
     @JsProperty void <%= item.setter %>;
 <% }); %>
 <% _.forEach(getMethods(properties), function(item) { %>

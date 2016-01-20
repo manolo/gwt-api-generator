@@ -4,7 +4,6 @@ import static jsinterop.annotations.JsPackage.GLOBAL;
 import jsinterop.annotations.JsType;
 
 @JsType(isNative=true, namespace=GLOBAL)
-@com.google.gwt.core.client.js.JsType
 public interface HTMLElement extends Element {
     /**
      * Polymer’s custom property shim evaluates and applies custom property values once at element creation time.

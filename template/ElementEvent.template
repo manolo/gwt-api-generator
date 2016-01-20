@@ -11,7 +11,6 @@ import jsinterop.annotations.JsType;
  * <%= getDescription(' ') %>
  */
 @JsType(isNative=true)
-@com.google.gwt.core.client.js.JsType
 public interface <%= camelCase(name) %>Event extends Event {
 
     @JsOverlay static final String NAME = "<%= computeName(name) %>";
@@ -21,13 +20,11 @@ public interface <%= camelCase(name) %>Event extends Event {
     Detail getDetail();
 
     @JsType(isNative=true)
-    @com.google.gwt.core.client.js.JsType
     interface Detail extends Event.Detail {
 <% _.forEach(params, function(param){ %>
         /**
          * <%= getDescription('         ', param) %>
          */
-        @com.google.gwt.core.client.js.JsProperty
         @JsProperty <%= computeType(param.type) %> <%= computeGetterWithPrefix(param) %>();
 <% }); %>
     }
