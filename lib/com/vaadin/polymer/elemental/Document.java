@@ -1,9 +1,10 @@
 package com.vaadin.polymer.elemental;
 
-import com.google.gwt.core.client.js.JsProperty;
-import com.google.gwt.core.client.js.JsType;
+import static jsinterop.annotations.JsPackage.GLOBAL;
+import jsinterop.annotations.JsProperty;
+import jsinterop.annotations.JsType;
 
-@JsType
+@JsType(isNative=true, namespace=GLOBAL)
 public interface Document extends Node {
     EventTarget getElementById(String id);
     <T> T createElement(String tag);

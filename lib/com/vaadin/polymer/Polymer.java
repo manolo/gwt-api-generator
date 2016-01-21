@@ -4,97 +4,108 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import jsinterop.annotations.JsType;
+
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArray;
-import com.google.gwt.core.client.js.JsType;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Timer;
+import com.vaadin.polymer.Polymer.PolymerRoot.Base;
 import com.vaadin.polymer.elemental.Function;
 import com.vaadin.polymer.elemental.HTMLElement;
 
+@SuppressWarnings({"rawtypes", "unchecked"})
 public abstract class Polymer {
 
-    public static PolymerBase Base;
+    private static PolymerRoot Polymer;
+    public static Base Base;
 
-    @JsType
-    public interface PolymerBase {
-        /**
-         * Returns the first node in this element’s local DOM that matches selector.
-         */
-        Element $$(String selector);
+    @JsType(isNative=true, name="Polymer")
+    public interface PolymerRoot {
 
-        /**
-         * Toggles the named boolean class on the node, adding the class if bool is
-         * truthy and removing it if bool is falsey.
-         */
-        void toggleClass(String name, boolean b, Element node);
+        @JsType(isNative=true, namespace="Polymer")
+        public interface Base {
+            /**
+             * Returns the first node in this element’s local DOM that matches selector.
+             */
+            Element $$(String selector);
 
-        /**
-         * Toggles the named boolean attribute on the node.
-         */
-        void toggleAttribute(String name, boolean b, Element node);
+            /**
+             * Toggles the named boolean class on the node, adding the class if bool is
+             * truthy and removing it if bool is falsey.
+             */
+            void toggleClass(String name, boolean b, Element node);
 
-        /**
-         * Moves a boolean attribute from oldNode to newNode, unsetting the attribute
-         * (if set) on oldNode and setting it on newNode
-         */
-        void attributeFollows(String name, Element newNode, Element oldNode);
+            /**
+             * Toggles the named boolean attribute on the node.
+             */
+            void toggleAttribute(String name, boolean b, Element node);
 
-        /**
-         *  Moves a class from oldNode to newNode, removing the class (if present)
-         *  on oldNode and adding it to newNode.
-         */
-        void classFollows(String name, Element newNode, Element oldNode);
+            /**
+             * Moves a boolean attribute from oldNode to newNode, unsetting the attribute
+             * (if set) on oldNode and setting it on newNode
+             */
+            void attributeFollows(String name, Element newNode, Element oldNode);
+
+            /**
+             *  Moves a class from oldNode to newNode, removing the class (if present)
+             *  on oldNode and adding it to newNode.
+             */
+            void classFollows(String name, Element newNode, Element oldNode);
 
 
-        /**
-         * Fires a custom event. The options object can contain the following properties:
-         *    node: Node to fire the event on (defaults to this).
-         *    bubbles: Whether the event should bubble. Defaults to true.
-         *    cancelable: Whether the event can be canceled with preventDefault. Defaults to false.
-         */
-        void fire(String type, JavaScriptObject detail, JavaScriptObject options);
+            /**
+             * Fires a custom event. The options object can contain the following properties:
+             *    node: Node to fire the event on (defaults to this).
+             *    bubbles: Whether the event should bubble. Defaults to true.
+             *    cancelable: Whether the event can be canceled with preventDefault. Defaults to false.
+             */
+            void fire(String type, JavaScriptObject detail, JavaScriptObject options);
 
-        /**
-         * Calls method asynchronously. If no wait time is specified, runs tasks with microtask
-         * timing (after the current method finishes, but before the next event from the event
-         * queue is processed). Returns a handle that can be used to cancel the task.
-         */
-        Object async(Function method, int wait);
+            /**
+             * Calls method asynchronously. If no wait time is specified, runs tasks with microtask
+             * timing (after the current method finishes, but before the next event from the event
+             * queue is processed). Returns a handle that can be used to cancel the task.
+             */
+            Object async(Function method, int wait);
 
-        /**
-         * Cancels the identified async task.
-         */
-        void cancelAsync(Object handle);
+            /**
+             * Cancels the identified async task.
+             */
+            void cancelAsync(Object handle);
 
-        /**
-         *  Applies a CSS transform to the specified node, or host element if no node is
-         *  specified. transform is specified as a string. For example:
-         *    transform('rotateX(90deg)', elm);
-         */
-        void transform(String transform, Element node);
+            /**
+             *  Applies a CSS transform to the specified node, or host element if no node is
+             *  specified. transform is specified as a string. For example:
+             *    transform('rotateX(90deg)', elm);
+             */
+            void transform(String transform, Element node);
 
-        /**
-         * Transforms the specified node, or host element if no node is specified. For example:
-         *   translate3d('100px', '100px', '100px', elm);
-         */
-        void translate3d(String x, String y, String z, Element node);
+            /**
+             * Transforms the specified node, or host element if no node is specified. For example:
+             *   translate3d('100px', '100px', '100px', elm);
+             */
+            void translate3d(String x, String y, String z, Element node);
 
-        /**
-         *  Dynamically imports an HTML document.
-         */
-        void importHref(String href, Function onload, Function onerror);
+            /**
+             *  Dynamically imports an HTML document.
+             */
+            void importHref(String href, Function onload, Function onerror);
 
-        /**
-         * Takes a URL relative to the <dom-module> of an imported Polymer element, and returns
-         * a path relative to the current document. This method can be used, for example,
-         * to refer to an asset delivered alongside an HTML import.
-         */
-        String resolveUrl(String url);
+            /**
+             * Takes a URL relative to the <dom-module> of an imported Polymer element, and returns
+             * a path relative to the current document. This method can be used, for example,
+             * to refer to an asset delivered alongside an HTML import.
+             */
+            String resolveUrl(String url);
+        }
+
+        void updateStyles();
     }
+
 
     private static Set<String> urlImported = new HashSet<>();
 
@@ -117,16 +128,19 @@ public abstract class Polymer {
         importHref(href, ok, null);
     }
 
-
     private static String absoluteHref(String hrefOrTag) {
         if (!hrefOrTag.startsWith("http")) {
             // It's a tag
             if (hrefOrTag.matches("[\\w-]+")) {
-                hrefOrTag = hrefOrTag + "/" + hrefOrTag + ".html";
+                hrefOrTag = hrefOrTag + "/" + hrefOrTag;
             }
             // It's not prefixed with the bower_components convention
             if (!hrefOrTag.startsWith("bower_components")) {
                 hrefOrTag = "bower_components/" + hrefOrTag;
+            }
+            // Not ending with html
+            if (!hrefOrTag.matches(".*\\.html$")) {
+                hrefOrTag += ".html";
             }
             hrefOrTag = GWT.getModuleBaseForStaticFiles() + hrefOrTag;
         }
@@ -137,6 +151,7 @@ public abstract class Polymer {
     /*-{
         function done() {
           // Set our static reference to Base
+          @com.vaadin.polymer.Polymer::Polymer = $wnd.Polymer;
           @com.vaadin.polymer.Polymer::Base = $wnd.Polymer.Base;
           // Polymer dynamic loaded does not remove unresolved
           $doc.body.removeAttribute('unresolved');
@@ -168,13 +183,19 @@ public abstract class Polymer {
     public static void importHref(String hrefOrTag, final Function ok, final Function err) {
         final String href = absoluteHref(hrefOrTag);
         if (!urlImported.contains(href)) {
+            if (!isRegistered(href)) {
+                whenPolymerLoaded(new Function() {
+                    public Object call(Object arg) {
+                        Base.importHref(href, ok, err);
+                        return null;
+                    }
+                });
+                return;
+            }
             urlImported.add(href);
-            whenPolymerLoaded(new Function() {
-                public Object call(Object arg) {
-                    Base.importHref(href, ok, err);
-                    return null;
-                }
-            });
+        }
+        if (ok != null) {
+            Base.importHref(href, ok, err);
         }
     }
 
@@ -225,7 +246,6 @@ public abstract class Polymer {
      * from the bower_components/src url if it was not loaded yet.
      */
     public static <T> T createElement(final String tagName, final String... imports) {
-        @SuppressWarnings("unchecked")
         final T e = (T)Document.get().createElement(tagName);
         if (imports.length > 0) {
             ensureCustomElement(e, imports);
@@ -279,6 +299,15 @@ public abstract class Polymer {
     }
 
     /**
+     * Return true if the element is already registered.
+     * Useful when components are loaded previously, i.e. when vulcanizing imports.
+     */
+    private static boolean isRegistered(String hrefOrTag) {
+        Element e = Document.get().createElement(hrefOrTag.replaceFirst("^.*/(.+).html$", "$1"));
+        return isRegisteredElement(e);
+    }
+
+    /**
      * Check whether a certain custom element has been registered.
      */
     private native static boolean isRegisteredElement(Object e)
@@ -292,6 +321,13 @@ public abstract class Polymer {
 
     public static void ready(Element e, Function f) {
         whenReady(f, e);
+    }
+
+    /**
+     * Update all style elements on the page.
+     */
+    public static void updateStyles() {
+        Polymer.updateStyles();
     }
 
     /**
@@ -315,7 +351,7 @@ public abstract class Polymer {
     /**
      * Executes a function after all imports have been loaded.
      */
-    public static void whenReady(Object f) {
+    public static void whenReady(Function f) {
         whenReady(f, null);
     }
 
@@ -323,20 +359,13 @@ public abstract class Polymer {
      * Executes a function after all imports have been loaded and when the
      * passed element is ready to use.
      */
-    public static native void whenReady(Object f, Element e)
+    public static native void whenReady(Function f, Element e)
     /*-{
-        function done() {
-          if (typeof f == 'function') {
-            f(e);
-          } else {
-            f.@com.vaadin.polymer.elemental.Function::call(*)(e);
-          }
-        }
-        $wnd.HTMLImports.whenReady(!e ? done : function() {
+        $wnd.HTMLImports.whenReady(!e ? f : function() {
           var id = setInterval(function() {
             if (@com.vaadin.polymer.Polymer::isRegisteredElement(*)(e)) {
               clearInterval(id);
-              done();
+              f(e);
             }
           }, 0);
         });
@@ -348,7 +377,7 @@ public abstract class Polymer {
      */
     @Deprecated
     private static void onReady(Element e, Object f) {
-        whenReady(f, e);
+        whenReady((Function)f, e);
     }
 
     /**
@@ -461,4 +490,41 @@ public abstract class Polymer {
         return l.@java.util.ArrayList::array;
     }-*/;
 
+    /**
+     * Utility method for getting a property for a JS object
+     */
+    public native static <T> T property(Object jso, String name)
+    /*-{
+       return jso[name] || null;
+    }-*/;
+
+    /**
+     * Utility method for setting properties to JS objects.
+     */
+    public native static void property(Object jso, String name, Object value)
+    /*-{
+       jso[name] = value;
+    }-*/;
+
+    /**
+     * Utility method for setting a function to a JS object.
+     * Useful for binding functions to templates.
+     */
+    public static void function(Object jso, String name, Function fnc) {
+        property(jso, name, fnc);
+    }
+
+    /**
+     * Utility method for calling a function of a JS object.
+     */
+    public native static <T> T apply(Object jso, String methodName, Object... args)
+    /*-{
+       return jso[methodName].apply(jso, args);
+    }-*/;
+
+    public static native <T> T cast(Object o)
+    /*-{
+      return o;
+    }-*/;
 }
+

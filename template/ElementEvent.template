@@ -3,22 +3,23 @@ package <%= ns %>.event;
 
 import com.vaadin.polymer.elemental.*;
 import com.google.gwt.core.client.JavaScriptObject;
-import com.google.gwt.core.client.js.JsProperty;
-import com.google.gwt.core.client.js.JsType;
+import jsinterop.annotations.JsOverlay;
+import jsinterop.annotations.JsProperty;
+import jsinterop.annotations.JsType;
 
 /**
  * <%= getDescription(' ') %>
  */
-@JsType
+@JsType(isNative=true)
 public interface <%= camelCase(name) %>Event extends Event {
 
-    static final String NAME = "<%= computeName(name) %>";
+    @JsOverlay static final String NAME = "<%= computeName(name) %>";
 <% if (hasParams()) { %>
     @Override
     @JsProperty
     Detail getDetail();
 
-    @JsType
+    @JsType(isNative=true)
     interface Detail extends Event.Detail {
 <% _.forEach(params, function(param){ %>
         /**
@@ -28,13 +29,4 @@ public interface <%= camelCase(name) %>Event extends Event {
 <% }); %>
     }
 <% } %>
-
-    public abstract class Listener implements EventListener {
-        protected abstract void handleEvent(<%= camelCase(name) %>Event event);
-
-        @Override
-        public void handleEvent(Event event) {
-            handleEvent((<%= camelCase(name) %>Event) event);
-        }
-    }
 }

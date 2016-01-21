@@ -1,11 +1,10 @@
 package com.vaadin.polymer.elemental;
 
-import com.vaadin.polymer.elemental.CSSStyleDeclaration;
+import static jsinterop.annotations.JsPackage.GLOBAL;
+import jsinterop.annotations.JsProperty;
+import jsinterop.annotations.JsType;
 
-import com.google.gwt.core.client.js.JsProperty;
-import com.google.gwt.core.client.js.JsType;
-
-@JsType
+@JsType(isNative=true, namespace=GLOBAL)
 public interface Element extends Node {
 
     @JsProperty
