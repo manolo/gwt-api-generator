@@ -65,7 +65,7 @@ Vaadin gwt-api-generator produces `@JsType` interfaces for JS Element level acce
 
 Generated classes are written using Java 1.7 syntax, and rely on GWT JSInterop available as an experimental feature from GWT 2.7.0, and will be stable in GWT 2.8.0.
 
-But, starting with gwt-api-generator 1.2.1, GWT 2.7.0 is not supported anymore since the experimental version of jsInterop in 2.7.0 does not suppor JsFunctions.
+But, starting with gwt-api-generator 1.2.1, GWT 2.7.0 is not supported anymore since the experimental version of jsInterop in 2.7.0 does not support JsFunctions.
 
 Additionally JsInterop has suffered a complete API change in 2.8.0, so old syntax will be deprecated and remove.
 

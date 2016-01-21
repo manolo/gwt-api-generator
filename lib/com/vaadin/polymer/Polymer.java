@@ -183,14 +183,18 @@ public abstract class Polymer {
     public static void importHref(String hrefOrTag, final Function ok, final Function err) {
         final String href = absoluteHref(hrefOrTag);
         if (!urlImported.contains(href)) {
+            if (!isRegistered(href)) {
+                whenPolymerLoaded(new Function() {
+                    public Object call(Object arg) {
+                        Base.importHref(href, ok, err);
+                        return null;
+                    }
+                });
+                return;
+            }
             urlImported.add(href);
-            whenPolymerLoaded(new Function() {
-                public Object call(Object arg) {
-                    Base.importHref(href, ok, err);
-                    return null;
-                }
-            });
-        } else {
+        }
+        if (ok != null) {
             Base.importHref(href, ok, err);
         }
     }
@@ -292,6 +296,15 @@ public abstract class Polymer {
      */
     public static com.vaadin.polymer.elemental.Document getDocument() {
         return (com.vaadin.polymer.elemental.Document)Document.get();
+    }
+
+    /**
+     * Return true if the element is already registered.
+     * Useful when components are loaded previously, i.e. when vulcanizing imports.
+     */
+    private static boolean isRegistered(String hrefOrTag) {
+        Element e = Document.get().createElement(hrefOrTag.replaceFirst("^.*/(.+).html$", "$1"));
+        return isRegisteredElement(e);
     }
 
     /**
@@ -494,7 +507,15 @@ public abstract class Polymer {
     }-*/;
 
     /**
-     * Utility method for calling a JS object function.
+     * Utility method for setting a function to a JS object.
+     * Useful for binding functions to templates.
+     */
+    public static void function(Object jso, String name, Function fnc) {
+        property(jso, name, fnc);
+    }
+
+    /**
+     * Utility method for calling a function of a JS object.
      */
     public native static <T> T apply(Object jso, String methodName, Object... args)
     /*-{
@@ -506,3 +527,4 @@ public abstract class Polymer {
       return o;
     }-*/;
 }
+
