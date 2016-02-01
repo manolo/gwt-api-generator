@@ -6,6 +6,7 @@ import java.util.Set;
 
 import jsinterop.annotations.JsType;
 
+import com.google.gwt.core.client.Callback;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArray;
@@ -138,8 +139,8 @@ public abstract class Polymer {
             if (!hrefOrTag.startsWith("bower_components")) {
                 hrefOrTag = "bower_components/" + hrefOrTag;
             }
-            // Not ending with html
-            if (!hrefOrTag.matches(".*\\.html$")) {
+            // Not ending with html or js
+            if (!hrefOrTag.matches(".*\\.(html|js)$")) {
                 hrefOrTag += ".html";
             }
             hrefOrTag = GWT.getModuleBaseForStaticFiles() + hrefOrTag;
@@ -156,7 +157,7 @@ public abstract class Polymer {
           // Polymer dynamic loaded does not remove unresolved
           $doc.body.removeAttribute('unresolved');
           //
-          ok.@com.vaadin.polymer.elemental.Function::call(*)();
+          ok();
         }
         if (!$wnd.Polymer) {
             var l = $doc.createElement('link');
@@ -357,23 +358,36 @@ public abstract class Polymer {
 
     /**
      * Executes a function after all imports have been loaded and when the
-     * passed element is ready to use.
+     * passed element is ready to use. If HTMLImports is not available it
+     * loads the webcomponentsjs polyfill.
      */
     public static native void whenReady(Function f, Element e)
     /*-{
-        $wnd.HTMLImports.whenReady(!e ? f : function() {
-          var id = setInterval(function() {
-            if (@com.vaadin.polymer.Polymer::isRegisteredElement(*)(e)) {
-              clearInterval(id);
-              f(e);
-            }
-          }, 0);
-        });
+        function done() {
+            $wnd.HTMLImports.whenReady(!e ? f : function() {
+              var id = setInterval(function() {
+                if (@com.vaadin.polymer.Polymer::isRegisteredElement(*)(e)) {
+                  clearInterval(id);
+                  f(e);
+                }
+              }, 0);
+            });
+        }
+        if (!$wnd.HTMLImports) {
+            var s = $doc.createElement('script');
+            s.src = @com.vaadin.polymer.Polymer::absoluteHref(*)
+                        ('webcomponentsjs/webcomponents-lite.min.js');
+            s.onreadystatechange = s.onload = done;
+            $doc.head.appendChild(s);
+        } else {
+           done();
+        }
     }-*/;
 
     /**
      * If an element is not ready, loops until it gets ready, then
      * run a Function (JsFunction or JavaFunction)
+     * @deprecated use {@link #whenReady(Function, Element)} instead.
      */
     @Deprecated
     private static void onReady(Element e, Object f) {

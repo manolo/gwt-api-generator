@@ -6,6 +6,8 @@ import jsinterop.annotations.JsType;
 
 @JsType(isNative=true, namespace=GLOBAL)
 public interface Event {
+    @JsProperty
+    String getType();
 
     @JsProperty
     Detail getDetail();
