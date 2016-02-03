@@ -42,7 +42,7 @@ gulp.task('bower:configure', ['clean:resources'], function(done) {
     if (!err) {
       fs.copySync('.bowerrc', globalVar.publicDir + '/.bowerrc');
       if(obj.directory) {
-        globalVar.bowerDir = globalVar.publicDir + '/' + obj.directory;
+        globalVar.bowerDir = globalVar.publicDir + '/' + obj.directory + '/';
       }
     }
     done();
