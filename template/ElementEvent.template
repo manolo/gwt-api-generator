@@ -2,6 +2,7 @@
 package <%= ns %>.event;
 
 import com.vaadin.polymer.elemental.*;
+import com.google.gwt.core.client.JsArray;
 import com.google.gwt.core.client.JavaScriptObject;
 import jsinterop.annotations.JsOverlay;
 import jsinterop.annotations.JsProperty;
