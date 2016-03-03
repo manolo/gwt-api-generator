@@ -61,7 +61,6 @@ gulp.task('bower:install', ['clean', 'bower:configure'], function() {
 gulp.task('parse', ['analyze'], function(cb) {
   global.parsed.forEach(function(item) {
     if (!helpers.isBehavior(item) && item.behaviors && item.behaviors.length) {
-
       item.behaviors.forEach(function(name) {
         var nestedBehaviors = helpers.getNestedBehaviors(item, name);
         item.properties = _.union(item.properties, nestedBehaviors.properties);
@@ -79,6 +78,22 @@ gulp.task('parse', ['analyze'], function(cb) {
         }
       });
     }
+    if (item.events) {
+      item.events.forEach(function(event) {
+        var p = [];
+        event.params.forEach(function(param) {
+          var notDuplicate = _.filter(p, function (p) {
+              return p.name == param.name;
+          }).length == 0;
+          // remove duplicated, and more than one level nested (detail.file.src)
+          if (notDuplicate && !/\..+\./.test(param.name)) {
+            p.push(param);
+          }
+        });
+        event.params = p;
+      });
+    }
+
     // We don't want to wrap any private api
     helpers.removePrivateApi(item.properties, 'name');
   });

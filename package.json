@@ -12,7 +12,7 @@
     "gulp-bower": "latest",
     "gulp-rename": "latest",
     "gulp-util": "latest",
-    "hydrolysis": "git://github.com/Polymer/hydrolysis#master",
+    "hydrolysis": "git://github.com/Polymer/hydrolysis#v1.22.0",
     "jsonfile": "^2.2.1",
     "lodash": "latest",
     "map-stream": "latest",
