@@ -14,7 +14,7 @@
     "gulp-util": "latest",
     "hydrolysis": "git://github.com/Polymer/hydrolysis#v1.22.0",
     "jsonfile": "^2.2.1",
-    "lodash": "latest",
+    "lodash": "^4.7.0",
     "map-stream": "latest",
     "marked": "latest",
     "minimist": "^1.1.1",

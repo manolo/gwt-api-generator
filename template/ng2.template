@@ -1,0 +1,20 @@
+import {Directive, ElementRef, Output, HostListener, EventEmitter} from 'angular2/core';
+
+@Directive({selector: '<%= name %>' })
+
+export class <%= camelCase(name) %> {
+  <% _(properties)
+    .filter(function(p) { return p.notify; })
+    .forEach(function(prop) { %>
+  @Output() <%= prop.name %>Change: EventEmitter<any> = new EventEmitter(false);
+  @HostListener('<%= _.kebabCase(prop.name) %>-changed', ['$event.detail.value'])
+  <%= prop.name %>changed(value) {
+    this.<%= prop.name %>Change.emit(value);
+  }
+  <% }); %>
+  constructor(el: ElementRef) {
+    if (!Polymer.isInstance(el.nativeElement)) {
+      Polymer.Base.importHref('bower_components/<%= path %>')
+    }
+  }
+}

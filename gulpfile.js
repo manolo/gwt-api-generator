@@ -139,6 +139,76 @@ gulp.task('analyze', ['clean:target', 'pre-analyze'], function() {
     }));
 });
 
+gulp.task('ng2', function() {
+  var resolver = new hyd.FSResolver({});
+  var loader = new hyd.Loader();
+  loader.addResolver(resolver);
+
+  var anal = new hyd.Analyzer(null, loader);
+
+  var analyzed = [];
+
+  return gulp.src([globalVar.bowerDir + "*/*.html",
+    // vaadin elements
+    globalVar.bowerDir + "*/vaadin-*/vaadin-*.html",
+    // ignore all demo.html, index.html and metadata.html files
+    "!" + globalVar.bowerDir + "*/*demo.html",
+    "!" + globalVar.bowerDir + "*/*index.html",
+    "!" + globalVar.bowerDir + "*/*metadata.html",
+    // includes a set of js files only, and some do not exist
+    "!" + globalVar.bowerDir + "*/*web-animations.html",
+    // Not useful in gwt and also has spurious event names
+    "!" + globalVar.bowerDir + "*/*iron-jsonp-library.html",
+    ])
+    .pipe(map(function(file, cb) {
+      anal.metadataTree(globalVar.bowerDir + file.relative).then(function(root) {
+        return Promise.resolve(anal);
+      }).then(function(result) {
+        //var jsonArray = _.union(result.elements, result.behaviors);
+        //jsonArray.forEach(function(item) {
+        result.elements.forEach(function(item) {
+          var path = file.relative.replace(/\\/, '/');
+          if (item.is && path.indexOf(item.is + '.html') >= 0) {
+            console.log('Anal ysing: ', path, item.is);
+            item.name = item.is;
+            item.path = path;
+
+            var nestedProps = _.flatMap(item.behaviors, function(b) { return _properties(result, result.behaviorsByName[b]); });
+            item.properties = _.union(item.properties, nestedProps);
+
+            //var bowerFile = file.base + path.split("/")[0] + "/bower.json";
+            //var bowerFileContent = fs.readFileSync(bowerFile);
+            //item.bowerData = bowerFileContent ? JSON.parse(bowerFileContent) : {};
+
+            // Save all items in an array for later processing
+            //global.parsed.push(item);
+            var targetPath = 'ng2/paper/';
+            var targetFile = targetPath + item.is + ".ts";
+
+            var tpl = _.template(fs.readFileSync(tplDir + 'ng2.template'));
+            fs.writeFileSync(targetFile, new Buffer(tpl(_.merge({}, null, item, helpers))));
+          }
+        });
+        cb(null, file);
+      })
+      ['catch'](function(e){
+        gutil.log(e.stack);
+        cb(null, file);
+      });
+    }));
+});
+
+function _properties(result, behavior) {
+  if (behavior === undefined) {
+    return [];
+  }
+
+  var nestedBehaviors = _.flatMap(behavior.behaviors, function(b) { return result.behaviorsByName[b]; });
+  var nestedProps = _.flatMap(nestedBehaviors, function(b) { return _properties(result, b);} );
+
+  return _.union(behavior.properties, nestedProps);
+}
+
 // Parse a template and generates a .java file.
 // template: file in the templates folder
 // obj:      context object for the template
