@@ -2,7 +2,7 @@
 
 var args = require('minimist')(process.argv.slice(2));
 var gulp = require('gulp');
-var bower = require('gulp-bower')
+var bower = require('gulp-bower');
 var map = require('map-stream');
 var fs = require('fs-extra');
 var globalVar = require('./template/tasks/global-variables');
@@ -70,7 +70,7 @@ gulp.task('parse', ['analyze'], function(cb) {
           nestedBehaviors.events.forEach(function (event) {
             var notDuplicate = _.filter(item.events, function (e) {
                 return e.name == event.name;
-              }).length == 0;
+              }).length === 0;
             if (notDuplicate) {
               item.events.push(event);
             }
@@ -84,7 +84,7 @@ gulp.task('parse', ['analyze'], function(cb) {
         event.params.forEach(function(param) {
           var notDuplicate = _.filter(p, function (p) {
               return p.name == param.name;
-          }).length == 0;
+          }).length === 0;
           // remove duplicated, and more than one level nested (detail.file.src)
           if (notDuplicate && !/\..+\./.test(param.name)) {
             p.push(param);
@@ -191,7 +191,7 @@ gulp.task('generate:elements', ['parse'], function() {
      } else {
        parseTemplate('Element', item, item.is, '', 'Element');
      }
-   })
+   });
 });
 
 gulp.task('generate:events', ['parse'], function() {
@@ -203,7 +203,7 @@ gulp.task('generate:events', ['parse'], function() {
           parseTemplate('ElementEvent', event, event.name, 'event/', 'Event');
         });
       }
-   })
+   });
 });
 
 gulp.task('generate:widgets', ['parse'], function() {
@@ -212,7 +212,7 @@ gulp.task('generate:widgets', ['parse'], function() {
       if (!helpers.isBehavior(item)) {
         parseTemplate('Widget', item, item.is, 'widget/', '');
       }
-   })
+   });
 });
 
 gulp.task('generate:widget-events', ['parse'], function() {
@@ -225,7 +225,7 @@ gulp.task('generate:widget-events', ['parse'], function() {
           parseTemplate('WidgetEventHandler', event, event.name, 'widget/event/', 'EventHandler');
         });
       }
-   })
+   });
 });
 
 gulp.task('generate:gwt-module', function() {
