@@ -1,7 +1,7 @@
 import {Directive, ElementRef, Output, HostListener, EventEmitter} from 'angular2/core';
+declare var Polymer;
 
 @Directive({selector: '<%= name %>'})
-
 export class <%= camelCase(name) %> {
   <% _(properties)
     .filter(function(p) { return p.notify; })
