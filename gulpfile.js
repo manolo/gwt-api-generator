@@ -175,6 +175,7 @@ gulp.task('ng2', function() {
 
             var nestedProps = _.flatMap(item.behaviors, function(b) { return _properties(result, result.behaviorsByName[b]); });
             item.properties = _.union(item.properties, nestedProps);
+            item.properties = item.properties.filter(prop => !prop.name.startsWith('_'));
 
             //var bowerFile = file.base + path.split("/")[0] + "/bower.json";
             //var bowerFileContent = fs.readFileSync(bowerFile);
