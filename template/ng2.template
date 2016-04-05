@@ -1,6 +1,6 @@
 import {Directive, ElementRef, Output, HostListener, EventEmitter} from 'angular2/core';
 
-@Directive({selector: '<%= name %>' })
+@Directive({selector: '<%= name %>'})
 
 export class <%= camelCase(name) %> {
   <% _(properties)
