@@ -184,6 +184,9 @@ module.exports = {
     }.bind(this));
     return ret;
   },
+  computeSignature: function(method) {
+    return method.replace(/\s+\w+\s*([,\)])/g, '$1');
+  },
   getMethods: function(properties) {
     // Sorting properties so Object methods are at first
     properties.sort(function(a, b) {
@@ -209,9 +212,11 @@ module.exports = {
         item.method = item.method || item.name + '(' + this.typedParamsString(item) + ')';
         // JsInterop + SDM do not support method overloading if one signature is object
         var other = item.method.replace(/String/, 'Object');
-        if (!gsetters[item.method] && !done[other] && !done[item.method]) {
+        var signature = this.computeSignature(item.method);
+        var other_sig = this.computeSignature(other);
+        if (!gsetters[signature] && !done[signature] && !done[other_sig]) {
           ret.push(item);
-          done[item.method] = true;
+          done[signature] = true;
         }
       }
     }.bind(this));
