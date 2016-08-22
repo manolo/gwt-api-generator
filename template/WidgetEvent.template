@@ -2,6 +2,7 @@
 package <%= ns %>.widget.event;
 
 import com.google.gwt.event.dom.client.DomEvent;
+import com.google.gwt.core.client.JsArray;
 import com.google.gwt.core.client.JavaScriptObject;
 
 /**
