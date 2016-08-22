@@ -200,6 +200,7 @@ gulp.task('generate:events', ['parse'], function() {
       if (item.events) {
         item.events.forEach(function(event) {
           event.bowerData = item.bowerData;
+          event.name = event.name.replace(/\s.*$/,'');
           parseTemplate('ElementEvent', event, event.name, 'event/', 'Event');
         });
       }
@@ -221,6 +222,7 @@ gulp.task('generate:widget-events', ['parse'], function() {
       if (item.events) {
         item.events.forEach(function(event) {
           event.bowerData = item.bowerData;
+          event.name = event.name.replace(/\s.*$/,'');
           parseTemplate('WidgetEvent', event, event.name, 'widget/event/', 'Event');
           parseTemplate('WidgetEventHandler', event, event.name, 'widget/event/', 'EventHandler');
         });
