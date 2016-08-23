@@ -67,6 +67,7 @@ public class <%= className() %> extends <%= base ? base : 'PolymerWidget' %> {
     }
 <% }); %>
 <% _.forEach(getStringSetters(properties), function(item) { %>
+    // Needed in UIBinder
     /**
      * <%= getDescription('     ', item) %>
      *
@@ -75,7 +76,8 @@ public class <%= className() %> extends <%= base ? base : 'PolymerWidget' %> {
      * <%= item.isBehavior ? ('@behavior ' + item.behavior ) : ''%>
      */
     public void <%= computeSetterWithPrefix(item) %>(String value) {
-        getPolymerElement().setAttribute("<%= hyphenize(item.name) %>", value);
+        Polymer.property(this, "<%= hyphenize(item.name) %>", value);
+        // getPolymerElement().setAttribute("<%= hyphenize(item.name) %>", value);
     }
 <% }); %>
 <% _.forEach(getMethods(properties), function(item) { var retType = returnString(item); %>
