@@ -1,12 +1,5 @@
 package com.vaadin.polymer;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import jsinterop.annotations.JsType;
-
-import com.google.gwt.core.client.Callback;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArray;
@@ -14,99 +7,120 @@ import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Timer;
-import com.vaadin.polymer.Polymer.PolymerRoot.Base;
+
 import com.vaadin.polymer.elemental.Function;
 import com.vaadin.polymer.elemental.HTMLElement;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import static jsinterop.annotations.JsPackage.GLOBAL;
+
+import jsinterop.annotations.JsType;
 
 @SuppressWarnings({"rawtypes", "unchecked"})
 public abstract class Polymer {
 
     private static PolymerRoot Polymer;
     public static Base Base;
+    
+    @JsType(isNative=true, namespace="Polymer")
+    public interface DomApi {
+        <T extends HTMLElement> T querySelector(String selector);
 
-    @JsType(isNative=true, name="Polymer")
-    public interface PolymerRoot {
+        JsArray querySelectorAll(String selector);
 
-        @JsType(isNative=true, namespace="Polymer")
-        public interface Base {
-            /**
-             * Returns the first node in this element’s local DOM that matches selector.
-             */
-            Element $$(String selector);
+        void appendChild(Object el);
 
-            /**
-             * Toggles the named boolean class on the node, adding the class if bool is
-             * truthy and removing it if bool is falsey.
-             */
-            void toggleClass(String name, boolean b, Element node);
-
-            /**
-             * Toggles the named boolean attribute on the node.
-             */
-            void toggleAttribute(String name, boolean b, Element node);
-
-            /**
-             * Moves a boolean attribute from oldNode to newNode, unsetting the attribute
-             * (if set) on oldNode and setting it on newNode
-             */
-            void attributeFollows(String name, Element newNode, Element oldNode);
-
-            /**
-             *  Moves a class from oldNode to newNode, removing the class (if present)
-             *  on oldNode and adding it to newNode.
-             */
-            void classFollows(String name, Element newNode, Element oldNode);
-
-
-            /**
-             * Fires a custom event. The options object can contain the following properties:
-             *    node: Node to fire the event on (defaults to this).
-             *    bubbles: Whether the event should bubble. Defaults to true.
-             *    cancelable: Whether the event can be canceled with preventDefault. Defaults to false.
-             */
-            void fire(String type, JavaScriptObject detail, JavaScriptObject options);
-
-            /**
-             * Calls method asynchronously. If no wait time is specified, runs tasks with microtask
-             * timing (after the current method finishes, but before the next event from the event
-             * queue is processed). Returns a handle that can be used to cancel the task.
-             */
-            Object async(Function method, int wait);
-
-            /**
-             * Cancels the identified async task.
-             */
-            void cancelAsync(Object handle);
-
-            /**
-             *  Applies a CSS transform to the specified node, or host element if no node is
-             *  specified. transform is specified as a string. For example:
-             *    transform('rotateX(90deg)', elm);
-             */
-            void transform(String transform, Element node);
-
-            /**
-             * Transforms the specified node, or host element if no node is specified. For example:
-             *   translate3d('100px', '100px', '100px', elm);
-             */
-            void translate3d(String x, String y, String z, Element node);
-
-            /**
-             *  Dynamically imports an HTML document.
-             */
-            void importHref(String href, Function onload, Function onerror);
-
-            /**
-             * Takes a URL relative to the <dom-module> of an imported Polymer element, and returns
-             * a path relative to the current document. This method can be used, for example,
-             * to refer to an asset delivered alongside an HTML import.
-             */
-            String resolveUrl(String url);
-        }
-
-        void updateStyles();
+        JsArray children();
     }
 
+    @JsType(isNative=true, namespace=GLOBAL)
+    public interface PolymerRoot {
+
+        void updateStyles();
+
+        DomApi dom(Object el);
+    }    
+
+    @JsType(isNative=true, namespace="Polymer")
+    public interface Base {
+
+        /**
+         * Returns the first node in this element’s local DOM that matches selector.
+         */
+        Element $$(String selector);
+
+        /**
+         * Toggles the named boolean class on the node, adding the class if bool is
+         * truthy and removing it if bool is falsey.
+         */
+        void toggleClass(String name, boolean b, Element node);
+
+        /**
+         * Toggles the named boolean attribute on the node.
+         */
+        void toggleAttribute(String name, boolean b, Element node);
+
+        /**
+         * Moves a boolean attribute from oldNode to newNode, unsetting the attribute
+         * (if set) on oldNode and setting it on newNode
+         */
+        void attributeFollows(String name, Element newNode, Element oldNode);
+
+        /**
+         *  Moves a class from oldNode to newNode, removing the class (if present)
+         *  on oldNode and adding it to newNode.
+         */
+        void classFollows(String name, Element newNode, Element oldNode);
+
+
+        /**
+         * Fires a custom event. The options object can contain the following properties:
+         *    node: Node to fire the event on (defaults to this).
+         *    bubbles: Whether the event should bubble. Defaults to true.
+         *    cancelable: Whether the event can be canceled with preventDefault. Defaults to false.
+         */
+        void fire(String type, JavaScriptObject detail, JavaScriptObject options);
+
+        /**
+         * Calls method asynchronously. If no wait time is specified, runs tasks with microtask
+         * timing (after the current method finishes, but before the next event from the event
+         * queue is processed). Returns a handle that can be used to cancel the task.
+         */
+        Object async(Function method, int wait);
+
+        /**
+         * Cancels the identified async task.
+         */
+        void cancelAsync(Object handle);
+
+        /**
+         *  Applies a CSS transform to the specified node, or host element if no node is
+         *  specified. transform is specified as a string. For example:
+         *    transform('rotateX(90deg)', elm);
+         */
+        void transform(String transform, Element node);
+
+        /**
+         * Transforms the specified node, or host element if no node is specified. For example:
+         *   translate3d('100px', '100px', '100px', elm);
+         */
+        void translate3d(String x, String y, String z, Element node);
+
+        /**
+         *  Dynamically imports an HTML document.
+         */
+        void importHref(String href, Function onload, Function onerror);
+
+        /**
+         * Takes a URL relative to the <dom-module> of an imported Polymer element, and returns
+         * a path relative to the current document. This method can be used, for example,
+         * to refer to an asset delivered alongside an HTML import.
+         */
+        String resolveUrl(String url);
+    }
 
     private static Set<String> urlImported = new HashSet<>();
 
@@ -540,5 +554,12 @@ public abstract class Polymer {
     /*-{
       return o;
     }-*/;
+
+    /**
+     * Return the dom API of one element.
+     */
+    public static DomApi dom(Object element) {
+        return Polymer.dom(element);
+    }
 }
 

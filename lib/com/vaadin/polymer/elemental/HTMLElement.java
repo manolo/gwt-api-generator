@@ -1,6 +1,8 @@
 package com.vaadin.polymer.elemental;
 
 import static jsinterop.annotations.JsPackage.GLOBAL;
+
+import jsinterop.annotations.JsProperty;
 import jsinterop.annotations.JsType;
 
 @JsType(isNative=true, namespace=GLOBAL)
@@ -11,4 +13,8 @@ public interface HTMLElement extends Element {
      * such as application of CSS classes, etc., call updateStyles().
      */
     void updateStyles();
+
+    @JsProperty HTMLElement getRoot();
+
+    void debounce(String name, Function f, int timeout);
 }

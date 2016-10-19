@@ -6,8 +6,9 @@ import <%= ns %>.*;
 import <%= event.ns %>.widget.event.<%= camelCase(event.name) %>Event;
 import <%= event.ns %>.widget.event.<%= camelCase(event.name) %>EventHandler;
 <% }); %>
-import com.vaadin.polymer.PolymerWidget;
+import com.vaadin.polymer.*;
 import com.vaadin.polymer.elemental.*;
+import com.vaadin.polymer.PolymerWidget;
 import com.google.gwt.core.client.JsArray;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.core.client.JavaScriptObject;
