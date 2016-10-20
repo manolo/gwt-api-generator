@@ -24,7 +24,7 @@ public abstract class Polymer {
 
     private static PolymerRoot Polymer;
     public static Base Base;
-    
+
     @JsType(isNative=true, namespace="Polymer")
     public interface DomApi {
         <T extends HTMLElement> T querySelector(String selector);
@@ -42,7 +42,7 @@ public abstract class Polymer {
         void updateStyles();
 
         DomApi dom(Object el);
-    }    
+    }
 
     @JsType(isNative=true, namespace="Polymer")
     public interface Base {
@@ -528,6 +528,20 @@ public abstract class Polymer {
 
     /**
      * Utility method for setting properties to JS objects.
+     * In case that value is a JSON string it must be based to Polymer attribute setter
+     * so as it's able to parse. Needed when setting json values in UIBinder.
+     */
+    public native static void property(HTMLElement jso, String name, String value)
+    /*-{
+        if (jso.setAttribute && /^[\[\{]/.test(value)) {
+          jso.setAttribute(name, value);
+        } else {
+          jso[name] = value;
+        }
+    }-*/;
+
+    /**
+     * Utility method for setting properties to JS objects.
      */
     public native static void property(Object jso, String name, Object value)
     /*-{
@@ -562,4 +576,5 @@ public abstract class Polymer {
         return Polymer.dom(element);
     }
 }
+
 
