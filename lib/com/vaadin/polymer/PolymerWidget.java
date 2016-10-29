@@ -88,6 +88,15 @@ public class PolymerWidget extends HTMLPanel {
         getElement().setAttribute("style", style);
     }
 
+    /**
+     * UiBinder catches the `setId` call in order to use it as a legacy way to set the `ui:field`.
+     * Since some Polymer elements use other elements id to enhance it like `paper-tooltip` we 
+     * maintain this method to directly declarative set custom ids.
+     */
+    public void setDomId(String id) {
+        getElement().setId(id);
+    }
+
     public void setId(String id) {
         getElement().setId(id);
     }
