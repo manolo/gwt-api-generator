@@ -591,7 +591,7 @@ public abstract class Polymer {
     public native static void property(HTMLElement jso, String name, String value)
     /*-{
         if (jso.setAttribute && /^[\[\{]/.test(value)) {
-          jso.setAttribute(name, value);
+          jso.setAttribute(name.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase(), value);
         } else {
           jso[name] = value;
         }
@@ -633,5 +633,3 @@ public abstract class Polymer {
         return Polymer.dom(element);
     }
 }
-
-
