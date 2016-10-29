@@ -11,6 +11,8 @@ import com.google.gwt.user.client.Timer;
 import com.vaadin.polymer.elemental.Function;
 import com.vaadin.polymer.elemental.HTMLElement;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -24,6 +26,7 @@ public abstract class Polymer {
 
     private static PolymerRoot Polymer;
     public static Base Base;
+    private static boolean hasHtmlImports = htmlImportsSupported();
 
     @JsType(isNative=true, namespace="Polymer")
     public interface DomApi {
@@ -123,6 +126,7 @@ public abstract class Polymer {
     }
 
     private static Set<String> urlImported = new HashSet<>();
+    private static HashMap<String, List<Function>> whenImported = new HashMap<>();
 
     /**
      * Inserts the appropriate &lt;import&gt; of a component given by url.
@@ -162,30 +166,43 @@ public abstract class Polymer {
         return hrefOrTag;
     }
 
+    // Loads Polymer once if not done yet, and queue all callbaks until ready
     private static native void whenPolymerLoaded(Function ok)
     /*-{
-        function done() {
+        function resolve() {
           // Set our static reference to Base
           @com.vaadin.polymer.Polymer::Polymer = $wnd.Polymer;
           @com.vaadin.polymer.Polymer::Base = $wnd.Polymer.Base;
           // Polymer dynamic loaded does not remove unresolved
           $doc.body.removeAttribute('unresolved');
-          //
-          ok();
         }
         if (!$wnd.Polymer) {
-            var l = $doc.createElement('link');
-            l.rel = 'import';
-            l.href = @com.vaadin.polymer.Polymer::absoluteHref(*)('polymer');
-            l.onload = done;
-            $doc.head.appendChild(l);
+            // Dynamic load Polymer and wait until ready
+            if (!$wnd._pending_oks) {
+                $wnd._pending_oks = [ok];
+                var l = $doc.createElement('link');
+                l.rel = 'import';
+                l.href = @com.vaadin.polymer.Polymer::absoluteHref(*)('polymer');
+                l.onload = function() {
+                  // Run all tasks waiting for Polymer be ready
+                  $wnd._pending_oks.forEach(function(ok){ok()});
+                  $wnd._pending_oks = undefined;
+                  resolve();
+                };
+                $doc.head.appendChild(l);
+            }
+            $wnd._pending_oks.push(ok);
         } else {
-           done();
+            resolve();
+            ok();
         }
     }-*/;
 
     /**
      * Inserts the appropriate &lt;import&gt; of a component given by url.
+     * If the components is already registered it does not import anything so as
+     * the user could import elements in the hosted page, or vulcanize them.
+     * If the component is being imported, all callbacks are queued until ready.
      *
      * @param hrefOrTag it can be an absolute url, a relative path or a tag name.
      *                  - if it is a relative path, we prefix it with bower_components
@@ -197,20 +214,42 @@ public abstract class Polymer {
      */
     public static void importHref(String hrefOrTag, final Function ok, final Function err) {
         final String href = absoluteHref(hrefOrTag);
+
+        Function done = arg -> {
+                urlImported.add(href);
+                List<Function> pending = whenImported.get(href);
+                if (pending != null) {
+                    for (Function f : pending) {
+                        f.call(null);
+                    }
+                }
+                whenImported.remove(href);
+                return null;
+        };
+        if (Base == null) {
+            whenPolymerLoaded(arg -> {
+                importHref(hrefOrTag, ok, err);
+                return null;
+            });
+            return;
+        }
         if (!urlImported.contains(href)) {
             if (!isRegistered(href)) {
-                whenPolymerLoaded(new Function() {
-                    public Object call(Object arg) {
-                        Base.importHref(href, ok, err);
-                        return null;
-                    }
-                });
+                List<Function> pending = whenImported.get(href);
+                if (pending == null) {
+                    pending = new ArrayList<Function>();
+                    whenImported.put(href, pending);
+                    Base.importHref(href, done, err);
+                }
+                if (ok != null) {
+                    pending.add(ok);
+                }
                 return;
             }
             urlImported.add(href);
         }
         if (ok != null) {
-            Base.importHref(href, ok, err);
+            ok.call(null);
         }
     }
 
@@ -274,6 +313,7 @@ public abstract class Polymer {
         if (isRegisteredElement(elem)) {
             return;
         }
+
         // Delay this so as the developer gets an early version of the element and
         // can assign properties soon.
         new Timer() {
@@ -370,29 +410,46 @@ public abstract class Polymer {
         whenReady(f, null);
     }
 
+    private native static boolean htmlImportsSupported()
+    /*-{
+        return 'import' in $doc.createElement('link');
+    }-*/;
+
     /**
      * Executes a function after all imports have been loaded and when the
-     * passed element is ready to use. If HTMLImports is not available it
-     * loads the webcomponentsjs polyfill.
+     * passed element is ready to use.
+     * For browsers not supporting html imports, it loads the webcomponentsjs polyfill.
      */
     public static native void whenReady(Function f, Element e)
     /*-{
-        function done() {
-            $wnd.HTMLImports.whenReady(!e ? f : function() {
+        function registered() {
+          if (e) {
               var id = setInterval(function() {
                 if (@com.vaadin.polymer.Polymer::isRegisteredElement(*)(e)) {
                   clearInterval(id);
-                  f(e);
+                  if (f) f(e);
                 }
-              }, 0);
-            });
+              }, 10);
+          } else {
+              if (f) f();
+          }
         }
-        if (!$wnd.HTMLImports) {
+        function done() {
+            $wnd.HTMLImports.whenReady(registered);
+        }
+        function loadPolyfill() {
             var s = $doc.createElement('script');
             s.src = @com.vaadin.polymer.Polymer::absoluteHref(*)
                         ('webcomponentsjs/webcomponents-lite.min.js');
             s.onreadystatechange = s.onload = done;
             $doc.head.appendChild(s);
+        }
+        if (!$wnd.HTMLImports) {
+            if (@com.vaadin.polymer.Polymer::hasHtmlImports) {
+                registered();
+            } else {
+                loadPolyfill();
+            }
         } else {
            done();
         }
