@@ -157,3 +157,8 @@ Vaadin gwt-api-generator produces `@JsType` interfaces for JS Element level acce
 
 Since `JsInterop` was a feature experimental in GWT-2.7.0 and stable in GWT-2.8.0, and its implementation has absolutly changed from the experimental to the stable API, we have decided not to support old releases anymore, starting with gwt-api-generator 1.2.1.
 
+## Modifying the `bower_components` folder
+
+The `gwt-polymer-elements` library is bundled with all web components placed in a the `bower_components` folder.
+Though, the developer might change this location by setting the `window.gwtBowerLocation` property, or by calling the `Polymer.setGwtBowerLocation(location)` method in the application entry point.
+

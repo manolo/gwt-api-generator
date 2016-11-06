@@ -19,6 +19,8 @@ import java.util.Set;
 
 import static jsinterop.annotations.JsPackage.GLOBAL;
 
+import jsinterop.annotations.JsPackage;
+import jsinterop.annotations.JsProperty;
 import jsinterop.annotations.JsType;
 
 @SuppressWarnings({"rawtypes", "unchecked"})
@@ -28,8 +30,38 @@ public abstract class Polymer {
     public static Base Base;
     private static boolean hasHtmlImports = htmlImportsSupported();
 
+    @JsProperty(namespace = JsPackage.GLOBAL)
+    public static String performance;
+
+    /**
+     * Set the location of the bower_components for the application.
+     * By default it is computed from the module base.
+     *
+     * Additionally this can be set from JS modifying the
+     * `window.gwtBowerLocation` property.
+     */
+    @JsProperty(namespace = JsPackage.GLOBAL)
+    public static native void setGwtBowerLocation(String s);
+
+    @JsProperty(namespace = JsPackage.GLOBAL)
+    public static native String getGwtBowerLocation();
+
+
+    static {
+        if (getGwtBowerLocation() == null) {
+            String moduleBase = GWT.getModuleBaseForStaticFiles();
+            String moduleName = GWT.getModuleName();
+            // SSO linker does not set correctly the module base
+            if (!moduleBase.contains(moduleName)) {
+                moduleBase = moduleName + "/";
+            }
+            setGwtBowerLocation(moduleBase + "bower_components/");
+        }
+    }
+
     @JsType(isNative=true, namespace="Polymer")
     public interface DomApi {
+
         <T extends HTMLElement> T querySelector(String selector);
 
         JsArray querySelectorAll(String selector);
@@ -41,7 +73,6 @@ public abstract class Polymer {
 
     @JsType(isNative=true, namespace=GLOBAL)
     public interface PolymerRoot {
-
         void updateStyles();
 
         DomApi dom(Object el);
@@ -153,15 +184,11 @@ public abstract class Polymer {
             if (hrefOrTag.matches("[\\w-]+")) {
                 hrefOrTag = hrefOrTag + "/" + hrefOrTag;
             }
-            // It's not prefixed with the bower_components convention
-            if (!hrefOrTag.startsWith("bower_components")) {
-                hrefOrTag = "bower_components/" + hrefOrTag;
-            }
             // Not ending with html or js
             if (!hrefOrTag.matches(".*\\.(html|js)$")) {
                 hrefOrTag += ".html";
             }
-            hrefOrTag = GWT.getModuleBaseForStaticFiles() + hrefOrTag;
+            hrefOrTag = getGwtBowerLocation() + hrefOrTag;
         }
         return hrefOrTag;
     }
@@ -633,3 +660,4 @@ public abstract class Polymer {
         return Polymer.dom(element);
     }
 }
+
