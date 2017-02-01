@@ -338,28 +338,10 @@ public abstract class Polymer {
             return;
         }
 
-        // Delay this so as the developer gets an early version of the element and
-        // can assign properties soon.
-        new Timer() {
-            public void run() {
-                // We need to remove ownProperties from the element when it's not
-                // registered because a bug in Polymer 1.0.x
-                // https://github.com/Polymer/polymer/issues/1882
-                saveProperties((Element)elem);
-            }
-        }.schedule(0);
         // Import all necessary stuff for this element
         for (String src : imports) {
             importHref(src, null, null);
         }
-        // Wait until everything is ready
-        whenReady(new Function(){
-            public Object call(Object arg) {
-                // Restore saved ownProperties
-                restoreProperties((Element)elem);
-                return null;
-            }
-        }, (Element)elem);
     }
 
     /**
@@ -408,24 +390,6 @@ public abstract class Polymer {
     public static void updateStyles() {
         Polymer.updateStyles();
     }
-
-    /**
-     * Restore all properties saved previously to the element was
-     * registered.
-     *
-     * Hack for: https://github.com/Polymer/polymer/issues/1882
-     */
-    private static native void restoreProperties(Element e)
-    /*-{
-        if (e && e.__o) {
-            @com.vaadin.polymer.Polymer::onReady(*)(e, function(){
-                for (i in e.__o) {
-                    e[i] = e.__o[i];
-                }
-                delete e.__o;
-            });
-        }
-    }-*/;
 
     /**
      * Executes a function after all imports have been loaded.
@@ -488,33 +452,6 @@ public abstract class Polymer {
     private static void onReady(Element e, Object f) {
         whenReady((Function)f, e);
     }
-
-    /**
-     * Read all element properties and save in a JS object in the element,
-     * so as we can restore then once the element is registered.
-     *
-     * We consider all ownProperties but those beginning or ending with '_'
-     * which is the symbol used by webcomponentjs to store private info.
-     *
-     * Hack for: https://github.com/Polymer/polymer/issues/1882
-     *
-     * TODO: this is a temporary workaround, and if the issue is not fixed in
-     * polymer we could eventually implement the fix based on a generated proxy
-     * per component to store for a while any method call.
-     */
-    private static native boolean saveProperties(Element e)
-    /*-{
-        if (!@com.vaadin.polymer.Polymer::isRegisteredElement(*)(e)) {
-            var o = {};
-            for (i in e) {
-                if (e.hasOwnProperty(i) && !/(^_|_$)/.test(i)) {
-                    o[i] = e[i];
-                    delete(e[i]);
-                    e.__o = o;
-                }
-            }
-        }
-    }-*/;
 
     /**
      * Utility method to show a loading element if there is no one in
