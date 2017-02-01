@@ -30,9 +30,6 @@ public abstract class Polymer {
     public static Base Base;
     private static boolean hasHtmlImports = htmlImportsSupported();
 
-    @JsProperty(namespace = JsPackage.GLOBAL)
-    public static String performance;
-
     /**
      * Set the location of the bower_components for the application.
      * By default it is computed from the module base.
