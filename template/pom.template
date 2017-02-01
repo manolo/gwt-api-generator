@@ -116,7 +116,7 @@
             <configuration>
               <target description="Remove files to speed-up deployment" name="clean">
                 <delete includeEmptyDirs="true">
-                  <fileset dir="src/main/resources/com/vaadin/polymer/public/bower_components/" defaultexcludes="no">
+                  <fileset dir="src/main/resources/<%= nspath %>/public/bower_components/" defaultexcludes="no">
                     <include name="**/demo/**/*"/>
                     <include name="**/test/**/*"/>
                     <include name="**/docs/**/*"/>
@@ -126,7 +126,7 @@
                     <include name="**/*.md"/>
                     <include name="**/*.txt"/>
                   </fileset>
-                  <dirset dir="src/main/resources/com/vaadin/polymer/public/bower_components/">
+                  <dirset dir="src/main/resources/<%= nspath %>/public/bower_components/">
                     <include name="**/demo"/>
                     <include name="**/test"/>
                     <include name="**/docs"/>
