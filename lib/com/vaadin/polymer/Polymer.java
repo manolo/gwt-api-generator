@@ -8,8 +8,8 @@ import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Timer;
 
-import com.vaadin.polymer.elemental.Function;
-import com.vaadin.polymer.elemental.HTMLElement;
+import elemental2.dom.Function;
+import elemental2.dom.HTMLElement;
 
 import java.util.ArrayList;
 import java.util.HashMap;

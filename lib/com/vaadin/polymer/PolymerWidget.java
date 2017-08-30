@@ -7,7 +7,7 @@ import com.google.gwt.regexp.shared.MatchResult;
 import com.google.gwt.regexp.shared.RegExp;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.user.client.ui.HTMLPanel;
-import com.vaadin.polymer.elemental.*;
+import elemental2.dom.*;
 
 public class PolymerWidget extends HTMLPanel {
 
