@@ -2,6 +2,7 @@
 package <%= ns %>;
 
 import elemental2.dom.*;
+import elemental2.core.*;
 import com.vaadin.polymer.elemental.PolymerHTMLElement;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArray;
