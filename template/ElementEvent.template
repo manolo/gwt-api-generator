@@ -1,7 +1,7 @@
 <%= disclaimer() %>
 package <%= ns %>.event;
 
-import com.vaadin.polymer.elemental.*;
+import elemental2.dom.*;
 import com.google.gwt.core.client.JsArray;
 import com.google.gwt.core.client.JavaScriptObject;
 import jsinterop.annotations.JsOverlay;
