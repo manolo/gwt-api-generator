@@ -1,6 +1,5 @@
 <%= disclaimer() %>
 package <%= ns %>;
-import static jsinterop.annotations.JsPackage.GLOBAL;
 
 import elemental2.dom.*;
 import elemental2.core.*;
@@ -14,7 +13,7 @@ import jsinterop.annotations.JsType;
 /**
  * <%= getDescription(' ') %>
  */
-@JsType(isNative=true, namespace=GLOBAL)
+@JsType(isNative=true)
 public class <%= elementClassName() %> extends <%= base ? base : 'PolymerHTMLElement' %> {
 
     @JsOverlay public static final String TAG = "<%= name %>";
