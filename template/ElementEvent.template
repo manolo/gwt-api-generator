@@ -12,7 +12,7 @@ import jsinterop.annotations.JsType;
  * <%= getDescription(' ') %>
  */
 @JsType(isNative=true)
-public interface <%= camelCase(name) %>Event extends Event {
+public class <%= camelCase(name) %>Event extends Event {
 
     @JsOverlay static final String NAME = "<%= computeName(name) %>";
 <% if (hasParams()) { %>
@@ -26,7 +26,7 @@ public interface <%= camelCase(name) %>Event extends Event {
         /**
          * <%= getDescription('         ', param) %>
          */
-        @JsProperty <%= computeType(param.type) %> <%= computeGetterWithPrefix(param) %>();
+        @JsProperty native <%= computeType(param.type) %> <%= computeGetterWithPrefix(param) %>();
 <% }); %>
     }
 <% } %>

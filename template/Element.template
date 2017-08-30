@@ -26,7 +26,7 @@ public class <%= elementClassName() %> extends <%= base ? base : 'PolymerHTMLEle
      * @type <%= item.type %>
      * <%= item.isBehavior ? ('@behavior ' + item.behavior ) : ''%>
      */
-    @JsProperty native <%= computeType(item.type) %> <%= item.getter %>();
+    @JsProperty public native <%= computeType(item.type) %> <%= item.getter %>();
     /**
      * <%= getDescription('     ', item) %>
      *
@@ -35,7 +35,7 @@ public class <%= elementClassName() %> extends <%= base ? base : 'PolymerHTMLEle
      * @type <%= item.type %>
      * <%= item.isBehavior ? ('@behavior ' + item.behavior ) : ''%>
      */
-    @JsProperty native void <%= item.setter %>;
+    @JsProperty public native void <%= item.setter %>;
 <% }); %>
 <% _.forEach(getMethods(properties), function(item) { %>
     /**
@@ -47,6 +47,6 @@ public class <%= elementClassName() %> extends <%= base ? base : 'PolymerHTMLEle
      * <%= item.isBehavior ? ('@behavior ' + item.behavior ) : ''%>
      * <%= item.return && item.return.type ? '@return {' + returnString(item) + '}' : ''%>
      */
-    native <%= returnString(item) %> <%= item.method %>;
+    public native <%= returnString(item) %> <%= item.method %>;
 <% }); %>
 }
