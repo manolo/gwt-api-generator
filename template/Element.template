@@ -1,7 +1,7 @@
 <%= disclaimer() %>
 package <%= ns %>;
 
-import elemental2.dom.*;
+import com.vaadin.polymer.elemental.PolymerHTMLElement;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArray;
 import jsinterop.annotations.JsOverlay;
@@ -12,7 +12,7 @@ import jsinterop.annotations.JsType;
  * <%= getDescription(' ') %>
  */
 @JsType(isNative=true)
-public interface <%= elementClassName() %> extends <%= base ? base : 'HTMLElement' %> {
+public class <%= elementClassName() %> extends <%= base ? base : 'PolymerHTMLElement' %> {
 
     @JsOverlay public static final String TAG = "<%= name %>";
     @JsOverlay public static final String SRC = "<%= path %>";
@@ -26,7 +26,7 @@ public interface <%= elementClassName() %> extends <%= base ? base : 'HTMLElemen
      * @type <%= item.type %>
      * <%= item.isBehavior ? ('@behavior ' + item.behavior ) : ''%>
      */
-    @JsProperty <%= computeType(item.type) %> <%= item.getter %>();
+    @JsProperty native <%= computeType(item.type) %> <%= item.getter %>();
     /**
      * <%= getDescription('     ', item) %>
      *
@@ -35,7 +35,7 @@ public interface <%= elementClassName() %> extends <%= base ? base : 'HTMLElemen
      * @type <%= item.type %>
      * <%= item.isBehavior ? ('@behavior ' + item.behavior ) : ''%>
      */
-    @JsProperty void <%= item.setter %>;
+    @JsProperty native void <%= item.setter %>;
 <% }); %>
 <% _.forEach(getMethods(properties), function(item) { %>
     /**
@@ -47,6 +47,6 @@ public interface <%= elementClassName() %> extends <%= base ? base : 'HTMLElemen
      * <%= item.isBehavior ? ('@behavior ' + item.behavior ) : ''%>
      * <%= item.return && item.return.type ? '@return {' + returnString(item) + '}' : ''%>
      */
-    <%= returnString(item) %> <%= item.method %>;
+    native <%= returnString(item) %> <%= item.method %>;
 <% }); %>
 }

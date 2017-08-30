@@ -6,9 +6,8 @@ import com.google.gwt.core.client.JsArray;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.Timer;
 
-import elemental2.dom.Function;
+import com.vaadin.polymer.elemental.Function;
 import elemental2.dom.HTMLElement;
 
 import java.util.ArrayList;
@@ -22,6 +21,7 @@ import static jsinterop.annotations.JsPackage.GLOBAL;
 import jsinterop.annotations.JsPackage;
 import jsinterop.annotations.JsProperty;
 import jsinterop.annotations.JsType;
+import jsinterop.base.Js;
 
 @SuppressWarnings({"rawtypes", "unchecked"})
 public abstract class Polymer {
@@ -240,15 +240,15 @@ public abstract class Polymer {
         final String href = absoluteHref(hrefOrTag);
 
         Function done = arg -> {
-                urlImported.add(href);
-                List<Function> pending = whenImported.get(href);
-                if (pending != null) {
-                    for (Function f : pending) {
-                        f.call(null);
-                    }
+            urlImported.add(href);
+            List<Function> pending = whenImported.get(href);
+            if (pending != null) {
+                for (Function f : pending) {
+                    f.call(null);
                 }
-                whenImported.remove(href);
-                return null;
+            }
+            whenImported.remove(href);
+            return null;
         };
         if (Base == null) {
             whenPolymerLoaded(arg -> {
@@ -291,7 +291,6 @@ public abstract class Polymer {
      *
      * @param hrefs a list of absolute urls or relative paths to load.
      * @param ok callback to run in case of all import success
-     * @param err callback to run in case of failure
      */
     public static void importHref(final List<String> hrefs, final Function ok) {
         importHref(hrefs, ok, null);
@@ -355,8 +354,8 @@ public abstract class Polymer {
     /**
      * Returns the JsInterop instance of Document
      */
-    public static com.vaadin.polymer.elemental.Document getDocument() {
-        return (com.vaadin.polymer.elemental.Document)Document.get();
+    public static elemental2.dom.Document getDocument() {
+        return Js.cast(Document.get());
     }
 
     /**
@@ -377,7 +376,7 @@ public abstract class Polymer {
     }-*/;
 
     public static void ready(HTMLElement e, Function f) {
-        whenReady(f, (Element)e);
+        whenReady(f, Js.cast(e));
     }
 
     public static void ready(Element e, Function f) {
@@ -478,7 +477,7 @@ public abstract class Polymer {
      *
      * @param container : The container to show when the component is available
      * @param webcomponent : Web component to monitor
-     * @param callback : Calback function
+     * @param func : Calback function
      */
     public static void endLoading(final Element container, Element webcomponent, final Function func) {
         container.getStyle().setOpacity(0);
