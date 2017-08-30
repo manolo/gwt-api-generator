@@ -1,7 +1,7 @@
 <%= disclaimer() %>
 package <%= ns %>.event;
 
-import com.vaadin.polymer.*;
+import com.vaadin.polymer.elemental.*;
 import com.google.gwt.core.client.JsArray;
 import com.google.gwt.core.client.JavaScriptObject;
 import jsinterop.annotations.JsOverlay;
@@ -26,7 +26,7 @@ public interface <%= camelCase(name) %>Event extends Event {
         /**
          * <%= getDescription('         ', param) %>
          */
-        @JsProperty native <%= computeType(param.type) %> <%= computeGetterWithPrefix(param) %>();
+        @JsProperty <%= computeType(param.type) %> <%= computeGetterWithPrefix(param) %>();
 <% }); %>
     }
 <% } %>
