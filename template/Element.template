@@ -15,7 +15,7 @@ import com.vaadin.polymer.elemental.PolymerHTMLElement;
 /**
  * <%= getDescription(' ') %>
  */
-@JsType(isNative=true, namespace = JsPackage.GLOBAL, name = "Object")
+@JsType(isNative=true, namespace = JsPackage.GLOBAL, name = "HTMLElement")
 public class <%= elementClassName() %> extends <%= base ? base : 'PolymerHTMLElement' %> {
 
     @JsOverlay public static final String TAG = "<%= name %>";
