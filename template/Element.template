@@ -9,12 +9,13 @@ import jsinterop.annotations.JsOverlay;
 import jsinterop.annotations.JsProperty;
 import jsinterop.annotations.JsType;
 import com.vaadin.polymer.elemental.Function;
+import com.vaadin.polymer.elemental.PolymerHTMLElement;
 
 /**
  * <%= getDescription(' ') %>
  */
-@JsType(isNative=true)
-public class <%= elementClassName() %> extends <%= base ? base : 'HTMLElement' %> {
+@JsType(isNative=true, namespace = JsPackage.GLOBAL, name = "Object")
+public class <%= elementClassName() %> extends <%= base ? base : 'PolymerHTMLElement' %> {
 
     @JsOverlay public static final String TAG = "<%= name %>";
     @JsOverlay public static final String SRC = "<%= path %>";
