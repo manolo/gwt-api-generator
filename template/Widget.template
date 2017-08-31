@@ -12,6 +12,7 @@ import com.google.gwt.core.client.JsArray;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.vaadin.polymer.elemental.Function;
+import elemental2.dom.Element;
 import jsinterop.base.Js;
 
 /**
