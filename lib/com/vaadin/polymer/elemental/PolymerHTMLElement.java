@@ -6,7 +6,7 @@ import jsinterop.annotations.JsProperty;
 import jsinterop.annotations.JsType;
 import elemental2.dom.HTMLElement;
 
-@JsType(isNative=true, namespace=GLOBAL, name="Object")
+@JsType(isNative=true, namespace=GLOBAL, name="HTMLElement")
 public class PolymerHTMLElement extends HTMLElement {
     /**
      * Polymer’s custom property shim evaluates and applies custom property values once at element creation time.
