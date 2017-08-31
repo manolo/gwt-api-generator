@@ -5,16 +5,16 @@ import jsinterop.annotations.JsType;
 
 import static jsinterop.annotations.JsPackage.GLOBAL;
 
-@JsType(isNative=true, namespace=GLOBAL)
-public interface Event {
+@JsType(isNative=true, namespace=GLOBAL, name="Event")
+public class Event extends elemental2.dom.Event{
     @JsProperty
-    String getType();
+    public native String getType();
 
     @JsProperty
-    Detail getDetail();
+    public native Detail getDetail();
 
     @JsProperty
-    EventTarget getTarget();
+    public native EventTarget getTarget();
 
     @JsType(isNative=true)
     public interface Detail {

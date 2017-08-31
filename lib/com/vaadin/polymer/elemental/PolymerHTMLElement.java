@@ -15,7 +15,7 @@ public class PolymerHTMLElement extends HTMLElement {
      */
     public native void updateStyles();
 
-    @JsProperty native HTMLElement getRoot();
+    @JsProperty public native HTMLElement getRoot();
 
-    native void debounce(String name, Function f, int timeout);
+    public native void debounce(String name, Function f, int timeout);
 }
