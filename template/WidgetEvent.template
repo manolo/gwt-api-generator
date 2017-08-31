@@ -4,6 +4,7 @@ package <%= ns %>.widget.event;
 import com.google.gwt.event.dom.client.DomEvent;
 import com.google.gwt.core.client.JsArray;
 import com.google.gwt.core.client.JavaScriptObject;
+import jsinterop.base.Js;
 
 /**
  * <%= getDescription(' ') %>
@@ -26,7 +27,7 @@ public class <%= camelCase(name) %>Event extends DomEvent<<%= camelCase(name) %>
     }
 
     public <%= ns %>.event.<%= camelCase(name) %>Event getPolymerEvent() {
-        return (<%= ns %>.event.<%= camelCase(name) %>Event)super.getNativeEvent();
+        return Js.cast(super.getNativeEvent());
     }
 
 <% if (hasParams())  _.forEach(params, function(param){ %>

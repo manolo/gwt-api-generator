@@ -1,28 +1,40 @@
 <%= disclaimer() %>
 package <%= ns %>.event;
 
-import com.vaadin.polymer.elemental.*;
 import com.google.gwt.core.client.JsArray;
 import com.google.gwt.core.client.JavaScriptObject;
 import jsinterop.annotations.JsOverlay;
 import jsinterop.annotations.JsProperty;
+import jsinterop.annotations.JsPackage;
 import jsinterop.annotations.JsType;
 import elemental2.dom.Element;
+import com.vaadin.polymer.elemental.Event;
+import elemental2.dom.EventInit;
+import elemental2.dom.EventTarget;
 
 /**
  * <%= getDescription(' ') %>
  */
-@JsType(isNative=true)
-public interface <%= camelCase(name) %>Event extends Event {
+@JsType(isNative=true, namespace=JsPackage.GLOBAL, name="Event")
+public class <%= camelCase(name) %>Event extends Event {
 
-    @JsOverlay static final String NAME = "<%= computeName(name) %>";
+    @JsOverlay public static final String NAME = "<%= computeName(name) %>";
+
+    public <%= camelCase(name) %>Event(EventInit eventInitDict) {
+        super(NAME, eventInitDict);
+    }
+
+    public <%= camelCase(name) %>Event() {
+        super(NAME);
+    }
+
 <% if (hasParams()) { %>
     @Override
     @JsProperty
-    Detail getDetail();
+    public native Detail getDetail();
 
     @JsType(isNative=true)
-    interface Detail extends Event.Detail {
+    public interface Detail extends Event.Detail {
 <% _.forEach(params, function(param){ %>
         /**
          * <%= getDescription('         ', param) %>
