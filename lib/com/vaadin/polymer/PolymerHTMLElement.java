@@ -5,6 +5,7 @@ import static jsinterop.annotations.JsPackage.GLOBAL;
 import elemental2.dom.HTMLElement;
 import jsinterop.annotations.JsOverlay;
 import jsinterop.annotations.JsType;
+import com.vaadin.polymer.elemental.Function;
 
 @JsType(isNative=true, namespace=GLOBAL, name="HTMLElement")
 public class PolymerHTMLElement extends HTMLElement {

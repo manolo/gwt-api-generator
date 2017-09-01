@@ -18,6 +18,9 @@ public interface <%= className() %> {
 
     @JsOverlay public static final String NAME = "<%= name %>";
     @JsOverlay public static final String SRC = "<%= path %>";
+    @JsOverlay public default <T> T cast() {
+      return (T)this;
+    }
 
 <% _.forEach(getGettersAndSetters(properties), function(item) { %>
     /**

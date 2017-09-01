@@ -7,7 +7,7 @@ import com.google.gwt.regexp.shared.MatchResult;
 import com.google.gwt.regexp.shared.RegExp;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.user.client.ui.HTMLPanel;
-import com.vaadin.polymer.elemental.PolymerHTMLElement;
+import com.vaadin.polymer.PolymerHTMLElement;
 import com.vaadin.polymer.elemental.Function;
 import jsinterop.base.Js;
 

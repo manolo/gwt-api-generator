@@ -9,8 +9,8 @@ import jsinterop.annotations.JsOverlay;
 import jsinterop.annotations.JsPackage;
 import jsinterop.annotations.JsProperty;
 import jsinterop.annotations.JsType;
+import com.vaadin.polymer.PolymerHTMLElement;
 import com.vaadin.polymer.elemental.Function;
-import com.vaadin.polymer.elemental.PolymerHTMLElement;
 
 /**
  * <%= getDescription(' ') %>

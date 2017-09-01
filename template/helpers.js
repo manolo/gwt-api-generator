@@ -111,6 +111,7 @@ module.exports = {
     if (/^boolean/i.test(t)) return 'boolean';
     if (/^array/i.test(t)) return 'JsArray';
     if (/^element/i.test(t)) return 'Element';
+    if (/^htmlelement/i.test(t)) return 'HTMLElement';
     if (/^number/i.test(t)) return 'double';
     if (/^function/i.test(t)) return 'Function';
     if (this.findBehavior(t)) {
