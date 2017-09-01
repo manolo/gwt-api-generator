@@ -1,4 +1,4 @@
-package com.vaadin.polymer.elemental;
+package com.vaadin.polymer;
 
 import static jsinterop.annotations.JsPackage.GLOBAL;
 
