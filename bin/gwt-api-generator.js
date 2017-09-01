@@ -3,6 +3,9 @@
 var gulp = require('gulp')
 require('../gulpfile');
 
+var gutil = require('gulp-util');
+gutil.log('Running gwt-api-generator version: ' + require('../package.json').version);
+
 require('coa').Cmd()
   .name(process.argv[1])
   .title('gwt-api-generator')
