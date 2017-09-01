@@ -2,12 +2,16 @@ package com.vaadin.polymer.elemental;
 
 import static jsinterop.annotations.JsPackage.GLOBAL;
 
-import jsinterop.annotations.JsProperty;
-import jsinterop.annotations.JsType;
 import elemental2.dom.HTMLElement;
+import jsinterop.annotations.JsOverlay;
+import jsinterop.annotations.JsType;
 
 @JsType(isNative=true, namespace=GLOBAL, name="HTMLElement")
 public class PolymerHTMLElement extends HTMLElement {
+
+    /** Properties and methods added by Polymer API **/
+    public HTMLElement root;
+    public native void debounce(String name, Function f, int timeout);
     /**
      * Polymer’s custom property shim evaluates and applies custom property values once at element creation time.
      * In order to have an element (and its subtree) re- evaluate custom property values due to dynamic changes
@@ -15,7 +19,18 @@ public class PolymerHTMLElement extends HTMLElement {
      */
     public native void updateStyles();
 
-    @JsProperty public native HTMLElement getRoot();
+    /** Missing properties in elemental2.dom.Element **/
+    public String textContent;
 
-    public native void debounce(String name, Function f, int timeout);
+    /** Helper methods **/
+    @SuppressWarnings("unchecked")
+    @JsOverlay public final <T> T cast() {
+      return (T) this;
+    }
+
+    @SuppressWarnings("unchecked")
+    @JsOverlay public static final <T extends PolymerHTMLElement>T as(Object o) {
+      return (T) o;
+    }
+
 }
