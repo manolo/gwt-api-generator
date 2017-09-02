@@ -7,8 +7,8 @@ import jsinterop.annotations.JsOverlay;
 import jsinterop.annotations.JsType;
 import com.vaadin.polymer.elemental.Function;
 
-@JsType(isNative=true, namespace=GLOBAL, name="HTMLElement")
-public class PolymerHTMLElement extends HTMLElement {
+@JsType(isNative=true, namespace = GLOBAL, name = "HTMLElement")
+public class PolymerElement extends HTMLElement {
 
     /** Properties and methods added by Polymer API **/
     public HTMLElement root;
@@ -30,7 +30,7 @@ public class PolymerHTMLElement extends HTMLElement {
     }
 
     @SuppressWarnings("unchecked")
-    @JsOverlay public static final <T extends PolymerHTMLElement>T as(Object o) {
+    @JsOverlay public static final <T extends PolymerElement>T as(Object o) {
       return (T) o;
     }
 
