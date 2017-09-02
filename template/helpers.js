@@ -109,7 +109,7 @@ module.exports = {
     if (/.*\|.*/.test(t)) return 'Object';
     if (/^string/i.test(t)) return 'String';
     if (/^boolean/i.test(t)) return 'boolean';
-    if (/^array/i.test(t)) return 'JsArray';
+    if (/^array/i.test(t)) return 'Array';
     if (/^element/i.test(t)) return 'Element';
     if (/^htmlelement/i.test(t)) return 'HTMLElement';
     if (/^number/i.test(t)) return 'double';

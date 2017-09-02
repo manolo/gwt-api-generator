@@ -3,7 +3,7 @@ package <%= ns %>;
 
 import elemental2.dom.*;
 import com.google.gwt.core.client.JavaScriptObject;
-import com.google.gwt.core.client.JsArray;
+import elemental2.core.Array;
 import jsinterop.annotations.JsOverlay;
 import jsinterop.annotations.JsProperty;
 import jsinterop.annotations.JsType;

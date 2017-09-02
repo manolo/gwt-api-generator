@@ -5,7 +5,7 @@ import jsinterop.annotations.JsProperty;
 import jsinterop.annotations.JsType;
 import elemental2.dom.HTMLElement;
 
-import com.google.gwt.core.client.JsArray;
+import elemental2.core.Array;
 
 @JsType(isNative=true, namespace=GLOBAL, name="HTMLElement")
 public class Template extends HTMLElement {
@@ -18,8 +18,8 @@ public class Template extends HTMLElement {
     @JsProperty public native String getIdexAs();
     @JsProperty public native void setIndexAs(String value);
 
-    @JsProperty public native JsArray<?> getItems();
-    @JsProperty public native void setItems(JsArray<?> items);
+    @JsProperty public native Array<?> getItems();
+    @JsProperty public native void setItems(Array<?> items);
 
     @JsProperty public native void setFilter(Function<Boolean, ?> items);
 
