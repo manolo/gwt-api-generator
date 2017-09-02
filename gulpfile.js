@@ -230,19 +230,15 @@ gulp.task('generate:widget-events', ['parse'], function() {
    });
 });
 
-gulp.task('generate:gwt-module', function() {
-  if (!args.excludeLib) {
+gulp.task('generate:gwt-module', function () {
+  if (args.moduleName != 'Elements' || args.groupId != 'com.vaadin.polymer') {
+    var dest = globalVar.publicDir.replace(/[^\/]+\/?$/, '');
+    gutil.log("Generating Module: " + dest + args.moduleName + ".gwt.xml");
     return gulp.src(tplDir + "GwtModule.template")
-      .pipe(rename("Elements.gwt.xml"))
-      .pipe(gulp.dest(globalVar.publicDir + "../"));
+      .pipe(rename(args.moduleName + ".gwt.xml"))
+      .pipe(gulp.dest(dest));
   }
 });
-
-gulp.task('copy:static-gwt-module', function() {
-  return gulp.src(tplDir + "Elements.gwt.xml")
-    .pipe(gulp.dest(globalVar.publicDirBase + '/com/vaadin/polymer/'));
-});
-
 
 gulp.task('generate:elements-all', ['generate:elements', 'generate:events']);
 
@@ -281,8 +277,8 @@ gulp.task('copy:pom', function() {
 
 gulp.task('default', function(){
   if(args.pom) {
-    runSequence('clean', 'bower:install', 'generate', 'copy:lib', 'copy:static-gwt-module', 'copy:pom');
+    runSequence('clean', 'bower:install', 'generate', 'copy:lib', 'copy:pom');
   } else {
-    runSequence('clean', 'bower:install', 'generate', 'copy:lib', 'copy:static-gwt-module');
+    runSequence('clean', 'bower:install', 'generate', 'copy:lib');
   }
 });
