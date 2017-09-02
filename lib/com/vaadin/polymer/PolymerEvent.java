@@ -1,4 +1,4 @@
-package com.vaadin.polymer.elemental;
+package com.vaadin.polymer;
 
 import jsinterop.annotations.JsProperty;
 import jsinterop.annotations.JsType;
@@ -7,14 +7,19 @@ import elemental2.dom.EventTarget;
 
 import static jsinterop.annotations.JsPackage.GLOBAL;
 
-@JsType(isNative=true, namespace=GLOBAL, name="Event")
-public class Event extends elemental2.dom.Event{
 
-    public Event(String type, EventInit eventInitDict) {
+/**
+ * PolymerEvent is a class over the Element implementation of elemental2 adding
+ * some properties present in Polymer Events, or missing in the elemental2 API.
+ */
+@JsType(isNative=true, namespace=GLOBAL, name="Event")
+public class PolymerEvent extends elemental2.dom.Event {
+
+    public PolymerEvent(String type, EventInit eventInitDict) {
         super(type, eventInitDict);
     }
 
-    public Event(String type) {
+    public PolymerEvent(String type) {
         super(type);
     }
 
@@ -31,3 +36,4 @@ public class Event extends elemental2.dom.Event{
     public interface Detail {
     }
 }
+

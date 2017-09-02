@@ -7,6 +7,11 @@ import jsinterop.annotations.JsOverlay;
 import jsinterop.annotations.JsType;
 import com.vaadin.polymer.elemental.Function;
 
+/**
+ * PolymerElement is a class over the HTMLElement of elemental2 adding
+ * some utility methods present in Polymer Elements, or missing in the
+ * elemental2 API.
+ */
 @JsType(isNative=true, namespace = GLOBAL, name = "HTMLElement")
 public class PolymerElement extends HTMLElement {
 
