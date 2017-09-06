@@ -7,7 +7,7 @@ import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.DOM;
 
-import com.vaadin.polymer.elemental.Function;
+import com.vaadin.polymer.PolymerFunction;
 import elemental2.dom.HTMLElement;
 
 import java.util.ArrayList;

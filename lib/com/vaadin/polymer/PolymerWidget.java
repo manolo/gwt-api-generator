@@ -8,7 +8,7 @@ import com.google.gwt.regexp.shared.RegExp;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.vaadin.polymer.PolymerElement;
-import com.vaadin.polymer.elemental.Function;
+import com.vaadin.polymer.PolymerFunction;
 import jsinterop.base.Js;
 
 public class PolymerWidget extends HTMLPanel {

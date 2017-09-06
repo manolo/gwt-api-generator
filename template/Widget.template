@@ -11,7 +11,7 @@ import com.vaadin.polymer.PolymerWidget;
 import elemental2.core.Array;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.core.client.JavaScriptObject;
-import com.vaadin.polymer.elemental.PolymerFunction;
+import com.vaadin.polymer.PolymerFunction;
 import elemental2.dom.Element;
 import elemental2.dom.HTMLElement;
 import jsinterop.base.Js;
