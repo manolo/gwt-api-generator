@@ -17,7 +17,7 @@ public class PolymerElement extends HTMLElement {
 
     /** Properties and methods added by Polymer API **/
     public HTMLElement root;
-    public native void debounce(String name, PolymerFunction f, int timeout);
+    public native void debounce(String name, Function f, int timeout);
     /**
      * Polymer’s custom property shim evaluates and applies custom property values once at element creation time.
      * In order to have an element (and its subtree) re- evaluate custom property values due to dynamic changes

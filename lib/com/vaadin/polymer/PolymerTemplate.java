@@ -21,7 +21,7 @@ public class PolymerTemplate extends HTMLElement {
     @JsProperty public native Array<?> getItems();
     @JsProperty public native void setItems(Array<?> items);
 
-    @JsProperty public native void setFilter(PolymerFunction<Boolean, ?> items);
+    @JsProperty public native void setFilter(Function<Boolean, ?> items);
 
     @JsProperty public native void setIf(String value);
 }
