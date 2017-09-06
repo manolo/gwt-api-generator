@@ -78,7 +78,7 @@ public class PolymerWidget extends HTMLPanel {
         return addDomHandler(handler, ClickEvent.getType());
     }
 
-    public void ready(Function<?, ?> f) {
+    public void ready(PolymerFunction<?, ?> f) {
         Polymer.ready(getElement(), f);
     }
 
