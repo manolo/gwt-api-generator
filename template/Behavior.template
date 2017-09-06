@@ -7,7 +7,7 @@ import elemental2.core.Array;
 import jsinterop.annotations.JsOverlay;
 import jsinterop.annotations.JsProperty;
 import jsinterop.annotations.JsType;
-import com.vaadin.polymer.elemental.Function;
+import com.vaadin.polymer.elemental.PolymerFunction;
 
 
 /**

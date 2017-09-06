@@ -1,4 +1,4 @@
-package com.vaadin.polymer.elemental;
+package com.vaadin.polymer;
 
 import static jsinterop.annotations.JsPackage.GLOBAL;
 import jsinterop.annotations.JsProperty;
@@ -8,7 +8,7 @@ import elemental2.dom.HTMLElement;
 import elemental2.core.Array;
 
 @JsType(isNative=true, namespace=GLOBAL, name="HTMLElement")
-public class Template extends HTMLElement {
+public class PolymerTemplate extends HTMLElement {
     @JsProperty public native String getIs();
     @JsProperty public native void setIs(String value);
 

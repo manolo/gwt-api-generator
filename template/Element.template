@@ -10,7 +10,7 @@ import jsinterop.annotations.JsPackage;
 import jsinterop.annotations.JsProperty;
 import jsinterop.annotations.JsType;
 import com.vaadin.polymer.PolymerElement;
-import com.vaadin.polymer.elemental.Function;
+import com.vaadin.polymer.elemental.PolymerFunction;
 
 /**
  * <%= getDescription(' ') %>

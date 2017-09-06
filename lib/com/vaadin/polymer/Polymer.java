@@ -444,7 +444,7 @@ public abstract class Polymer {
 
     /**
      * If an element is not ready, loops until it gets ready, then
-     * run a Function (JsFunction or JavaFunction)
+     * run a PolymerFunction (JsFunction or JavaFunction)
      * @deprecated use {@link #whenReady(Function, Element)} instead.
      */
     @Deprecated
