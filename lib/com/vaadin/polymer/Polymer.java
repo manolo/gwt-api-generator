@@ -120,7 +120,7 @@ public abstract class Polymer {
          * timing (after the current method finishes, but before the next event from the event
          * queue is processed). Returns a handle that can be used to cancel the task.
          */
-        Object async(Function method, int wait);
+        Object async(PolymerFunction method, int wait);
 
         /**
          * Cancels the identified async task.
@@ -143,7 +143,7 @@ public abstract class Polymer {
         /**
          *  Dynamically imports an HTML document.
          */
-        void importHref(String href, Function onload, Function onerror);
+        void importHref(String href, PolymerFunction onload, PolymerFunction onerror);
 
         /**
          * Takes a URL relative to the <dom-module> of an imported Polymer element, and returns
@@ -154,7 +154,7 @@ public abstract class Polymer {
     }
 
     private static Set<String> urlImported = new HashSet<>();
-    private static HashMap<String, List<Function>> whenImported = new HashMap<>();
+    private static HashMap<String, List<PolymerFunction>> whenImported = new HashMap<>();
 
     /**
      * Inserts the appropriate &lt;import&gt; of a component given by url.
@@ -171,7 +171,7 @@ public abstract class Polymer {
      * @param href either an absolute url or a path relative to bower_components folder.
      * @param ok callback to run in case of success
      */
-    public static void importHref(String href, Function ok) {
+    public static void importHref(String href, PolymerFunction ok) {
         importHref(href, ok, null);
     }
 
@@ -191,7 +191,7 @@ public abstract class Polymer {
     }
 
     // Loads Polymer once if not done yet, and queue all callbaks until ready
-    private static native void whenPolymerLoaded(Function ok)
+    private static native void whenPolymerLoaded(PolymerFunction ok)
     /*-{
         function resolve() {
           // Set our static reference to Base
@@ -236,14 +236,14 @@ public abstract class Polymer {
      * @param ok callback to run in case of success
      * @param err callback to run in case of failure
      */
-    public static void importHref(String hrefOrTag, final Function ok, final Function err) {
+    public static void importHref(String hrefOrTag, final PolymerFunction ok, final PolymerFunction err) {
         final String href = absoluteHref(hrefOrTag);
 
-        Function done = arg -> {
+        PolymerFunction done = arg -> {
             urlImported.add(href);
-            List<Function> pending = whenImported.get(href);
+            List<PolymerFunction> pending = whenImported.get(href);
             if (pending != null) {
-                for (Function f : pending) {
+                for (PolymerFunction f : pending) {
                     f.call(null);
                 }
             }
@@ -259,9 +259,9 @@ public abstract class Polymer {
         }
         if (!urlImported.contains(href)) {
             if (!isRegistered(href)) {
-                List<Function> pending = whenImported.get(href);
+                List<PolymerFunction> pending = whenImported.get(href);
                 if (pending == null) {
-                    pending = new ArrayList<Function>();
+                    pending = new ArrayList<PolymerFunction>();
                     whenImported.put(href, pending);
                     Base.importHref(href, done, err);
                 }
@@ -292,7 +292,7 @@ public abstract class Polymer {
      * @param hrefs a list of absolute urls or relative paths to load.
      * @param ok callback to run in case of all import success
      */
-    public static void importHref(final List<String> hrefs, final Function ok) {
+    public static void importHref(final List<String> hrefs, final PolymerFunction ok) {
         importHref(hrefs, ok, null);
     }
 
@@ -303,8 +303,8 @@ public abstract class Polymer {
      * @param ok callback to run in case of all import success
      * @param err callback to run in case of failure
      */
-    public static void importHref(final List<String> hrefs, final Function ok, Function err) {
-        Function allOk = ok == null ? ok : new Function() {
+    public static void importHref(final List<String> hrefs, final PolymerFunction ok, PolymerFunction err) {
+        PolymerFunction allOk = ok == null ? ok : new PolymerFunction() {
             int count = hrefs.size();
             public Object call(Object arg) {
                 if (--count == 0) {
@@ -375,11 +375,11 @@ public abstract class Polymer {
         return !!e && e.constructor !== $wnd.HTMLElement && e.constructor != $wnd.HTMLUnknownElement;
     }-*/;
 
-    public static void ready(HTMLElement e, Function f) {
+    public static void ready(HTMLElement e, PolymerFunction f) {
         whenReady(f, Js.cast(e));
     }
 
-    public static void ready(Element e, Function f) {
+    public static void ready(Element e, PolymerFunction f) {
         whenReady(f, e);
     }
 
@@ -393,7 +393,7 @@ public abstract class Polymer {
     /**
      * Executes a function after all imports have been loaded.
      */
-    public static void whenReady(Function f) {
+    public static void whenReady(PolymerFunction f) {
         whenReady(f, null);
     }
 
@@ -407,7 +407,7 @@ public abstract class Polymer {
      * passed element is ready to use.
      * For browsers not supporting html imports, it loads the webcomponentsjs polyfill.
      */
-    public static native void whenReady(Function f, Element e)
+    public static native void whenReady(PolymerFunction f, Element e)
     /*-{
         function registered() {
           if (e) {
@@ -449,7 +449,7 @@ public abstract class Polymer {
      */
     @Deprecated
     private static void onReady(Element e, Object f) {
-        whenReady((Function)f, e);
+        whenReady((PolymerFunction)f, e);
     }
 
     /**
@@ -479,10 +479,10 @@ public abstract class Polymer {
      * @param webcomponent : Web component to monitor
      * @param func : Calback function
      */
-    public static void endLoading(final Element container, Element webcomponent, final Function func) {
+    public static void endLoading(final Element container, Element webcomponent, final PolymerFunction func) {
         container.getStyle().setOpacity(0);
         container.getStyle().setProperty("transition", "opacity 1.1s");
-        ready(webcomponent, new Function() {
+        ready(webcomponent, new PolymerFunction() {
             public Object call(Object arg) {
                 reFlow();
                 container.getStyle().setOpacity(1);
@@ -569,7 +569,7 @@ public abstract class Polymer {
      * Utility method for setting a function to a JS object.
      * Useful for binding functions to templates.
      */
-    public static void function(Object jso, String name, Function fnc) {
+    public static void function(Object jso, String name, PolymerFunction fnc) {
         property(jso, name, fnc);
     }
 
