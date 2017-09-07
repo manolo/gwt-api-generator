@@ -39,7 +39,7 @@ public class <%= camelCase(name) %>Event extends PolymerEvent {
         /**
          * <%= getDescription('         ', param) %>
          */
-        @JsProperty <%= computeType(param.type) %> <%= computeGetterWithPrefix(param) %>();
+        @JsProperty <%= computeGenericType(param.type) %> <%= computeType(param.type) %> <%= computeGetterWithPrefix(param) %>();
 <% }); %>
     }
 <% } %>
