@@ -34,7 +34,7 @@ public class <%= camelCase(name) %>Event extends DomEvent<<%= camelCase(name) %>
     /**
      * <%= getDescription('     ', param) %>
      */
-    public <%= computeType(param.type) %> <%= computeGetterWithPrefix(param) %>() {
+    public <%= computeGenericType(param.type) %> <%= computeType(param.type) %> <%= computeGetterWithPrefix(param) %>() {
         return getPolymerEvent().getDetail().<%= computeGetterWithPrefix(param) %>();
     }
 <% }); %>
