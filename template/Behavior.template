@@ -52,6 +52,6 @@ public interface <%= className() %> {
      * <%= item.isBehavior ? ('@behavior ' + item.behavior ) : ''%>
      * <%= item.return && item.return.type ? '@return {' + returnString(item) + '}' : ''%>
      */
-    <%= returnString(item) %> <%= item.method %>;
+    <%= item.return && item.return.type ?  computeGenericType(item.return.type): ''%> <%= returnString(item) %> <%= item.method %>;
 <% }); %>
 }
