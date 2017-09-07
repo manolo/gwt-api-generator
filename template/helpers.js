@@ -123,6 +123,17 @@ module.exports = {
 
     return "JavaScriptObject";
   },
+  computeGenericType: function(t) {
+      if (!t) return '';
+      // TODO: Sometimes type have a syntax like: (number|string)
+      // We should be able to overload those methods instead of using
+      // Object, but JsInterop does not support well overloading
+
+      if (/^array/i.test(t)) return '<E>';
+
+
+      return "";
+    },
   sortProperties: function(properties) {
   },
   getGettersAndSetters: function(properties) {

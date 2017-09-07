@@ -30,7 +30,7 @@ public class <%= elementClassName() %> extends <%= base ? base : 'PolymerElement
      * @type <%= item.type %>
      * <%= item.isBehavior ? ('@behavior ' + item.behavior ) : ''%>
      */
-    @JsProperty public native <%= computeType(item.type) %> <%= item.getter %>();
+    @JsProperty public native <%= computeGenericType(item.type) %> <%= computeType(item.type) %> <%= item.getter %>();
     /**
      * <%= getDescription('     ', item) %>
      *
