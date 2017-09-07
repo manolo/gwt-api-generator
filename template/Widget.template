@@ -61,7 +61,7 @@ public class <%= className() %> extends <%= base ? base : 'PolymerWidget' %> {
      * @type <%= item.type %>
      * <%= item.isBehavior ? ('@behavior ' + item.behavior ) : ''%>
      */
-    public void <%= item.setter %> {
+    public <%= computeGenericType(item.type) %> void <%= item.setter %> {
         getPolymerElement().<%= computeSetterWithPrefix(item) %>(value);
     }
 <% }); %>
