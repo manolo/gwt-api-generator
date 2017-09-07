@@ -39,7 +39,7 @@ public class <%= elementClassName() %> extends <%= base ? base : 'PolymerElement
      * @type <%= item.type %>
      * <%= item.isBehavior ? ('@behavior ' + item.behavior ) : ''%>
      */
-    @JsProperty public native void <%= item.setter %>;
+    @JsProperty public native <%= computeGenericType(item.type) %> void <%= item.setter %>;
 <% }); %>
 <% _.forEach(getMethods(properties), function(item) { %>
     /**
