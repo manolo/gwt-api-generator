@@ -31,7 +31,7 @@ public interface <%= className() %> {
      * @type <%= item.type %>
      * <%= item.isBehavior ? ('@behavior ' + item.behavior ) : ''%>
      */
-    @JsProperty <%= computeType(item.type) %> <%= item.getter %>();
+    @JsProperty <%= computeGenericType(item.type) %> <%= computeType(item.type) %> <%= item.getter %>();
     /**
      * <%= getDescription('     ', item) %>
      *
@@ -40,7 +40,7 @@ public interface <%= className() %> {
      * @type <%= item.type %>
      * <%= item.isBehavior ? ('@behavior ' + item.behavior ) : ''%>
      */
-    @JsProperty void <%= item.setter %>;
+    @JsProperty <%= computeGenericType(item.type) %> void <%= item.setter %>;
 <% }); %>
 <% _.forEach(getMethods(properties), function(item) { %>
     /**
