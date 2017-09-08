@@ -109,10 +109,11 @@ module.exports = {
     if (/.*\|.*/.test(t)) return 'Object';
     if (/^string/i.test(t)) return 'String';
     if (/^boolean/i.test(t)) return 'boolean';
-    if (/^array/i.test(t)) return 'JsArray';
+    if (/^array/i.test(t)) return 'Array<E>';
     if (/^element/i.test(t)) return 'Element';
+    if (/^htmlelement/i.test(t)) return 'HTMLElement';
     if (/^number/i.test(t)) return 'double';
-    if (/^function/i.test(t)) return 'Function';
+    if (/^function/i.test(t)) return 'PolymerFunction';
     if (this.findBehavior(t)) {
       return this.camelCase(t);
     }
@@ -122,6 +123,17 @@ module.exports = {
 
     return "JavaScriptObject";
   },
+  computeGenericType: function(t) {
+      if (!t) return '';
+      // TODO: Sometimes type have a syntax like: (number|string)
+      // We should be able to overload those methods instead of using
+      // Object, but JsInterop does not support well overloading
+
+      if (/^array/i.test(t)) return '<E>';
+
+
+      return "";
+    },
   sortProperties: function(properties) {
   },
   getGettersAndSetters: function(properties) {
@@ -173,7 +185,7 @@ module.exports = {
     var arr = this.getGettersAndSetters(properties);
     _.forEach(arr, function(item) {
       var itType = this.computeType(item.type) ;
-      if (!/(Function|String|boolean)/.test(itType)) {
+      if (!/(PolymerFunction|String|boolean)/.test(itType)) {
         for (var j = 0; j< arr.length; j++) {
           if (arr[j].name == item.name && arr[j].type == 'String') {
             return;
@@ -263,7 +275,7 @@ module.exports = {
     return str.indexOf(substr) === 0;
   },
   signParamString: function(method) {
-    if (method.type != 'Function') {
+    if (method.type != 'PolymerFunction') {
       return method.type;
     }
     var result = [];

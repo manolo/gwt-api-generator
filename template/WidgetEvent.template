@@ -2,8 +2,9 @@
 package <%= ns %>.widget.event;
 
 import com.google.gwt.event.dom.client.DomEvent;
-import com.google.gwt.core.client.JsArray;
+import elemental2.core.Array;
 import com.google.gwt.core.client.JavaScriptObject;
+import jsinterop.base.Js;
 
 /**
  * <%= getDescription(' ') %>
@@ -26,14 +27,14 @@ public class <%= camelCase(name) %>Event extends DomEvent<<%= camelCase(name) %>
     }
 
     public <%= ns %>.event.<%= camelCase(name) %>Event getPolymerEvent() {
-        return (<%= ns %>.event.<%= camelCase(name) %>Event)super.getNativeEvent();
+        return Js.cast(super.getNativeEvent());
     }
 
 <% if (hasParams())  _.forEach(params, function(param){ %>
     /**
      * <%= getDescription('     ', param) %>
      */
-    public <%= computeType(param.type) %> <%= computeGetterWithPrefix(param) %>() {
+    public <%= computeGenericType(param.type) %> <%= computeType(param.type) %> <%= computeGetterWithPrefix(param) %>() {
         return getPolymerEvent().getDetail().<%= computeGetterWithPrefix(param) %>();
     }
 <% }); %>

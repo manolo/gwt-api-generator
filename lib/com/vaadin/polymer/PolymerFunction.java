@@ -1,9 +1,8 @@
-package com.vaadin.polymer.elemental;
+package com.vaadin.polymer;
 
 import jsinterop.annotations.JsFunction;
 
 @JsFunction
-public interface Function<RET, ARG>  {
+public interface PolymerFunction<RET, ARG>  {
     public RET call(ARG arg);
 }
-

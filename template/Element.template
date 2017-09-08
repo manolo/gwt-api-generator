@@ -1,18 +1,22 @@
 <%= disclaimer() %>
 package <%= ns %>;
 
-import com.vaadin.polymer.elemental.*;
+import elemental2.dom.HTMLElement;
+import elemental2.dom.Element;
 import com.google.gwt.core.client.JavaScriptObject;
-import com.google.gwt.core.client.JsArray;
+import elemental2.core.Array;
 import jsinterop.annotations.JsOverlay;
+import jsinterop.annotations.JsPackage;
 import jsinterop.annotations.JsProperty;
 import jsinterop.annotations.JsType;
+import com.vaadin.polymer.PolymerElement;
+import com.vaadin.polymer.PolymerFunction;
 
 /**
  * <%= getDescription(' ') %>
  */
-@JsType(isNative=true)
-public interface <%= elementClassName() %> extends <%= base ? base : 'HTMLElement' %> {
+@JsType(isNative=true, namespace = JsPackage.GLOBAL, name = "HTMLElement")
+public class <%= elementClassName() %> extends <%= base ? base : 'PolymerElement' %> {
 
     @JsOverlay public static final String TAG = "<%= name %>";
     @JsOverlay public static final String SRC = "<%= path %>";
@@ -26,7 +30,7 @@ public interface <%= elementClassName() %> extends <%= base ? base : 'HTMLElemen
      * @type <%= item.type %>
      * <%= item.isBehavior ? ('@behavior ' + item.behavior ) : ''%>
      */
-    @JsProperty <%= computeType(item.type) %> <%= item.getter %>();
+    @JsProperty public native <%= computeGenericType(item.type) %> <%= computeType(item.type) %> <%= item.getter %>();
     /**
      * <%= getDescription('     ', item) %>
      *
@@ -35,7 +39,7 @@ public interface <%= elementClassName() %> extends <%= base ? base : 'HTMLElemen
      * @type <%= item.type %>
      * <%= item.isBehavior ? ('@behavior ' + item.behavior ) : ''%>
      */
-    @JsProperty void <%= item.setter %>;
+    @JsProperty public native <%= computeGenericType(item.type) %> void <%= item.setter %>;
 <% }); %>
 <% _.forEach(getMethods(properties), function(item) { %>
     /**
@@ -47,6 +51,6 @@ public interface <%= elementClassName() %> extends <%= base ? base : 'HTMLElemen
      * <%= item.isBehavior ? ('@behavior ' + item.behavior ) : ''%>
      * <%= item.return && item.return.type ? '@return {' + returnString(item) + '}' : ''%>
      */
-    <%= returnString(item) %> <%= item.method %>;
+    public native <%= returnString(item) %> <%= item.method %>;
 <% }); %>
 }

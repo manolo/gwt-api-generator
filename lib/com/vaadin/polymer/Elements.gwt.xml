@@ -2,4 +2,6 @@
 <module>
     <source path="" />
     <inherits name='com.google.gwt.user.User'/>
+    <inherits name='elemental2.core.Core'/>
+    <inherits name='elemental2.dom.Dom'/>
 </module>

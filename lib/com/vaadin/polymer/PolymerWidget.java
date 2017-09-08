@@ -7,7 +7,9 @@ import com.google.gwt.regexp.shared.MatchResult;
 import com.google.gwt.regexp.shared.RegExp;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.user.client.ui.HTMLPanel;
-import com.vaadin.polymer.elemental.*;
+import com.vaadin.polymer.PolymerElement;
+import com.vaadin.polymer.PolymerFunction;
+import jsinterop.base.Js;
 
 public class PolymerWidget extends HTMLPanel {
 
@@ -35,7 +37,7 @@ public class PolymerWidget extends HTMLPanel {
     public boolean getBooleanAttribute(String value) {
         return getElement().hasAttribute(value)
                 && (getElement().getAttribute(value).isEmpty()
-                    || Boolean.parseBoolean(getElement().getAttribute(value)));
+                || Boolean.parseBoolean(getElement().getAttribute(value)));
     }
 
     // TODO: Remove this hack for paper-radio-button
@@ -76,7 +78,7 @@ public class PolymerWidget extends HTMLPanel {
         return addDomHandler(handler, ClickEvent.getType());
     }
 
-    public void ready(Function<?, ?> f) {
+    public void ready(PolymerFunction<?, ?> f) {
         Polymer.ready(getElement(), f);
     }
 
@@ -90,7 +92,7 @@ public class PolymerWidget extends HTMLPanel {
 
     /**
      * UiBinder catches the `setId` call in order to use it as a legacy way to set the `ui:field`.
-     * Since some Polymer elements use other elements id to enhance it like `paper-tooltip` we 
+     * Since some Polymer elements use other elements id to enhance it like `paper-tooltip` we
      * maintain this method to directly declarative set custom ids.
      */
     public void setDomId(String id) {
@@ -111,7 +113,8 @@ public class PolymerWidget extends HTMLPanel {
      * such as application of CSS classes, etc., call updateStyles().
      */
     public void updateStyles() {
-        ((HTMLElement)getElement()).updateStyles();
+        final PolymerElement element = Js.cast(getElement());
+        element.updateStyles();
     }
 }
 
