@@ -581,11 +581,6 @@ public abstract class Polymer {
        return jso[methodName].apply(jso, args);
     }-*/;
 
-    public static native <T> T cast(Object o)
-    /*-{
-      return o;
-    }-*/;
-
     /**
      * Return the dom API of one element.
      */
@@ -593,4 +588,3 @@ public abstract class Polymer {
         return Polymer.dom(element);
     }
 }
-
