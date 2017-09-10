@@ -231,11 +231,11 @@ gulp.task('generate:widget-events', ['parse'], function() {
 });
 
 gulp.task('generate:gwt-module', function () {
-  if (args.moduleName != 'Elements' || args.groupId != 'com.vaadin.polymer') {
+  if (globalVar.moduleName != 'Elements' || globalVar.ns != 'com.vaadin.polymer') {
     var dest = globalVar.publicDir.replace(/[^\/]+\/?$/, '');
-    gutil.log("Generating Module: " + dest + args.moduleName + ".gwt.xml");
+    gutil.log("Generating Module: " + dest + globalVar.moduleName + ".gwt.xml");
     return gulp.src(tplDir + "GwtModule.template")
-      .pipe(rename(args.moduleName + ".gwt.xml"))
+      .pipe(rename(globalVar.moduleName + ".gwt.xml"))
       .pipe(gulp.dest(dest));
   }
 });
