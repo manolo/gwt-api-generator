@@ -2,16 +2,39 @@ package com.vaadin.polymer;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.MouseEvent;
+import com.google.gwt.event.shared.EventHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.regexp.shared.MatchResult;
 import com.google.gwt.regexp.shared.RegExp;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.user.client.ui.HTMLPanel;
-import com.vaadin.polymer.PolymerElement;
-import com.vaadin.polymer.PolymerFunction;
 import jsinterop.base.Js;
+import com.vaadin.polymer.elemental.Function;
+import com.vaadin.polymer.elemental.HTMLElement;
 
 public class PolymerWidget extends HTMLPanel {
+
+    public interface TapHandler extends EventHandler {
+        void onTap(TapEvent event);
+    }
+
+    public static class TapEvent extends MouseEvent<TapHandler> {
+        private static final Type<TapHandler> TYPE = new Type<TapHandler>("tap", new TapEvent());
+
+        public static Type<TapHandler> getType() {
+            return TYPE;
+        }
+        protected TapEvent() {
+        }
+
+        public final Type<TapHandler> getAssociatedType() {
+            return TYPE;
+        }
+        protected void dispatch(TapHandler handler) {
+          handler.onTap(this);
+        }
+    }
 
     public PolymerWidget(String tag, String src, String html) {
         super(tag, html);
@@ -78,7 +101,11 @@ public class PolymerWidget extends HTMLPanel {
         return addDomHandler(handler, ClickEvent.getType());
     }
 
-    public void ready(PolymerFunction<?, ?> f) {
+    public HandlerRegistration addTapHandler(TapHandler handler) {
+        return addDomHandler(handler, TapEvent.getType());
+    }
+
+    public void ready(Function<?, ?> f) {
         Polymer.ready(getElement(), f);
     }
 
@@ -117,4 +144,3 @@ public class PolymerWidget extends HTMLPanel {
         element.updateStyles();
     }
 }
-
