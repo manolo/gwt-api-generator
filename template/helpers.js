@@ -107,7 +107,7 @@ module.exports = {
     // We should be able to overload those methods instead of using
     // Object, but JsInterop does not support well overloading
     if (/.*\|.*/.test(t)) return 'Object';
-    if (/^string/i.test(t)) return 'String';
+    if (/^string|^computed/i.test(t)) return 'String';
     if (/^boolean/i.test(t)) return 'boolean';
     if (/^array/i.test(t)) return 'Array<E>';
     if (/^element/i.test(t)) return 'Element';

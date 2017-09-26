@@ -112,6 +112,8 @@ gulp.task('analyze', ['clean:target', 'pre-analyze'], function() {
     "!" + globalVar.bowerDir + "*/*web-animations.html",
     // Not useful in gwt and also has spurious event names
     "!" + globalVar.bowerDir + "*/*iron-jsonp-library.html",
+    // 
+    "!" + globalVar.bowerDir + "*/iron-doc*.html",
     ])
     .pipe(map(function(file, cb) {
       hyd.Analyzer.analyze(globalVar.bowerDir + file.relative).then(function(result) {
