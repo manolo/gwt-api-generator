@@ -51,7 +51,7 @@ gulp.task('bower:configure', ['clean:resources'], function(done) {
 
 gulp.task('bower:install', ['clean', 'bower:configure'], function() {
   if (globalVar.bowerPackages) {
-    return bower({ cmd: 'install', cwd: globalVar.publicDir}, [globalVar.bowerPackages]);
+    return bower({ cmd: 'install', cwd: globalVar.publicDir, interactive: true }, [globalVar.bowerPackages]);
   } else {
     gutil.log('No --package provided. Using package(s) from bower_components folder.');
     return gulp.src('./bower_components/**/*', {base: '.'}).pipe(gulp.dest(globalVar.publicDir));
