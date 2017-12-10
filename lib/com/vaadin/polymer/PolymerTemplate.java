@@ -5,7 +5,7 @@ import jsinterop.annotations.JsProperty;
 import jsinterop.annotations.JsType;
 import elemental2.dom.HTMLElement;
 
-import elemental2.core.Array;
+import elemental2.core.JsArray;
 
 @JsType(isNative=true, namespace=GLOBAL, name="HTMLElement")
 public class PolymerTemplate extends HTMLElement {
