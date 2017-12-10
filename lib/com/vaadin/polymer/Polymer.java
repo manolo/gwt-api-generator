@@ -530,7 +530,7 @@ public abstract class Polymer {
      * penalty because we directly take the native array of the super ArrayList
      * implementation.
      */
-    public static native <T extends JavaScriptObject> Array<T> asJsArray(List<?> l)
+    public static native <T extends JavaScriptObject> JsArray<T> asJsArray(List<?> l)
     /*-{
         return l.@java.util.ArrayList::array;
     }-*/;
