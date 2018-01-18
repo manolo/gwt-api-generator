@@ -1,19 +1,13 @@
-## NOTICE: This library is no longer supported by Vaadin
+# gwt-api-generator
 
-Vaadin transfers the ownership of this library, thus Vaadin no longer provides support or does active development on it. 
-We took this decision because once demonstrated that polymer elements could be easily be integrated in GWT, we want to invest our team’s time in adding valuable user benefits to Vaadin Core Elements, and pass the baton to the community to do integrations with other frameworks.
-
-**In addition, we are happy to announce that ownership of the repository will be transferred by 20 Apr 2017 to [@manolo](https://github.com/manolo), who will continue to maintain it.**
-
-**If you are willing to participate as a collaborator, please leave a comment in [#76](https://github.com/vaadin/gwt-api-generator/issues/76). The collaborators will be granted access after transferring. We encourage contribution in any form and shape.**
-
-# Vaadin gwt-api-generator
-
-Vaadin gwt-api-generator is a tool that produces GWT Java APIs for JavaScript libraries provided as input, assuming their APIs are decorated with JSDoc annotations.
+gwt-api-generator is a tool that produces GWT Java APIs for JavaScript libraries provided as input, assuming their APIs are decorated with JSDoc annotations.
 
 Currently the generator only supports Web Components written in Polymer 1.0 syntax. Support for other type of JavaScript sources might be added in the future.
 
 Original motivation behind the project was to provide GWT community an easy access to the elements in [Vaadin Elements](https://github.com/vaadin/vaadin-core-elements) collection.
+
+_Notice:_ Vaadin transferred the ownership of this library to the community
+by 20 Apr 2017, thus Vaadin no longer provides support or does active development on it.
 
 ## Installation and Usage
 
