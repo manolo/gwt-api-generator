@@ -5,7 +5,7 @@ import jsinterop.annotations.JsProperty;
 import jsinterop.annotations.JsType;
 import elemental2.dom.HTMLElement;
 
-import elemental2.core.Array;
+import elemental2.core.JsArray;
 
 @JsType(isNative=true, namespace=GLOBAL, name="HTMLElement")
 public class PolymerTemplate extends HTMLElement {
@@ -18,8 +18,8 @@ public class PolymerTemplate extends HTMLElement {
     @JsProperty public native String getIdexAs();
     @JsProperty public native void setIndexAs(String value);
 
-    @JsProperty public native Array<?> getItems();
-    @JsProperty public native void setItems(Array<?> items);
+    @JsProperty public native JsArray<?> getItems();
+    @JsProperty public native void setItems(JsArray<?> items);
 
     @JsProperty public native void setFilter(PolymerFunction<Boolean, ?> items);
 
