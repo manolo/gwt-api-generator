@@ -10,8 +10,6 @@ import com.google.gwt.regexp.shared.RegExp;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import jsinterop.base.Js;
-import com.vaadin.polymer.elemental.Function;
-import com.vaadin.polymer.elemental.HTMLElement;
 
 public class PolymerWidget extends HTMLPanel {
 
@@ -105,7 +103,7 @@ public class PolymerWidget extends HTMLPanel {
         return addDomHandler(handler, TapEvent.getType());
     }
 
-    public void ready(Function<?, ?> f) {
+    public void ready(PolymerFunction<?, ?> f) {
         Polymer.ready(getElement(), f);
     }
 
